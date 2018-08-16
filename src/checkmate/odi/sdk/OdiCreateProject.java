@@ -39,19 +39,25 @@ public class OdiCreateProject {
 		//ODI SDK CODE BEGIN
 		
 		//Creating a TEST Project
-				OdiProject project = new OdiProject("TEST-ECLIPSE", "TEST-ECLIPSE");
+			OdiProject project = new OdiProject("TEST-PROJECT", "TEST-PROJECT");
 				//OdiProject(java.lang.String pName, java.lang.String pCode)
 				 
-				//OdiContext context=new OdiContext("TEST-ECLIPSE");
+				//OdiContext context=new OdiContext("TEST-PROJECT");
 				//context.setDefaultContext(true);
 				//OdiContext(java.lang.String pCode)
-				
+			System.out.println( " Creating Project " + project.getName() + " ... ");
+
 				//Creating New Folder
-				OdiFolder folder = new OdiFolder(project,"FOLDER-TEST");
-				
+			OdiFolder folder = new OdiFolder(project,"TEST-FOLDER");
+			System.out.println( " Creating Folder " + folder.getName() + " ... ");
+
+
 				//Persisting to Save the Codes
-				odiInstance.getTransactionalEntityManager().persist(project);
-				odiInstance.getTransactionalEntityManager().persist(folder);
+			odiInstance.getTransactionalEntityManager().persist(project);
+			odiInstance.getTransactionalEntityManager().persist(folder);
+
+			System.out.println( " Project " + project.getName() + " created Succesfully! ");
+			System.out.println( " Folder " + folder.getName() + " created Succesfully! ");
 			
 		//ODI SDK CODE END
 			// Close the Instance

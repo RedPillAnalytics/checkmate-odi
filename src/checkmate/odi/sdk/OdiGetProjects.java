@@ -47,7 +47,7 @@ public class OdiGetProjects {
 		 for ( int i =0 ;i <project.length ; i++ )  {
 		    OdiProject pro1=(OdiProject) project[i];
 		   // We need to cast the object project accordingly, for this example OdiProject
-		 System.out.println("Project Name "+pro1.getName());
+		 System.out.println("Project Name -> "+pro1.getName());
 		}
 			
 		//ODI SDK CODE END
