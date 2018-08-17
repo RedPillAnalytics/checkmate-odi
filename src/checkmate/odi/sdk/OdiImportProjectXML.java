@@ -37,22 +37,23 @@ public class OdiImportProjectXML {
             odiInstance.getSecurityManager().setCurrentThreadAuthentication(auth);
             ITransactionStatus trans = odiInstance.getTransactionManager()
                     .getTransaction(new DefaultTransactionDefinition());
-            // End Connection Configuration
-
-            //ODI SDK CODE BEGIN
-            //Execution Repository
 
             // Execution Repository
             // In case if your Execution rep is linked to a different Master repository please appropriately create new variables
             // The present codes assumes that Development and Execution are linked to the same Master Repository.
 
             String WorkRep_Execution="WORKREP";
-            
+
             WorkRepositoryDbInfo workInfo_exec = new WorkRepositoryDbInfo(WorkRep_Execution, new PoolingAttributes());
             OdiInstance odiInstance_exec=OdiInstance.createInstance(new OdiInstanceConfig(masterInfo,workInfo_exec));
             Authentication auth_exec = odiInstance_exec.getSecurityManager().createAuthentication(Odi_User,Odi_Pass.toCharArray());
             odiInstance_exec.getSecurityManager().setCurrentThreadAuthentication(auth_exec);
             ITransactionStatus trans_exec = odiInstance_exec.getTransactionManager().getTransaction(new DefaultTransactionDefinition());
+
+
+            // End Connection Configuration
+
+            //ODI SDK CODE BEGIN
 
             //Exporting Options
 
@@ -67,18 +68,15 @@ public class OdiImportProjectXML {
             SmartImportServiceImpl importsrvc = new SmartImportServiceImpl(odiInstance_exec);
             String[] XMLFiles=getXMLFiles(ImportFolderPath).split("n");
             for (String xmlfile : XMLFiles) {
-                System.out.println(" Importing Project from XML File "+xmlfile);
+                System.out.println(" Importing Object from XML File "+xmlfile);
                 importsrvc.importObjectsFromXml(xmlfile, ExportKey, ImportWithoutCipherData);
+                System.out.println(" Imported Object from XML File "+xmlfile);
 
             }
 
             //ODI SDK CODE END
 
             // Close the Instance
-            odiInstance.getTransactionManager().commit(trans);
-            odiInstance.close();
-
-            // Commit and Close Transaction Execution
             odiInstance.close();
             odiInstance_exec.getTransactionManager().commit(trans_exec);
             odiInstance_exec.close();
@@ -94,7 +92,7 @@ public class OdiImportProjectXML {
                 null,JOptionPane.INFORMATION_MESSAGE);
     }
 
-    //Reading all the XML Files
+    //Reading all the XML Files from the Project Folder
     public static String getXMLFiles(String DirectoryName){
 
         String xmlfiles="";
