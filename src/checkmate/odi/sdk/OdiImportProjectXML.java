@@ -9,7 +9,6 @@ import oracle.odi.core.persistence.transaction.ITransactionStatus;
 import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition;
 import oracle.odi.core.security.Authentication;
 import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl;
-import oracle.odi.impexp.support.ImportServiceImpl;
 
 import javax.swing.*;
 import java.io.File;

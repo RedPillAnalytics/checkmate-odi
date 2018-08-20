@@ -14,6 +14,7 @@ import oracle.odi.domain.project.finder.IOdiProjectFinder;
 import javax.swing.*;
 
 public class OdiGetProjects {
+	private static String projectNameOutput;
 
 	public static void main(String[] args) {
 		try {
@@ -43,11 +44,13 @@ public class OdiGetProjects {
 		 
 		Object[] project = ((IOdiProjectFinder)odiInstance.getTransactionalEntityManager().
 		getFinder(OdiProject.class)).findAll().toArray();
+		//List of Projects to Output
+		projectNameOutput = "EXISTING PROJECTS:\n";
 		 
 		 for ( int i =0 ;i <project.length ; i++ )  {
 		    OdiProject pro1=(OdiProject) project[i];
-		   // We need to cast the object project accordingly, for this example OdiProject
-		 System.out.println("Project Name -> "+pro1.getName());
+		   //We need to cast the object project accordingly, for this example OdiProject
+             projectNameOutput += String.format("-> %s\n", pro1.getName());
 		}
 			
 		//ODI SDK CODE END
@@ -58,6 +61,6 @@ public class OdiGetProjects {
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString(),null,JOptionPane.ERROR_MESSAGE);
 		}
-		JOptionPane.showMessageDialog(null, "Task Completed!",null,JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, projectNameOutput,null,JOptionPane.INFORMATION_MESSAGE);
 	}
 }
