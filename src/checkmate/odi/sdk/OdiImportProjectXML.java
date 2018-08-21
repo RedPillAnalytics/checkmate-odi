@@ -19,7 +19,7 @@ public class OdiImportProjectXML {
     public static void main(String[] args) {
         try {
             /* CONNECTION PARAMETERS */
-            String Url = "jdbc:oracle:thin:@52.14.228.220:1521/HR927";
+            String Url = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL";
             String Driver = "oracle.jdbc.OracleDriver";
             String Master_User = "DEV_ODI_REPO";
             String Master_Pass = "Welcome1";
