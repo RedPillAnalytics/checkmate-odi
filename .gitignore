@@ -1,5 +1,21 @@
+# No log files
+*.log
+
+# No macOS files
+.DS_Store
+
+#IntelliJ stuff
+.idea/
+*.iml
+
+# Gradle Cache directory
 .gradle
-/build/
+
+# Build Directories
+build/
+
+# Plugin builds
+out
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -9,6 +25,3 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
-
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
