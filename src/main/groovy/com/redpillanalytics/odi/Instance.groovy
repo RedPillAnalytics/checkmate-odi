@@ -1,12 +1,17 @@
-package odi
+package com.redpillanalytics.odi
 
-import common.Utils
+import com.redpillanalytics.common.Utils
+import groovy.util.logging.Slf4j
 import oracle.odi.core.OdiInstance
 import oracle.odi.core.config.MasterRepositoryDbInfo
 import oracle.odi.core.config.OdiInstanceConfig
 import oracle.odi.core.config.PoolingAttributes
 import oracle.odi.core.config.WorkRepositoryDbInfo
+import oracle.odi.core.persistence.transaction.ITransactionStatus
+import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition
+import oracle.odi.core.security.Authentication
 
+@Slf4j
 class Instance {
 
    // basic connection information
@@ -22,6 +27,7 @@ class Instance {
    MasterRepositoryDbInfo masterDb
    WorkRepositoryDbInfo workDb
    OdiInstance odi
+   ITransactionStatus transaction
 
    Instance(String url, String driver, String masterRepo, String workRepo, String masterPassword, String odiUser, String odiPassword) {
 
@@ -35,6 +41,10 @@ class Instance {
       this.workDb = getWorkRepo(workRepo)
 
       this.odi = OdiInstance.createInstance(new OdiInstanceConfig(masterDb, workDb))
+
+      Authentication auth = odi.getSecurityManager().createAuthentication(odiUser, odiPassword.toCharArray())
+      odi.getSecurityManager().setCurrentThreadAuthentication(auth)
+
    }
 
    def getMasterRepo(String url, String driver, String user, String password, PoolingAttributes pooling = new PoolingAttributes()) {
@@ -45,5 +55,18 @@ class Instance {
    def getWorkRepo(String user, PoolingAttributes pooling = new PoolingAttributes()) {
 
       return new WorkRepositoryDbInfo(user, pooling)
+   }
+
+   def beginTransation() {
+
+      this.transaction = odi.getTransactionManager()
+              .getTransaction(new DefaultTransactionDefinition())
+
+   }
+
+   def endTransaction() {
+
+      odi.getTransactionManager().commit(this.transaction)
+      odi.close(this.transaction)
    }
 }

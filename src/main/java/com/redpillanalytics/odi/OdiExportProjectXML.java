@@ -1,4 +1,4 @@
-package odi;
+package com.redpillanalytics.odi;
 
 import oracle.odi.core.OdiInstance;
 import oracle.odi.core.config.MasterRepositoryDbInfo;

@@ -1,4 +1,4 @@
-package odi;
+package com.redpillanalytics.odi;
 
 import oracle.odi.core.OdiInstance;
 import oracle.odi.core.config.MasterRepositoryDbInfo;
@@ -8,18 +8,16 @@ import oracle.odi.core.config.WorkRepositoryDbInfo;
 import oracle.odi.core.persistence.transaction.ITransactionStatus;
 import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition;
 import oracle.odi.core.security.Authentication;
+import oracle.odi.domain.project.OdiFolder;
 import oracle.odi.domain.project.OdiProject;
-import oracle.odi.domain.project.finder.IOdiProjectFinder;
 
 import javax.swing.*;
 
-public class OdiGetProjects {
-	private static String projectNameOutput;
-
+public class OdiCreateProject {
 	public static void main(String[] args) {
 		try {
 			/* CONNECTION PARAMETERS */
-			String Url = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL";
+			String Url = "jdbc:oracle:thin:@52.14.228.220:1521/HR927";
 			String Driver = "oracle.jdbc.OracleDriver";
 			String Master_User = "DEV_ODI_REPO";
 			String Master_Pass = "Welcome1";
@@ -40,18 +38,26 @@ public class OdiGetProjects {
 		
 		//ODI SDK CODE BEGIN
 		
-		// List all the projects
-		 
-		Object[] project = ((IOdiProjectFinder)odiInstance.getTransactionalEntityManager().
-		getFinder(OdiProject.class)).findAll().toArray();
-		//List of Projects to Output
-		projectNameOutput = "EXISTING PROJECTS:\n";
-		 
-		 for ( int i =0 ;i <project.length ; i++ )  {
-		    OdiProject pro1=(OdiProject) project[i];
-		   //We need to cast the object project accordingly, for this example OdiProject
-             projectNameOutput += String.format("-> %s\n", pro1.getName());
-		}
+		//Creating a TEST Project
+			OdiProject project = new OdiProject("TEST-PROJECT", "TEST-PROJECT");
+				//OdiProject(java.lang.String pName, java.lang.String pCode)
+				 
+				//OdiContext context=new OdiContext("TEST-PROJECT");
+				//context.setDefaultContext(true);
+				//OdiContext(java.lang.String pCode)
+			System.out.println( " Creating Project " + project.getName() + " ... ");
+
+				//Creating New Folder
+			OdiFolder folder = new OdiFolder(project,"TEST-FOLDER");
+			System.out.println( " Creating Folder " + folder.getName() + " ... ");
+
+
+				//Persisting to Save the Codes
+			odiInstance.getTransactionalEntityManager().persist(project);
+			odiInstance.getTransactionalEntityManager().persist(folder);
+
+			System.out.println( " Project " + project.getName() + " created Succesfully! ");
+			System.out.println( " Folder " + folder.getName() + " created Succesfully! ");
 			
 		//ODI SDK CODE END
 			// Close the Instance
@@ -61,6 +67,6 @@ public class OdiGetProjects {
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString(),null,JOptionPane.ERROR_MESSAGE);
 		}
-		JOptionPane.showMessageDialog(null, projectNameOutput,null,JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Task Completed!",null,JOptionPane.INFORMATION_MESSAGE);
 	}
 }

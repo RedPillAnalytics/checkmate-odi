@@ -1,6 +1,7 @@
 plugins {
    id 'groovy'
    id 'maven-publish'
+   id "com.gradle.plugin-publish" version "0.9.9"
    id 'java-gradle-plugin'
    id "pl.allegro.tech.build.axion-release" version "1.9.2"
    id 'org.unbroken-dome.test-sets' version '1.5.1'
@@ -21,6 +22,31 @@ scmVersion {
 //set Gradle version to SCM Version
 allprojects {
    project.version = scmVersion.version
+}
+
+gradlePlugin {
+   plugins {
+      checkmatePlugin {
+         id = 'com.redpillanalytics.checkmate.odi'
+         implementationClass = 'com.redpillanalytics.odi.gradle.OdiPlugin'
+      }
+   }
+}
+
+pluginBundle {
+
+   website = 'http://redpillanalytics.com/'
+   vcsUrl = 'https://github.com/RedPillAnalytics/checkmate-odi/'
+
+   plugins {
+
+      checkmateOdi {
+         displayName = 'checkmate.odi'
+         description = "Builds, tests and deploys Oracle Data Integrator code."
+         tags = ['oracle', 'data-integration','etl']
+         version = project.version
+      }
+   }
 }
 
 dependencies {
