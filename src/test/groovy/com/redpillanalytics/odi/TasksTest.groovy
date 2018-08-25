@@ -37,7 +37,7 @@ class TasksTest extends Specification {
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Si', 'tasks')
+              .withArguments('-Si', 'tasks','--all')
               .withPluginClasspath()
               .build()
 

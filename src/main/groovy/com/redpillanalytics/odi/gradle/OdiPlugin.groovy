@@ -1,9 +1,9 @@
 package com.redpillanalytics.odi.gradle
 
+import com.redpillanalytics.odi.gradle.containers.TaskGroupContainer
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.language.base.plugins.LanguageBasePlugin
 
 @Slf4j
 class OdiPlugin implements Plugin<Project> {
@@ -17,7 +17,11 @@ class OdiPlugin implements Plugin<Project> {
          extensions.create('odi', OdiPluginExtension)
       }
 
+      project.odi.extensions.buildGroups = project.container(TaskGroupContainer)
+
       project.afterEvaluate {
+
+
 
       }
    }
