@@ -57,14 +57,14 @@ class Instance {
       return new WorkRepositoryDbInfo(user, pooling)
    }
 
-   def beginTransation() {
+   def beginTxn() {
 
       this.transaction = odi.getTransactionManager()
               .getTransaction(new DefaultTransactionDefinition())
 
    }
 
-   def endTransaction() {
+   def endTxn() {
 
       odi.getTransactionManager().commit(this.transaction)
       odi.close(this.transaction)
