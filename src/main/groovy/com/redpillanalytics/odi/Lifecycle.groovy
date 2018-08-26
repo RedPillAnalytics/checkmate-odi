@@ -14,6 +14,11 @@ class Lifecycle {
 
    }
 
+   Lifecycle(Instance instance) {
+
+      this.instance = instance
+   }
+
    def createProject(String name, String code) {
 
       instance.beginTxn()

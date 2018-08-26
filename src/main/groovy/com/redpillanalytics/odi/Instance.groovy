@@ -15,12 +15,12 @@ import oracle.odi.core.security.Authentication
 class Instance {
 
    // basic connection information
-   String url = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
-   String driver = "oracle.jdbc.OracleDriver";
-   String masterRepo = "DEV_ODI_REPO"
+   String url
+   String driver
+   String masterRepo
    String masterPassword
-   String workRepo = "WORKREP"
-   String odiUser = "SUPERVISOR"
+   String workRepo
+   String odiUser
    String odiPassword
 
    // master repository connection
@@ -37,24 +37,39 @@ class Instance {
       this.masterPassword = masterPassword
       this.workRepo = workRepo
 
-      this.masterDb = getMasterRepo(url, driver, masterRepo, masterPassword)
-      this.workDb = getWorkRepo(workRepo)
-
-      this.odi = OdiInstance.createInstance(new OdiInstanceConfig(masterDb, workDb))
-
-      Authentication auth = odi.getSecurityManager().createAuthentication(odiUser, odiPassword.toCharArray())
-      odi.getSecurityManager().setCurrentThreadAuthentication(auth)
+      // make the connection
+      connect()
 
    }
 
    def getMasterRepo(String url, String driver, String user, String password, PoolingAttributes pooling = new PoolingAttributes()) {
 
-      return new MasterRepositoryDbInfo(url, driver, user, password.toCharArray(), pooling)
+      try {
+         return new MasterRepositoryDbInfo(url, driver, user, password.toCharArray(), pooling)
+      }
+      catch (NullPointerException e) {
+
+         throw new Exception("A portion of the Master Repository credentials are missing.")
+      }
    }
 
    def getWorkRepo(String user, PoolingAttributes pooling = new PoolingAttributes()) {
 
       return new WorkRepositoryDbInfo(user, pooling)
+   }
+
+   def connect() {
+
+      this.masterDb = getMasterRepo(url, driver, masterRepo, masterPassword)
+      this.workDb = getWorkRepo(workRepo)
+
+      this.odi = OdiInstance.createInstance(new OdiInstanceConfig(masterDb, workDb))
+      this.odiUser = odiUser
+      this.odiPassword = odiPassword
+
+      Authentication auth = odi.getSecurityManager().createAuthentication(odiUser, odiPassword.toCharArray())
+      odi.getSecurityManager().setCurrentThreadAuthentication(auth)
+
    }
 
    def beginTxn() {
@@ -64,9 +79,12 @@ class Instance {
 
    }
 
-   def endTxn() {
+   def endTxn( Boolean commit = true) {
 
-      odi.getTransactionManager().commit(this.transaction)
+      if (commit) {
+         odi.getTransactionManager().commit(this.transaction)
+      }
+
       odi.close(this.transaction)
    }
 }

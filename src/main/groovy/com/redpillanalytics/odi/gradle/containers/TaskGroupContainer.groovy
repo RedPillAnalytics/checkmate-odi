@@ -10,6 +10,12 @@ class TaskGroupContainer {
     */
    String name
 
+   TaskGroupContainer(String name) {
+
+      // set the name of the container
+      this.name = name
+   }
+
    // Build Group defaults
    private static final String CURRENT_BUILD_NAME = 'current'
 
@@ -43,11 +49,6 @@ class TaskGroupContainer {
       return taskName
 
 
-   }
-
-   def getTaskGroup(String groupName) {
-
-      return groupName
    }
 
 }

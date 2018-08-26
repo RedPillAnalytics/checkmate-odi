@@ -1,4 +1,4 @@
-package com.redpillanalytics.odi
+
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
@@ -10,16 +10,19 @@ import spock.lang.Title
 import spock.lang.Unroll
 
 @Slf4j
-@Title("Execute tasks using --dry-run")
-class DryRunTest extends Specification {
+@Title("Execute :tasks")
+class TasksTest extends Specification {
 
    @ClassRule
    @Shared
    TemporaryFolder testProjectDir = new TemporaryFolder()
 
-   @Shared buildFile
-   @Shared result
-   @Shared indexedResultOutput
+   @Shared
+           buildFile
+   @Shared
+           result
+   @Shared
+           indexedResultOutput
 
    // run the Gradle build
    // return regular output
@@ -34,7 +37,7 @@ class DryRunTest extends Specification {
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Sim', 'build')
+              .withArguments('-Si', 'tasks','--all')
               .withPluginClasspath()
               .build()
 
@@ -44,12 +47,12 @@ class DryRunTest extends Specification {
    }
 
    @Unroll
-   def "a dry run configuration contains :#task"() {
+   def "Executing :tasks contains :#task"() {
 
-      given: "a dry run task"
+      given: "a gradle tasks execution"
 
       expect:
-      result.output.contains(":$task")
+      result.output.contains("$task")
 
       where:
       task << ['build']
