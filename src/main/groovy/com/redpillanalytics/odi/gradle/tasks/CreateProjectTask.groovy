@@ -1,7 +1,8 @@
 package com.redpillanalytics.odi.gradle.tasks
 
-import com.redpillanalytics.odi.Lifecycle
+import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
+import oracle.odi.domain.project.OdiProject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
@@ -59,7 +60,13 @@ class CreateProjectTask extends DefaultTask {
    @TaskAction
    def createProject() {
 
-      new Lifecycle(url, driver, master, work, masterPass, odi, odiPass).createProject(pname, pcode)
+      def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
+
+      instance.beginTxn()
+
+      instance.odi.getTransactionalEntityManager().persist(new OdiProject(pname, pcode))
+
+      instance.endTxn()
 
    }
 }
