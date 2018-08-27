@@ -3,14 +3,14 @@ package com.redpillanalytics.odi.gradle.containers
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class TaskGroupContainer {
+class BuildGroupContainer {
 
    /**
     * The name of the container entity.
     */
    String name
 
-   TaskGroupContainer(String name) {
+   BuildGroupContainer(String name) {
 
       // set the name of the container
       this.name = name

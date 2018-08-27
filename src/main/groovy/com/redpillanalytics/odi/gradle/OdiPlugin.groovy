@@ -1,7 +1,7 @@
 package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
-import com.redpillanalytics.odi.gradle.containers.TaskGroupContainer
+import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
@@ -22,10 +22,10 @@ class OdiPlugin implements Plugin<Project> {
       // create the extension for the build group container
       // this facilitates creating multiple build groups
       // build groups are groups of similar tasks with slight configuration modifications
-      project.odi.extensions.buildGroups = project.container(TaskGroupContainer)
+      project.odi.extensions.buildGroups = project.container(BuildGroupContainer)
 
       // we'll start with only a single build group
-      project.extensions.odi.buildGroups.add(new TaskGroupContainer('current'))
+      project.extensions.odi.buildGroups.add(new BuildGroupContainer('current'))
 
       project.afterEvaluate {
 
