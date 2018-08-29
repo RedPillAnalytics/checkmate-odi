@@ -64,8 +64,8 @@ class SmartExportTask extends DefaultTask {
     def exportProject() {
 
         def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-        OdiProject project = ((IOdiProjectFinder) instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(projectName)
-        def export=new ExportServiceImpl(instance.odi)
+        def project = ((IOdiProjectFinder) instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(projectName)
+        def export= new ExportServiceImpl(instance.odi)
         def encdOption = new EncodingOptions()
 
 
