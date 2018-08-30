@@ -2,7 +2,6 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
-import oracle.odi.core.OdiInstance
 import oracle.odi.domain.project.OdiProject
 import oracle.odi.domain.project.finder.IOdiProjectFinder
 import oracle.odi.impexp.EncodingOptions

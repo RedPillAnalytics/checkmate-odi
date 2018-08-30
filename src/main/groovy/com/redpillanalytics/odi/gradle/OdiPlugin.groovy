@@ -3,6 +3,8 @@ package com.redpillanalytics.odi.gradle
 import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
+import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
+import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,6 +39,8 @@ class OdiPlugin implements Plugin<Project> {
 
          String projectName
          String projectCode
+         String exportPath
+         String importFilePath
 
          // see if there's an explicit project name
          if (getParameter('projectName')) {
@@ -101,6 +105,58 @@ class OdiPlugin implements Plugin<Project> {
                   odi odiUser
 
                   odiPass odiPassword
+
+               }
+
+               // Task that executes the smart export of a project
+               project.task(bg.getTaskName('exportProject'), type: SmartExportTask) {
+
+                  group 'project'
+
+                  description = "Executes a Smart Export of a project in the ODI Instance."
+
+                  url masterUrl
+
+                  driver masterDriver
+
+                  master masterRepo
+
+                  work workRepo
+
+                  masterPass masterPassword
+
+                  odi odiUser
+
+                  odiPass odiPassword
+
+                  expPath exportPath
+
+                  pname projectName
+
+               }
+
+               // Task that executes the smart import of a project
+               project.task(bg.getTaskName('importProject'), type: SmartImportTask) {
+
+                  group 'project'
+
+                  description = "Executes a Smart Import of a project to the ODI Instance."
+
+                  url masterUrl
+
+                  driver masterDriver
+
+                  master masterRepo
+
+                  work workRepo
+
+                  masterPass masterPassword
+
+                  odi odiUser
+
+                  odiPass odiPassword
+
+                  impPath importFilePath
 
                }
             }
