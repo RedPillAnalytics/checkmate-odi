@@ -39,8 +39,7 @@ class OdiPlugin implements Plugin<Project> {
 
          String projectName
          String projectCode
-         String exportPath
-         String importFilePath
+         String sourceBase = getParameter('sourceBase')
 
          // see if there's an explicit project name
          if (getParameter('projectName')) {
@@ -129,7 +128,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   odiPass odiPassword
 
-                  expPath exportPath
+                  path sourceBase
 
                   pname projectName
 
@@ -156,7 +155,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   odiPass odiPassword
 
-                  impPath importFilePath
+                  path sourceBase
 
                }
             }
