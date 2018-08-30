@@ -17,7 +17,7 @@ class OdiPluginExtension {
    String projectCode
 
    /**
-    * The base sorurce directory.
+    * The base source directory.
     */
    String sourceBase = 'src/main/odi'
 
