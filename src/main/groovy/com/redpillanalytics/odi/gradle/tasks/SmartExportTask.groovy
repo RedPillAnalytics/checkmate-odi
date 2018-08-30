@@ -73,8 +73,6 @@ class SmartExportTask extends DefaultTask {
 
         export.exportToXmlWithParents(project, exportPath, true, true, encdOption, null, true)
 
-        instance.odi.getTransactionManager().commit()
-
         instance.endTxn()
 
     }
