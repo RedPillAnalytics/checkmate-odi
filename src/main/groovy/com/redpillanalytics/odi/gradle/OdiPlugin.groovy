@@ -5,6 +5,7 @@ import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
+import com.redpillanalytics.odi.gradle.tasks.SmartImportAllTask
 import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
@@ -180,6 +181,31 @@ class OdiPlugin implements Plugin<Project> {
                     odi odiUser
 
                     odiPass odiPassword
+                }
+
+                // Task that executes the smart import of a project
+                project.task(bg.getTaskName('importAllXML'), type: SmartImportAllTask) {
+
+                    group 'project'
+
+                    description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
+
+                    url masterUrl
+
+                    driver masterDriver
+
+                    master masterRepo
+
+                    work workRepo
+
+                    masterPass masterPassword
+
+                    odi odiUser
+
+                    odiPass odiPassword
+
+                    path sourceBase
+
                 }
             }
          }
