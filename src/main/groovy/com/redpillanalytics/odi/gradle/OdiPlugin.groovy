@@ -3,6 +3,7 @@ package com.redpillanalytics.odi.gradle
 import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
+import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
 import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
 import groovy.util.logging.Slf4j
@@ -158,6 +159,28 @@ class OdiPlugin implements Plugin<Project> {
                   path sourceBase
 
                }
+
+                // Task that get all the existing projects in the Repository
+                project.task(bg.getTaskName('getProjects'), type: GetProjectsTask) {
+
+                    group 'project'
+
+                    description = "Get all the projects existing on the ODI Instance."
+
+                    url masterUrl
+
+                    driver masterDriver
+
+                    master masterRepo
+
+                    work workRepo
+
+                    masterPass masterPassword
+
+                    odi odiUser
+
+                    odiPass odiPassword
+                }
             }
          }
       }
