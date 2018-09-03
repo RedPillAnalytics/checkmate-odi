@@ -5,12 +5,11 @@ import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiProject
 import oracle.odi.domain.project.finder.IOdiProjectFinder
 import oracle.odi.impexp.EncodingOptions
-import oracle.odi.impexp.support.ExportServiceImpl
+import oracle.odi.impexp.smartie.ISmartExportable
+import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -72,17 +71,20 @@ class SmartExportTask extends DefaultTask {
    @TaskAction
    def exportProject() {
 
-      def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-      def project = ((IOdiProjectFinder) instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(pname)
-      def export = new ExportServiceImpl(instance.odi)
-      def encdOption = new EncodingOptions()
+       def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
+       def exportService = new SmartExportServiceImpl(instance.odi)
+       def encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9")
 
+       def project = ((IOdiProjectFinder) instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(pname) as List<ISmartExportable>
 
-      instance.beginTxn()
+       //List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable> ();
+       //smartExportList = ((IOdiProjectFinder)instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
 
-      export.exportToXmlWithParents(project, 'path', true, true, encdOption, null, true)
+       instance.beginTxn()
 
-      instance.endTxn()
+       exportService.exportToXml(project,path,pname,true,false,encdOption,false,null,null,true)
+
+       instance.endTxn()
 
    }
 }
