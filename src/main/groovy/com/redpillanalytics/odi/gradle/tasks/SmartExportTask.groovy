@@ -72,16 +72,17 @@ class SmartExportTask extends DefaultTask {
    def exportProject() {
 
        def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-       //def export = new ExportServiceImpl(instance.odi)
-       def export = new SmartExportServiceImpl(instance.odi)
-       def encdOption = new EncodingOptions()
-       def project = ((IOdiProjectFinder) instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(pname)
-       //def projects = ((IOdiProjectFinder)instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
+       def exportService = new SmartExportServiceImpl(instance.odi)
+       def encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9")
+
+       def project = ((IOdiProjectFinder) instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(pname) as List<ISmartExportable>
+
+       //List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable> ();
+       //smartExportList = ((IOdiProjectFinder)instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
 
        instance.beginTxn()
 
-       //export.exportToXmlWithParents(project, 'path', true, true, encdOption, null, true)
-       export.exportToXml(project as List<ISmartExportable>,path,pname,true,false,encdOption,false,null,null,true)
+       exportService.exportToXml(project,path,pname,true,false,encdOption,false,null,null,true)
 
        instance.endTxn()
 
