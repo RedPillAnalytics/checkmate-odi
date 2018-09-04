@@ -50,18 +50,18 @@ class SmartImportTask extends DefaultTask {
    String odiPass
 
    @Input
-   @Option(option = "path",
+   @Option(option = "sourcePath",
            description = "The path to the source file to import. Defaults to the 'sourceBase' parameter value.")
-   String path
+   String sourcePath
 
    // setImportFile() is not used, but I added it for Gradle incremental build support
    @InputFile
    def getImportFile() {
-      def file = project.file('path')
+      def file = project.file('sourcePath')
 
-      if (file.directory) throw new GradleException("'${path}' points to a directory")
+      if (file.directory) throw new GradleException("'${sourcePath}' points to a directory")
 
-      if (!(file.name =~ /\.xml/)) throw new GradleException("'${path}' does not appear to be an XML file.")
+      if (!(file.name =~ /\.xml/)) throw new GradleException("'${sourcePath}' does not appear to be an XML file.")
 
       return file
    }

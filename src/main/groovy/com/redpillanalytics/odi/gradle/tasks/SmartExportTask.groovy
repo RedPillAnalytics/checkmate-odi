@@ -52,9 +52,9 @@ class SmartExportTask extends DefaultTask {
    String odiPass
 
    @Input
-   @Option(option = "path",
+   @Option(option = "sourcePath",
            description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
-   String path
+   String sourcePath
 
    @Input
    @Option(option = "pname",
@@ -65,7 +65,7 @@ class SmartExportTask extends DefaultTask {
    @OutputDirectory
    def getSourceBase() {
 
-      return project.file(path)
+      return project.file(sourcePath)
    }
 
    @TaskAction
@@ -82,7 +82,7 @@ class SmartExportTask extends DefaultTask {
 
        instance.beginTxn()
 
-       exportService.exportToXml(project,path,pname,true,false,encdOption,false,null,null,true)
+       exportService.exportToXml(project,sourcePath,pname,true,false,encdOption,false,null,null,true)
 
        instance.endTxn()
 
