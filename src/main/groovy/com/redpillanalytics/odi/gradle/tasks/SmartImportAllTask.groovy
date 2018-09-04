@@ -64,7 +64,7 @@ class SmartImportAllTask extends DefaultTask {
             def files
             def folder = new File(path as String) //We need to threat the NullPointer Exception if the path is null or is not a path?
             def listOfFiles = folder.listFiles()
-            listOfFiles.each { def file ->
+            listOfFiles.each { file ->
                 if (file.isFile()) {
                     files = file.name
                     if (files.endsWith(".xml") || files.endsWith(".XML")) {
@@ -81,7 +81,7 @@ class SmartImportAllTask extends DefaultTask {
         instance.beginTxn()
 
         //Importing each XML File to the ODI Repository
-        xmlFiles.each { def xmlfile ->
+        xmlFiles.each { xmlfile ->
             importService.importObjectsFromXml(xmlfile, null, false)
         }
 
