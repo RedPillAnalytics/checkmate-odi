@@ -47,9 +47,9 @@ class SmartImportAllTask extends DefaultTask {
     String odiPass
 
     @Input
-    @Option(option = "path",
+    @Option(option = "sourcePath",
             description = "The path to the source file to import. Defaults to the 'sourceBase' parameter value.")
-    String path
+    String sourcePath
 
     @TaskAction
     def importAllXML() {
@@ -58,17 +58,17 @@ class SmartImportAllTask extends DefaultTask {
         def importService = new SmartImportServiceImpl(instance.odi)
 
         //Reading all the XML Files from the Source Directory
-        def getXMLFiles = { path ->
+        def getXMLFiles = { sourcePath ->
 
             def xmlFiles = ""
             def files
-            def folder = new File(path as String) //We need to threat the NullPointer Exception if the path is null or is not a path?
+            def folder = new File(sourcePath as String) //We need to threat the NullPointer Exception if the path is null or is not a path?
             def listOfFiles = folder.listFiles()
             listOfFiles.each { file ->
                 if (file.isFile()) {
                     files = file.name
                     if (files.endsWith(".xml") || files.endsWith(".XML")) {
-                        xmlFiles += path + "/" + files + "n"
+                        xmlFiles += sourcePath + "/" + files + "n"
                     }
                 }
             }
@@ -76,7 +76,7 @@ class SmartImportAllTask extends DefaultTask {
         }
 
         //Taking all the XML Files from the Source Directory and splitting to loop into each XML File to Import
-        def xmlFiles = getXMLFiles(path).split("n")
+        def xmlFiles = getXMLFiles(sourcePath).split("n")
 
         instance.beginTxn()
 
