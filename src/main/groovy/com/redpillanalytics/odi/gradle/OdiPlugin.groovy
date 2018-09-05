@@ -4,6 +4,7 @@ import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
+import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
 import com.redpillanalytics.odi.gradle.tasks.SmartImportAllTask
 import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
@@ -133,6 +134,31 @@ class OdiPlugin implements Plugin<Project> {
                         sourcePath sourceBase
 
                         pname projectName
+
+                    }
+
+                    // Task that executes the smart export of a project
+                    project.task(bg.getTaskName('exportAllProjects'), type: SmartExportAllTask) {
+
+                        group 'project'
+
+                        description = "Executes a Smart Export of a project in the ODI Instance."
+
+                        url masterUrl
+
+                        driver masterDriver
+
+                        master masterRepo
+
+                        work workRepo
+
+                        masterPass masterPassword
+
+                        odi odiUser
+
+                        odiPass odiPassword
+
+                        sourcePath sourceBase
 
                     }
 
