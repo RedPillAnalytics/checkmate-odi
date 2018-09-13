@@ -3,6 +3,7 @@ package com.redpillanalytics.odi.gradle
 import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
+import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
@@ -43,6 +44,9 @@ class OdiPlugin implements Plugin<Project> {
             String projectName
             String projectCode
             String sourceBase = getParameter('sourceBase')
+            // targetProject and targetFolder variables to exportProjectFolder, that exports the objects contained in a folder from a project
+            String targetPrjct
+            String targetFldr
 
             // see if there's an explicit project name
             if (getParameter('projectName')) {
@@ -135,6 +139,36 @@ class OdiPlugin implements Plugin<Project> {
 
                         pname projectName
 
+                    }
+
+                    // Task that executes the smart export of all code from a folder in the target project
+                    project.task(bg.getTaskName('exportProjectFolder'), type: ExportProjectFolderTask) {
+
+                        group 'project'
+
+                        description = "Executes a Smart Export of the object in a specified folder in the ODI Instance."
+
+                        url masterUrl
+
+                        driver masterDriver
+
+                        master masterRepo
+
+                        work workRepo
+
+                        masterPass masterPassword
+
+                        odi odiUser
+
+                        odiPass odiPassword
+
+                        sourcePath sourceBase
+
+                        pname projectName
+
+                        targetProject targetPrjct
+
+                        targetFolder targetFldr
                     }
 
                     // Task that executes the smart export of a project
