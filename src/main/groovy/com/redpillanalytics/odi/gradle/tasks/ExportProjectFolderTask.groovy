@@ -75,12 +75,12 @@ class ExportProjectFolderTask extends DefaultTask {
 
     @Input
     @Option(option = "targetProject",
-            description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
+            description = "The target project name containing the folders with the objects from the ODI Repository for the SmartExport.")
     String targetProject
 
     @Input
     @Option(option = "targetFolder",
-            description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
+            description = "The target folder name containing the objects to export from the ODI Repository for the SmartExport.")
     String targetFolder
 
     // setSourceBase is not used, but I added it to support Gradle Incremental Build support
@@ -93,67 +93,62 @@ class ExportProjectFolderTask extends DefaultTask {
     @TaskAction
     def exportProjectFolder() {
 
+        //create ODI Instance
         def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-        def exportService = new SmartExportServiceImpl(instance.odi)
 
         // create the export list
-        List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable> ();
+        List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable> ()
 
         // create transaction items
-        def tm = instance.getTransactionManager();
-        def tme = instance.getTransactionalEntityManager();
+        def tme = instance.getTransactionalEntityManager()
 
         // create finders
-        def pf = (IOdiProjectFinder)tme.getFinder(OdiProject.class);  // project
-        def ff = (IOdiFolderFinder)tme.getFinder(OdiFolder.class);   // project code folders
-        def mf = (IMappingFinder)tme.getFinder(Mapping.class);
-        def pkf= (IOdiPackageFinder)tme.getFinder(OdiPackage.class);
-        def prf= (IOdiUserProcedureFinder)tme.getFinder(OdiUserProcedure.class);
+        def pf = (IOdiProjectFinder)tme.getFinder(OdiProject.class)  // project
+        def ff = (IOdiFolderFinder)tme.getFinder(OdiFolder.class)   // project code folders
+        def mf = (IMappingFinder)tme.getFinder(Mapping.class)
+        def pkf= (IOdiPackageFinder)tme.getFinder(OdiPackage.class)
+        def prf= (IOdiUserProcedureFinder)tme.getFinder(OdiUserProcedure.class)
 
         // Validate project and folder
 
-        def project = pf.findByCode(targetProject);
+        def project = pf.findByCode(targetProject)
         if (project == null) {
             println("Project "+ targetProject +" not found")
         }
-        else //
+        else
         {
-            def folderColl = ff.findByName(targetFolder, targetProject);
-            if (folderColl.size() == 1)
-                folder = folderColl.iterator().next();
-// list the mappings
-            mappingColl = mf.findByProject(targetProject,targetFolder)
+            def folderColl = ff.findByName(targetFolder, targetProject)
+            if (folderColl.size() == 1) {
+                def folder = folderColl.iterator().next()
+                folder
+            }
+            // list the mappings
+            def mappingColl = mf.findByProject(targetProject,targetFolder)
             for (Mapping mapping : mappingColl) {
-                smartExportList.add( (ISmartExportable) mapping); // add the item to the list
-                println(mapping.getName());
+                smartExportList.add( (ISmartExportable) mapping) // add the item to the list
+                println(mapping.getName())
             }
-// list the packages
-            packageColl = pkf.findByProject(targetProject,targetFolder)
+             // list the packages
+            def packageColl = pkf.findByProject(targetProject,targetFolder)
             for (OdiPackage thePackage : packageColl) {
-                smartExportList.add( (ISmartExportable) thePackage);
-                println(thePackage.getName());
+                smartExportList.add( (ISmartExportable) thePackage)
+                println(thePackage.getName())
             }
-// list the procedures
-            procedureColl = prf.findByProject(targetProject,targetFolder)
+             // list the procedures
+            def procedureColl = prf.findByProject(targetProject,targetFolder)
             for (OdiUserProcedure theProcedure : procedureColl) {
-                smartExportList.add( (ISmartExportable) theProcedure);
-                println(theProcedure.getName());
+                smartExportList.add( (ISmartExportable) theProcedure)
+                println(theProcedure.getName())
             }
-            // list the load plans
-
-
-            // we have a list! So do the export
-            ISmartExportService smartExport = new SmartExportServiceImpl(odiInstance);
-            EncodingOptions encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9");
-            // wrap in a transaction
-            txnDef = new DefaultTransactionDefinition();
-            tm = odiInstance.getTransactionManager()
-            txnStatus = tm.getTransaction(txnDef)
-            smartExport.exportToXml (smartExportList, codeExportFolder, codeExportFile, true, false, encdOption, false, null, null, true);
-            tm.rollback(txnStatus) // we don't need to persist!
         }
 
+        //create Smart Export Service Object
+        ISmartExportService smartExport = new SmartExportServiceImpl(instance.odi)
+        EncodingOptions encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9")
+
         instance.beginTxn()
+
+        smartExport.exportToXml (smartExportList, sourcePath, pname, true, false, encdOption, false, null, null, true)
 
 
         instance.endTxn()
