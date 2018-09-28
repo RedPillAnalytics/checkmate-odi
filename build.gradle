@@ -51,6 +51,11 @@ pluginBundle {
 
 dependencies {
 
+   //Offline Dependencies added such does not included on s3://maven.redpillanalytics.com/release/maven2
+   compile name: 'identitystore'
+   compile name: 'com.oracle.weblogic.persistence'
+   compile name: 'oracle.ide.persistence'
+
    // basic Groovy/Gradle stuff
    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.12'
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
@@ -70,21 +75,18 @@ dependencies {
    compile 'odi-sdk:odi-wls:+'
    compile 'odi-sdk:ogg-jmx:+'
    compile 'odi-sdk:ogg-jmx:+'
-
    compile 'oracle-common:jps-api:+'
    compile 'oracle-common:ojdl-core:+'
    compile 'oracle-common:ojdbc8:+'
    compile 'oracle-common:ucp-core:+'
-
    compile 'wls-modules:wls-rac-ucp:+'
 
    // ODI SDK common libraries -- will add more in as required
-   compile 'org.springframework:spring-tx:+'
-   compile 'nz.net.osnz.composite:composite-spring-jdbc:5.5'
+   compile 'org.springframework.integration:spring-integration-jdbc:4.0.0.RELEASE'
+   compile 'nz.net.osnz.composite:composite-spring-jdbc:4.1'
    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:+'
    compile 'bsh:bsh:+'
    compile 'org.apache-extras.beanshell:bsh:+'
-   compile 'org.apache.karaf.eik.plugins:org.apache.commons.collections:3.2.1'
    compile 'com.fasterxml.jackson.core:jackson-core:+'
    compile 'com.fasterxml.jackson.core:jackson-databind:+'
    compile 'org.glassfish:javax.json:+'
@@ -98,6 +100,8 @@ dependencies {
    compile 'org.eclipse.persistence:org.eclipse.persistence.oracle.nosql:+'
    compile 'org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:+'
    compile 'org.ops4j.pax.runner:pax-runner-no-jcl:+'
+   compile 'commons-collections:commons-collections:20040616'
+   compile 'org.apache.commons:commons-collections4:4.2'
 
    testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
 }
@@ -106,6 +110,11 @@ dependencies {
 group = 'com.redpillanalytics'
 
 repositories {
+
+   flatDir {
+      dirs 'build/libs'
+   }
+
    jcenter()
    maven {
       url releaseUrl
