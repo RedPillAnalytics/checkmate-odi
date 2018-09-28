@@ -76,11 +76,11 @@ class OdiPlugin implements Plugin<Project> {
             def workRepo = getParameter('workRepo')
             log.debug "workRepo: $workRepo"
             def masterPassword = getParameter('masterPassword')
-            //log.debug "masterPassword: $masterPassword"
+            log.debug "masterPassword: $masterPassword"
             def odiUser = getParameter('odiUser')
             log.debug "odiUser: $odiUser"
             def odiPassword = getParameter('odiPassword')
-            //log.debug "odiPassword: $odiPassword"
+            log.debug "odiPassword: $odiPassword"
 
             // configure all build groups
             project.odi.buildGroups.all { bg ->

@@ -36,6 +36,8 @@ class Instance {
       this.masterRepo = masterRepo
       this.masterPassword = masterPassword
       this.workRepo = workRepo
+      this.odiUser = odiUser
+      this.odiPassword = odiPassword
 
       // make the connection
       connect()
@@ -85,6 +87,6 @@ class Instance {
          odi.getTransactionManager().commit(this.transaction)
       }
 
-      //odi.close(this.transaction)
+      odi.close()
    }
 }
