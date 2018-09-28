@@ -42,7 +42,7 @@ class Instance {
 
    }
 
-   def getMasterRepo(String url, String driver, String user, String password, PoolingAttributes pooling = new PoolingAttributes()) {
+    static def getMasterRepo(String url, String driver, String user, String password, PoolingAttributes pooling = new PoolingAttributes()) {
 
       try {
          return new MasterRepositoryDbInfo(url, driver, user, password.toCharArray(), pooling)
@@ -53,7 +53,7 @@ class Instance {
       }
    }
 
-   def getWorkRepo(String user, PoolingAttributes pooling = new PoolingAttributes()) {
+    static def getWorkRepo(String user, PoolingAttributes pooling = new PoolingAttributes()) {
 
       return new WorkRepositoryDbInfo(user, pooling)
    }
@@ -67,7 +67,7 @@ class Instance {
       this.odiUser = odiUser
       this.odiPassword = odiPassword
 
-      Authentication auth = odi.getSecurityManager().createAuthentication(odiUser, odiPassword.toCharArray())
+      Authentication auth = odi.getSecurityManager().createAuthentication(odiUser, odiPassword as char[])
       odi.getSecurityManager().setCurrentThreadAuthentication(auth)
 
    }
@@ -85,6 +85,6 @@ class Instance {
          odi.getTransactionManager().commit(this.transaction)
       }
 
-      odi.close(this.transaction)
+      //odi.close(this.transaction)
    }
 }
