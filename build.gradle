@@ -117,7 +117,7 @@ repositories {
 
 // Options for all tests
 tasks.withType(Test) {
-   ignoreFailures true
+   ignoreFailures = true
    testLogging.showStandardStreams = true
 }
 
