@@ -36,13 +36,21 @@ class OdiPluginExtension {
     */
    String workType = 'development'
 
-   String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
+//   String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
+//   String masterDriver = "oracle.jdbc.OracleDriver"
+//   String masterRepo = "DEV_ODI_REPO"
+//   String masterPassword = 'test'
+//   String workRepo = "WORKREP"
+//   String odiUser = "SUPERVISOR"
+//   String odiPassword = 'test'
+
+   String masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"
    String masterRepo = "DEV_ODI_REPO"
-   String masterPassword = 'test'
+   String masterPassword = 'Welcome1'
    String workRepo = "WORKREP"
    String odiUser = "SUPERVISOR"
-   String odiPassword = 'test'
+   String odiPassword = 'Welcome1'
 
    /**
     * Returns a normalized version of the ODI Project Name for use as the Project Code.
