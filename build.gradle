@@ -63,11 +63,20 @@ dependencies {
    compile 'odi-sdk:odi-jse:+'
    compile 'odi-sdk:odi-jaxrsri:+'
    compile 'odi-sdk:spring-core:+'
+   compile 'odi-sdk:odi-happ-common:+'
+   compile 'odi-sdk:odi-happ-essbase:+'
+   compile 'odi-sdk:odi-happ-planning:+'
+   compile 'odi-sdk:odi-sap:+'
+   compile 'odi-sdk:odi-wls:+'
+   compile 'odi-sdk:ogg-jmx:+'
+   compile 'odi-sdk:ogg-jmx:+'
+
    compile 'oracle-common:jps-api:+'
    compile 'oracle-common:ojdl-core:+'
    compile 'oracle-common:ojdbc8:+'
    compile 'oracle-common:ucp-core:+'
 
+   compile 'wls-modules:wls-rac-ucp:+'
 
    // ODI SDK common libraries -- will add more in as required
    compile 'org.springframework:spring-tx:+'
@@ -109,7 +118,7 @@ repositories {
 // Options for all tests
 tasks.withType(Test) {
    ignoreFailures true
-   testLogging.showStandardStreams true
+   testLogging.showStandardStreams = true
 }
 
 testSets {
