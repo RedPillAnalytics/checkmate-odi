@@ -65,7 +65,6 @@ class OdiPlugin implements Plugin<Project> {
 
             // if no project code is specified, create one
             projectCode = getParameter('projectCode') ?: project.extensions.odi.getProjectCode(projectName)
-
             // capture all the connection parameters
             def masterUrl = getParameter('masterUrl')
             log.debug "masterUrl: $masterUrl"

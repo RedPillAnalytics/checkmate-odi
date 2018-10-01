@@ -9,7 +9,7 @@ class OdiPluginExtension {
    /**
     * The name of the ODI project being built. Defaults to the directory name in SCM.
     */
-   String projectName
+   String projectName = 'TEST_PROJECT'
 
    /**
     * The code of the ODI project being built. Defaults to a normalized version of the project name.
@@ -70,6 +70,6 @@ class OdiPluginExtension {
     */
    def isDevelopment() {
 
-      return (workType.toLowerCase() == 'development') ? true : false
+      return (workType.toLowerCase() == 'development')
    }
 }
