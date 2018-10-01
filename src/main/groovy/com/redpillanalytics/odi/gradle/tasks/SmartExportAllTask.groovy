@@ -68,18 +68,16 @@ class SmartExportAllTask extends DefaultTask {
 
         def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
         def exportService = new SmartExportServiceImpl(instance.odi)
-        def encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9")
+        def encdOption = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
 
         //Finding all Projects and save into a smartExportList
-        def projects = ((IOdiProjectFinder)instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
+        List<ISmartExportable> smartExportList = ((IOdiProjectFinder) instance.odi.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toList()
 
         instance.beginTxn()
+
         //Exporting All the Projects with individual files per project
-        projects.each { project ->
-            exportService.exportToXml(project as List<ISmartExportable>, sourcePath, (project as OdiProject).name,true,false, encdOption,false,null,null,true)
-        }
+        exportService.exportToXml(smartExportList, sourcePath,'smartExportAllProjects' , true, false, encdOption, false, null, null, true)
 
         instance.endTxn()
-
     }
 }
