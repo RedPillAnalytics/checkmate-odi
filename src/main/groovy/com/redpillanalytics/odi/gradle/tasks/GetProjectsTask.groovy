@@ -54,7 +54,7 @@ class GetProjectsTask extends DefaultTask {
         def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
 
         //Get all projects and save into "projects"
-        def projects = ((IOdiProjectFinder)instance.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
+        def projects = ((IOdiProjectFinder)instance.odi.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
 
         instance.beginTxn()
 
