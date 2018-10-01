@@ -100,7 +100,7 @@ class ExportProjectFolderTask extends DefaultTask {
         List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable> ()
 
         // create transaction items
-        def tme = instance.getTransactionalEntityManager()
+        def tme = instance.odi.getTransactionalEntityManager()
 
         // create finders
         def pf = (IOdiProjectFinder)tme.getFinder(OdiProject.class)  // project
