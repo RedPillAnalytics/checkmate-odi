@@ -10,6 +10,10 @@ import oracle.odi.core.config.WorkRepositoryDbInfo
 import oracle.odi.core.persistence.transaction.ITransactionStatus
 import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition
 import oracle.odi.core.security.Authentication
+import oracle.odi.domain.project.OdiFolder
+import oracle.odi.domain.project.OdiProject
+import oracle.odi.domain.project.finder.IOdiFolderFinder
+import oracle.odi.domain.project.finder.IOdiProjectFinder
 
 @Slf4j
 class Instance {
@@ -39,12 +43,13 @@ class Instance {
       this.odiUser = odiUser
       this.odiPassword = odiPassword
 
-      // make the connection
-      connect()
+      // testing making the connection later, only when it's used
+      // similar to what I did with MBeans in the Checkmate OBI plugin
+      //connect()
 
    }
 
-    static def getMasterRepo(String url, String driver, String user, String password, PoolingAttributes pooling = new PoolingAttributes()) {
+   static def getMasterRepo(String url, String driver, String user, String password, PoolingAttributes pooling = new PoolingAttributes()) {
 
       try {
          return new MasterRepositoryDbInfo(url, driver, user, password.toCharArray(), pooling)
@@ -55,7 +60,7 @@ class Instance {
       }
    }
 
-    static def getWorkRepo(String user, PoolingAttributes pooling = new PoolingAttributes()) {
+   static def getWorkRepo(String user, PoolingAttributes pooling = new PoolingAttributes()) {
 
       return new WorkRepositoryDbInfo(user, pooling)
    }
@@ -81,7 +86,7 @@ class Instance {
 
    }
 
-   def endTxn( Boolean commit = true) {
+   def endTxn(Boolean commit = true) {
 
       if (commit) {
          odi.getTransactionManager().commit(this.transaction)
@@ -89,4 +94,23 @@ class Instance {
 
       odi.close()
    }
+
+   def findProject(String projectCode) {
+      def tme = odi.getTransactionalEntityManager()
+      def pf = (IOdiProjectFinder) tme.getFinder(OdiProject.class)
+      return pf.findByCode(projectCode)
+   }
+
+   def getProjectFinder() {
+      return (IOdiProjectFinder) odi.getTransactionalEntityManager().getFinder(OdiProject.class)
+   }
+
+   def findProjectCode(String code) {
+      return getProjectFinder().findByCode(code)
+   }
+
+   def findProjectName(String name) {
+      return getProjectFinder().findByCode(name)
+   }
+
 }
