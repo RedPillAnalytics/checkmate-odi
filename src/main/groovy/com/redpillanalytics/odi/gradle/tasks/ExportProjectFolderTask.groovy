@@ -74,14 +74,9 @@ class ExportProjectFolderTask extends DefaultTask {
     String pname
 
     @Input
-    @Option(option = "targetProject",
-            description = "The target project name containing the folders with the objects from the ODI Repository for the SmartExport.")
-    String targetProject
-
-    @Input
-    @Option(option = "targetFolder",
+    @Option(option = "fname",
             description = "The target folder name containing the objects to export from the ODI Repository for the SmartExport.")
-    String targetFolder
+    String fname
 
     // setSourceBase is not used, but I added it to support Gradle Incremental Build support
     @OutputDirectory
@@ -111,31 +106,31 @@ class ExportProjectFolderTask extends DefaultTask {
 
         // Validate project and folder
 
-        def project = pf.findByCode(targetProject)
+        def project = pf.findByCode(pname)
         if (project == null) {
-            println("Project "+ targetProject +" not found")
+            println("Project "+ pname +" not found")
         }
         else
         {
-            def folderColl = ff.findByName(targetFolder, targetProject)
+            def folderColl = ff.findByName(fname, pname)
             if (folderColl.size() == 1) {
                 def folder = folderColl.iterator().next()
                 folder
             }
             // list the mappings
-            def mappingColl = mf.findByProject(targetProject,targetFolder)
+            def mappingColl = mf.findByProject(pname,fname)
             for (Mapping mapping : mappingColl) {
                 smartExportList.add( (ISmartExportable) mapping) // add the item to the list
                 println(mapping.getName())
             }
              // list the packages
-            def packageColl = pkf.findByProject(targetProject,targetFolder)
+            def packageColl = pkf.findByProject(pname,fname)
             for (OdiPackage thePackage : packageColl) {
                 smartExportList.add( (ISmartExportable) thePackage)
                 println(thePackage.getName())
             }
              // list the procedures
-            def procedureColl = prf.findByProject(targetProject,targetFolder)
+            def procedureColl = prf.findByProject(pname,fname)
             for (OdiUserProcedure theProcedure : procedureColl) {
                 smartExportList.add( (ISmartExportable) theProcedure)
                 println(theProcedure.getName())
@@ -149,7 +144,6 @@ class ExportProjectFolderTask extends DefaultTask {
         instance.beginTxn()
 
         smartExport.exportToXml (smartExportList, sourcePath, pname, true, false, encdOption, false, null, null, true)
-
 
         instance.endTxn()
 

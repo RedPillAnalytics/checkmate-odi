@@ -9,10 +9,12 @@ class OdiPluginExtension {
    /**
     * The name of the ODI project being built. Defaults to the directory name in SCM.
     */
-   //Assigned TEST_PROJECT to projectName variable to test SmartExport Functionality,
-   // If you want to test the CreateProjectTask you will need to change this name for a new project name variable
    String projectName = 'TEST_PROJECT'
 
+   /**
+    * The target folder name containing the objects to export from the ODI Repository for the SmartExport (ExportProjectFolderTask)
+    */
+   String folderName = 'TEST_FOLDER'
    /**
     * The code of the ODI project being built. Defaults to a normalized version of the project name.
     */

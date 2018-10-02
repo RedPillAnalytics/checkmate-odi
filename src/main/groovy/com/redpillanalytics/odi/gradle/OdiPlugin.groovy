@@ -44,9 +44,8 @@ class OdiPlugin implements Plugin<Project> {
             String projectName
             String projectCode
             String sourceBase = getParameter('sourceBase')
-            // targetProject and targetFolder variables to exportProjectFolder, that exports the objects contained in a folder from a project
-            String targetPrjct
-            String targetFldr
+            // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
+            String folderName = getParameter('folderName')
 
             // see if there's an explicit project name
             if (getParameter('projectName')) {
@@ -165,9 +164,7 @@ class OdiPlugin implements Plugin<Project> {
 
                         pname projectName
 
-                        targetProject targetPrjct
-
-                        targetFolder targetFldr
+                        fname folderName
                     }
 
                     // Task that executes the smart export of a project

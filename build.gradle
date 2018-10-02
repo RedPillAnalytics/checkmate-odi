@@ -51,11 +51,6 @@ pluginBundle {
 
 dependencies {
 
-   //Offline Dependencies added such does not included on s3://maven.redpillanalytics.com/release/maven2
-   compile name: 'identitystore'
-   compile name: 'com.oracle.weblogic.persistence'
-   compile name: 'oracle.ide.persistence'
-
    // basic Groovy/Gradle stuff
    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.12'
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
@@ -79,7 +74,10 @@ dependencies {
    compile 'oracle-common:ojdl-core:+'
    compile 'oracle-common:ojdbc8:+'
    compile 'oracle-common:ucp-core:+'
+   compile 'oracle-common:persistence-api:+'
    compile 'wls-modules:wls-rac-ucp:+'
+   compile 'wls-modules:identitystore-core:+'
+   compile 'wls-modules:persistence-core:+'
 
    // ODI SDK common libraries -- will add more in as required
    compile 'org.springframework.integration:spring-integration-jdbc:4.0.0.RELEASE'
@@ -112,11 +110,6 @@ dependencies {
 group = 'com.redpillanalytics'
 
 repositories {
-
-   flatDir {
-      dirs 'build/libs'
-   }
-
    jcenter()
    maven {
       url releaseUrl
