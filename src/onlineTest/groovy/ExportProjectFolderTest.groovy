@@ -9,7 +9,7 @@ import spock.lang.Unroll
 
 @Slf4j
 @Title("Execute :tasks")
-class ExportProjectFolder extends Specification {
+class ExportProjectFolderTest extends Specification {
 
     @ClassRule
     @Shared
