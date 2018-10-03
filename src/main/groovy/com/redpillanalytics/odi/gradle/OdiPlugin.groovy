@@ -221,19 +221,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
 
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
+                  instance odiInstance
 
                   sourcePath sourceBase
 

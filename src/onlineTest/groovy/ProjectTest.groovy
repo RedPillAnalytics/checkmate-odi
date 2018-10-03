@@ -39,8 +39,6 @@ class ProjectTest extends Specification {
                masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
                masterPassword = 'Welcome1'
                odiPassword = 'Welcome1'
-               
-               projectName = 'TEST_PROJECT'
             }
         """)
    }

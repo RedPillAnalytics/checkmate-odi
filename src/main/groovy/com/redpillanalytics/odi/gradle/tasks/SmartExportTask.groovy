@@ -64,6 +64,8 @@ class SmartExportTask extends DefaultTask {
               true
       )
 
+      println(sourcePath)
+
       instance.endTxn()
 
    }

@@ -5,46 +5,15 @@ import groovy.util.logging.Slf4j
 import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
 class SmartImportAllTask extends DefaultTask {
 
-    @Input
-    @Option(option = "url",
-            description = "The JDBC URL of the Master Repository.")
-    String url
-
-    @Input
-    @Option(option = "driver",
-            description = "The JDBC driver class of the Master Repository.")
-    String driver
-
-    @Input
-    @Option(option = "master",
-            description = "The schema name of the Master repository.")
-    String master
-
-    @Input
-    @Option(option = "work",
-            description = "The schema name of the Work repository.")
-    String work
-
-    @Input
-    @Option(option = "masterPass",
-            description = "The password for the Master repository.")
-    String masterPass
-
-    @Input
-    @Option(option = "odi",
-            description = "The name of the ODI user.")
-    String odi
-
-    @Input
-    @Option(option = "odiPass",
-            description = "The password of the ODI user.")
-    String odiPass
+    @Internal
+    Instance instance
 
     @Input
     @Option(option = "sourcePath",
@@ -54,21 +23,21 @@ class SmartImportAllTask extends DefaultTask {
     @TaskAction
     def importAllXML() {
 
-        def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-        def importService = new SmartImportServiceImpl(instance.odi)
+        log.debug "sourcePath: ${sourcePath}"
+        log.debug "sourceBase: ${sourceBase}"
 
         //Reading all the XML Files from the Source Directory
-        def getXMLFiles = { sourcePath ->
+        def getXMLFiles = { String sourcePath ->
 
             def xmlFiles = ""
             def files
-            def folder = new File(sourcePath as String) //We need to threat the NullPointer Exception if the path is null or is not a path?
+            def folder = new File(sourcePath) //We need to threat the NullPointer Exception if the path is null or is not a path?
             def listOfFiles = folder.listFiles()
             listOfFiles.each { file ->
                 if (file.isFile()) {
                     files = file.name
                     if (files.endsWith(".xml") || files.endsWith(".XML")) {
-                        xmlFiles += sourcePath + "/" + files + "n"
+                        xmlFiles += sourcePath + "/" + files + "#"
                     }
                 }
             }
@@ -76,13 +45,20 @@ class SmartImportAllTask extends DefaultTask {
         }
 
         //Taking all the XML Files from the Source Directory and splitting to loop into each XML File to Import
-        def xmlFiles = getXMLFiles(sourcePath).split("n")
+        def xmlFiles = getXMLFiles(sourcePath).split("#")
+
+        //Make the Connection
+        instance.connect()
 
         instance.beginTxn()
 
         //Importing each XML File to the ODI Repository
         xmlFiles.each { xmlfile ->
-            importService.importObjectsFromXml(xmlfile, null, false)
+            new SmartImportServiceImpl(instance.odi).importObjectsFromXml(
+                    xmlfile,
+                    null,
+                    false,
+            )
         }
 
         instance.endTxn()
