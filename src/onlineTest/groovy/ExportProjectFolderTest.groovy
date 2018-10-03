@@ -11,49 +11,53 @@ import spock.lang.Unroll
 @Title("Execute :tasks")
 class ExportProjectFolderTest extends Specification {
 
-    @ClassRule
-    @Shared
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+   @Shared
+   File projectDir, buildDir, buildFile
 
-    @Shared
-            buildFile
-    @Shared
-            result
-    @Shared
-            indexedResultOutput
+   @Shared
+   def result, taskList
 
-    // run the Gradle build
-    // return regular output
-    def setupSpec() {
+   def setupSpec() {
 
-        buildFile = testProjectDir.newFile('build.gradle')
-        buildFile << """
+      projectDir = new File("${System.getProperty("projectDir")}/export-folder")
+      projectDir.mkdirs()
+      buildDir = new File(projectDir, 'build')
+      buildFile = new File(projectDir, 'build.gradle')
+      taskList = ['exportProjectFolder']
+
+//      resourcesDir = new File('src/test/resources')
+//
+//      new AntBuilder().copy(todir: projectDir) {
+//         fileset(dir: resourcesDir)
+//      }
+
+      buildFile.write("""
             plugins {
                 id 'com.redpillanalytics.checkmate.odi'
             }
-        """
+            
+            odi {
+               masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
+               masterPassword = 'Welcome1'
+               odiPassword = 'Welcome1'
+            }
+        """)
+   }
 
-        result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments('-Si', 'exportProjectFolder')
-                .withPluginClasspath()
-                .build()
+   def "Executing :tasks contains :#task"() {
 
-        indexedResultOutput = result.output.readLines()
+      given:
 
-        log.warn result.output
-    }
+      result = GradleRunner.create()
+              .withProjectDir(projectDir)
+              .withArguments('-Si', 'exportProjectFolder')
+              .withPluginClasspath()
+              .build()
 
-    @Unroll
-    def "Executing :tasks contains :#task"() {
+      log.warn result.getOutput()
 
-        given: "a gradle tasks execution"
-
-        expect:
-        result.output.contains("$task")
-
-        where:
-        task << ['build']
-    }
+      expect:
+      ['SUCCESS', 'UP_TO_DATE', 'SKIPPED'].contains(result.task(":exportProjectFolder").outcome.toString())
+   }
 
 }

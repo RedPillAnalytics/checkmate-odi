@@ -11,7 +11,7 @@ import org.gradle.api.tasks.options.Option
 
 
 @Slf4j
-class CreateProjectTask extends DefaultTask {
+class DeleteProjectTask extends DefaultTask {
 
    @Input
    @Option(option = "project-name",
@@ -27,26 +27,22 @@ class CreateProjectTask extends DefaultTask {
    Instance instance
 
    @TaskAction
-   def createProject() {
+   def deleteProject() {
 
       instance.connect()
 
-      log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
+      log.debug "All projects: ${instance.projects.toString()}"
 
-      if (instance.findProjectCode(pcode)) {
+      if (!instance.findProjectCode(pcode)) {
 
-         log.warn "Project Code '${pcode}' already exists."
-
-      } else if (instance.findProjectName(pname)) {
-
-         log.warn "Project Name '${pname}' already exists."
+         log.warn "Project name ${pname} does not exist."
 
       } else {
          instance.beginTxn()
-         instance.odi.getTransactionalEntityManager().persist(new OdiProject(pname, pcode))
+         instance.odi.getTransactionalEntityManager().remove(new OdiProject(pname, pcode))
          instance.endTxn()
 
-         log.warn "Project '${pname}' created sucessfully."
+         log.warn "Project '${pname}' deleted sucessfully."
       }
    }
 }

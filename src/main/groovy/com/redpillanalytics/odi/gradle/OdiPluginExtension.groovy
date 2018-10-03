@@ -9,12 +9,12 @@ class OdiPluginExtension {
    /**
     * The name of the ODI project being built. Defaults to the directory name in SCM.
     */
-   String projectName = 'TEST_PROJECT'
+   String projectName
 
    /**
     * The target folder name containing the objects to export from the ODI Repository for the SmartExport (ExportProjectFolderTask)
     */
-   String folderName = 'TEST_FOLDER'
+   String folderName
    /**
     * The code of the ODI project being built. Defaults to a normalized version of the project name.
     */
@@ -57,7 +57,6 @@ class OdiPluginExtension {
 
       return projectCode ?: name.toUpperCase().replace(' ', '_')
    }
-
 
    /**
     * Returns a Boolean: true if this is a development work repository; false if it is not.

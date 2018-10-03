@@ -4,6 +4,7 @@ import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
+import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
@@ -13,6 +14,8 @@ import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import java.sql.DriverManager
 
 @Slf4j
 class OdiPlugin implements Plugin<Project> {
@@ -25,6 +28,9 @@ class OdiPlugin implements Plugin<Project> {
       project.configure(project) {
          extensions.create('odi', OdiPluginExtension)
       }
+
+      // create configuration for JDBC
+      //project.configurations { jdbc }
 
       // create the extension for the build group container
       // this facilitates creating multiple build groups
@@ -45,6 +51,7 @@ class OdiPlugin implements Plugin<Project> {
          String projectName
          String projectCode
          String sourceBase = getParameter('sourceBase')
+
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
          String folderName = getParameter('folderName')
 
@@ -81,8 +88,16 @@ class OdiPlugin implements Plugin<Project> {
          def odiPassword = getParameter('odiPassword')
          log.debug "odiPassword: $odiPassword"
 
-         // let's go ahead and get an Instance object, but unconnected.
 
+//         // Let's JIT load the JDBC driver
+//         URLClassLoader loader = GroovyObject.class.classLoader
+//         project.configurations.jdbc.each { File file ->
+//            log.warn "jdbc driver JAR: $file"
+//            loader.addURL(file.toURI().toURL())
+//            DriverManager.registerDriver(loader.loadClass(masterDriver).newInstance())
+//         }
+
+         // let's go ahead and get an Instance object, but unconnected.
          def odiInstance = new Instance(masterUrl, masterDriver, masterRepo, workRepo, masterPassword, odiUser, odiPassword)
 
          // configure all build groups
@@ -96,6 +111,21 @@ class OdiPlugin implements Plugin<Project> {
                   group 'project'
 
                   description = "Create a new project in the ODI Instance."
+
+                  pname projectName
+
+                  pcode projectCode
+
+                  instance odiInstance
+
+               }
+
+               // Task that creates a project
+               project.task(bg.getTaskName('deleteProject'), type: DeleteProjectTask) {
+
+                  group 'project'
+
+                  description = "Delete a new project in the ODI Instance."
 
                   pname projectName
 
@@ -139,25 +169,13 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Executes a Smart Export of the object in a specified folder in the ODI Instance."
 
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
-
                   sourcePath sourceBase
 
                   pname projectName
 
-                  fname folderName
+                  folder folderName
+
+                  instance odiInstance
                }
 
                // Task that executes the smart export of a project
@@ -167,19 +185,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Executes a Smart Export of a project in the ODI Instance."
 
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
+                  instance odiInstance
 
                   sourcePath sourceBase
 
@@ -217,19 +223,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Get all the projects existing on the ODI Instance."
 
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
+                  instance odiInstance
                }
 
                // Task that executes the smart import of a project
