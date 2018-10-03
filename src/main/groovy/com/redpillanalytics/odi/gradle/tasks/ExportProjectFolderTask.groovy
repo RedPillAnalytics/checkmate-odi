@@ -2,156 +2,102 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
-import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition
-import oracle.odi.domain.mapping.Mapping
-import oracle.odi.domain.mapping.finder.IMappingFinder
-import oracle.odi.domain.project.OdiFolder
-import oracle.odi.domain.project.OdiPackage
-import oracle.odi.domain.project.OdiProject
-import oracle.odi.domain.project.OdiUserProcedure
-import oracle.odi.domain.project.finder.IOdiFolderFinder
-import oracle.odi.domain.project.finder.IOdiPackageFinder
-import oracle.odi.domain.project.finder.IOdiProjectFinder
-import oracle.odi.domain.project.finder.IOdiUserProcedureFinder
 import oracle.odi.impexp.EncodingOptions
-import oracle.odi.impexp.smartie.ISmartExportService
 import oracle.odi.impexp.smartie.ISmartExportable
 import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
-import static oracle.odi.domain.project.OdiFolder.*
-
 @Slf4j
 class ExportProjectFolderTask extends DefaultTask {
 
-    @Input
-    @Option(option = "url",
-            description = "The JDBC URL of the Master Repository.")
-    String url
+   @Input
+   @Option(option = "source-path",
+           description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
+   String sourcePath
 
-    @Input
-    @Option(option = "driver",
-            description = "The JDBC driver class of the Master Repository.")
-    String driver
+   @Input
+   @Option(option = "project-name",
+           description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
+   String pname
 
-    @Input
-    @Option(option = "master",
-            description = "The schema name of the Master repository.")
-    String master
+   @Input
+   @Option(option = "folder-name",
+           description = "The target folder name containing the objects to export from the ODI Repository for the SmartExport.")
+   String folder
 
-    @Input
-    @Option(option = "work",
-            description = "The schema name of the Work repository.")
-    String work
+   @Internal
+   Instance instance
 
-    @Input
-    @Option(option = "masterPass",
-            description = "The password for the Master repository.")
-    String masterPass
+   // setSourceBase is not used, but I added it to support Gradle Incremental Build support
+   @OutputDirectory
+   def getSourceBase() {
 
-    @Input
-    @Option(option = "odi",
-            description = "The name of the ODI user.")
-    String odi
+      return project.file(sourcePath)
+   }
 
-    @Input
-    @Option(option = "odiPass",
-            description = "The password of the ODI user.")
-    String odiPass
+   @TaskAction
+   def exportProjectFolder() {
 
-    @Input
-    @Option(option = "sourcePath",
-            description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
-    String sourcePath
+      log.debug "sourcePath: ${sourcePath}"
+      log.debug "sourceBase: ${sourceBase}"
 
-    @Input
-    @Option(option = "pname",
-            description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
-    String pname
+      instance.connect()
 
-    @Input
-    @Option(option = "targetProject",
-            description = "The target project name containing the folders with the objects from the ODI Repository for the SmartExport.")
-    String targetProject
-
-    @Input
-    @Option(option = "targetFolder",
-            description = "The target folder name containing the objects to export from the ODI Repository for the SmartExport.")
-    String targetFolder
-
-    // setSourceBase is not used, but I added it to support Gradle Incremental Build support
-    @OutputDirectory
-    def getSourceBase() {
-
-        return project.file(sourcePath)
-    }
-
-    @TaskAction
-    def exportProjectFolder() {
-
-        //create ODI Instance
-        def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-
-        // create the export list
-        List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable> ()
-
-        // create transaction items
-        def tme = instance.getTransactionalEntityManager()
-
-        // create finders
-        def pf = (IOdiProjectFinder)tme.getFinder(OdiProject.class)  // project
-        def ff = (IOdiFolderFinder)tme.getFinder(OdiFolder.class)   // project code folders
-        def mf = (IMappingFinder)tme.getFinder(Mapping.class)
-        def pkf= (IOdiPackageFinder)tme.getFinder(OdiPackage.class)
-        def prf= (IOdiUserProcedureFinder)tme.getFinder(OdiUserProcedure.class)
-
-        // Validate project and folder
-
-        def project = pf.findByCode(targetProject)
-        if (project == null) {
-            println("Project "+ targetProject +" not found")
-        }
-        else
-        {
-            def folderColl = ff.findByName(targetFolder, targetProject)
-            if (folderColl.size() == 1) {
-                def folder = folderColl.iterator().next()
-                folder
-            }
-            // list the mappings
-            def mappingColl = mf.findByProject(targetProject,targetFolder)
-            for (Mapping mapping : mappingColl) {
-                smartExportList.add( (ISmartExportable) mapping) // add the item to the list
-                println(mapping.getName())
-            }
-             // list the packages
-            def packageColl = pkf.findByProject(targetProject,targetFolder)
-            for (OdiPackage thePackage : packageColl) {
-                smartExportList.add( (ISmartExportable) thePackage)
-                println(thePackage.getName())
-            }
-             // list the procedures
-            def procedureColl = prf.findByProject(targetProject,targetFolder)
-            for (OdiUserProcedure theProcedure : procedureColl) {
-                smartExportList.add( (ISmartExportable) theProcedure)
-                println(theProcedure.getName())
-            }
-        }
-
-        //create Smart Export Service Object
-        ISmartExportService smartExport = new SmartExportServiceImpl(instance.odi)
-        EncodingOptions encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9")
-
-        instance.beginTxn()
-
-        smartExport.exportToXml (smartExportList, sourcePath, pname, true, false, encdOption, false, null, null, true)
+      // create the export list
+      List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
 
 
-        instance.endTxn()
+      // Validate project and folder
 
-    }
+      if (!instance.findProjectName(pname)) {
+
+         log.warn "Project name '${pname}' not found."
+
+      } else if (!instance.findFolder(folder, pname)[0]) {
+
+         log.warn "Folder name '${folder}' not found."
+
+      } else {
+
+         // list the mappings
+         instance.findMapping(pname, folder).each {
+            smartExportList.add((ISmartExportable) it)
+            log.info "Mapping ${it.name} added to export list..."
+         }
+
+         // list the packages
+         instance.findPackage(pname, folder).each {
+            smartExportList.add((ISmartExportable) it)
+            log.info "Package ${it.name} added to export list..."
+         }
+
+         // list the procedures
+         instance.findProcedure(pname, folder).each {
+            smartExportList.add((ISmartExportable) it)
+            log.info "Procedure ${it.name} added to export list..."
+         }
+      }
+
+      instance.beginTxn()
+
+      new SmartExportServiceImpl(instance.odi).exportToXml(
+              smartExportList,
+              sourceBase.canonicalPath,
+              pname,
+              true,
+              false,
+              new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
+              false,
+              null,
+              null,
+              true
+      )
+
+      instance.endTxn()
+   }
 }

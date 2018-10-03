@@ -6,6 +6,7 @@ import oracle.odi.domain.project.OdiProject
 import oracle.odi.domain.project.finder.IOdiProjectFinder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -13,56 +14,26 @@ import org.gradle.api.tasks.options.Option
 @Slf4j
 class GetProjectsTask extends DefaultTask {
 
-    @Input
-    @Option(option = "url",
-            description = "The JDBC URL of the Master Repository.")
-    String url
+   @Internal
+   Instance instance
 
-    @Input
-    @Option(option = "driver",
-            description = "The JDBC driver class of the Master Repository.")
-    String driver
+   @TaskAction
+   def getProjects() {
 
-    @Input
-    @Option(option = "master",
-            description = "The schema name of the Master repository.")
-    String master
+      instance.connect()
 
-    @Input
-    @Option(option = "work",
-            description = "The schema name of the Work repository.")
-    String work
+      //Get all projects and save into "projects"
+      //def projects = ((IOdiProjectFinder) instance.odi.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
 
-    @Input
-    @Option(option = "masterPass",
-            description = "The password for the Master repository.")
-    String masterPass
+      def projects = instance.projects
 
-    @Input
-    @Option(option = "odi",
-            description = "The name of the ODI user.")
-    String odi
+      instance.beginTxn()
 
-    @Input
-    @Option(option = "odiPass",
-            description = "The password of the ODI user.")
-    String odiPass
+      projects.each { OdiProject project ->
+         //Action to do to the projects retrieved
+         println(project.name)
+      }
+      instance.endTxn()
 
-    @TaskAction
-    def getProjects() {
-
-        def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-
-        //Get all projects and save into "projects"
-        def projects = ((IOdiProjectFinder)instance.odi.getTransactionalEntityManager().getFinder(OdiProject.class)).findAll().toArray()
-
-        instance.beginTxn()
-
-        projects.each { OdiProject project ->
-            //Action to do to the projects retrieved
-            println(project.name)
-        }
-            instance.endTxn()
-
-        }
+   }
 }

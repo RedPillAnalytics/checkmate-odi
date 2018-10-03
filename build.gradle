@@ -51,13 +51,8 @@ pluginBundle {
 
 dependencies {
 
-   //Offline Dependencies added such does not included on s3://maven.redpillanalytics.com/release/maven2
-   compile name: 'identitystore'
-   compile name: 'com.oracle.weblogic.persistence'
-   compile name: 'oracle.ide.persistence'
-
    // basic Groovy/Gradle stuff
-   compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.12'
+   compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
 
@@ -80,10 +75,12 @@ dependencies {
    compile 'oracle-common:ojdbc8:+'
    compile 'oracle-common:ucp-core:+'
    compile 'wls-modules:wls-rac-ucp:+'
+   compile 'wls-modules:identitystore-core:+'
+
 
    // ODI SDK common libraries -- will add more in as required
-   compile 'org.springframework.integration:spring-integration-jdbc:4.0.0.RELEASE'
    compile 'nz.net.osnz.composite:composite-spring-jdbc:4.1'
+   compile 'org.springframework:spring-orm:4.0.1.RELEASE'
    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:+'
    compile 'bsh:bsh:+'
    compile 'org.apache-extras.beanshell:bsh:+'
@@ -91,17 +88,23 @@ dependencies {
    compile 'com.fasterxml.jackson.core:jackson-databind:+'
    compile 'org.glassfish:javax.json:+'
    compile 'org.eclipse.persistence:javax.persistence:+'
-   compile 'javax.persistence:javax.persistence-api:+'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.asm:+'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.core:+'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:+'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.nosql:+'
    compile 'org.eclipse.persistence:org.eclipse.persistence.oracle:+'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.oracle.nosql:+'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:+'
    compile 'org.ops4j.pax.runner:pax-runner-no-jcl:+'
    compile 'commons-collections:commons-collections:20040616'
-   compile 'org.apache.commons:commons-collections4:4.2'
+   compile 'javolution:javolution:5.5.1'
+
+   // Libraries that don't appear to be needed, but we will keep them commented out just in case
+//   compile 'org.springframework.integration:spring-integration-jdbc:4.0.0.RELEASE'
+//   compile 'oracle-common:persistence-api:+'
+//   compile 'wls-modules:persistence-core:+'
+//   compile 'javax.persistence:javax.persistence-api:+'
+//   compile 'org.eclipse.persistence:org.eclipse.persistence.asm:+'
+//   compile 'org.eclipse.persistence:org.eclipse.persistence.core:+'
+//   compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:+'
+//   compile 'org.eclipse.persistence:org.eclipse.persistence.nosql:+'
+//   compile 'org.eclipse.persistence:org.eclipse.persistence.oracle.nosql:+'
+//   compile 'org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:+'
+//   compile 'org.apache.commons:commons-collections4:4.2'
 
    testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
 }
@@ -110,11 +113,6 @@ dependencies {
 group = 'com.redpillanalytics'
 
 repositories {
-
-   flatDir {
-      dirs 'build/libs'
-   }
-
    jcenter()
    maven {
       url releaseUrl
@@ -128,6 +126,7 @@ repositories {
 tasks.withType(Test) {
    ignoreFailures = true
    testLogging.showStandardStreams = true
+   systemProperty 'projectDir', temporaryDir
 }
 
 testSets {
