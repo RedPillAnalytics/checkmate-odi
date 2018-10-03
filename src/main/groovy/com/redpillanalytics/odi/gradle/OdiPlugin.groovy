@@ -142,23 +142,11 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Executes a Smart Export of a project in the ODI Instance."
 
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
-
                   sourcePath sourceBase
 
                   pname projectName
+
+                  instance odiInstance
 
                }
 

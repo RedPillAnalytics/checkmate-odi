@@ -39,6 +39,8 @@ class ProjectTest extends Specification {
                masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
                masterPassword = 'Welcome1'
                odiPassword = 'Welcome1'
+               
+               projectName = 'TEST_PROJECT'
             }
         """)
    }
@@ -67,6 +69,17 @@ class ProjectTest extends Specification {
       given:
       taskName = 'createProject'
       result = executeSingleTask(taskName, ['clean', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :exportProject task"() {
+
+      given:
+      taskName = 'exportProject'
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

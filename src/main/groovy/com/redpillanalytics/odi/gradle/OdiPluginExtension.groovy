@@ -26,7 +26,7 @@ class OdiPluginExtension {
    String sourceBase = 'src/main/odi'
 
    /**
-    * The base ODI build directory, which exists inside of the project 'buildDir' directoruy.
+    * The base ODI build directory, which exists inside of the project 'buildDir' directory.
     */
    String buildBase = 'odi'
 
