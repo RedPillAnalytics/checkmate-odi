@@ -186,32 +186,10 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Executes a Smart Import of a project to the ODI Instance."
 
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
+                  instance odiInstance
 
                   sourcePath sourceBase
 
-               }
-
-               // Task that get all the existing projects in the Repository
-               project.task(bg.getTaskName('getProjects'), type: GetProjectsTask) {
-
-                  group 'project'
-
-                  description = "Get all the projects existing on the ODI Instance."
-
-                  instance odiInstance
                }
 
                // Task that executes the smart import of a project
@@ -225,6 +203,16 @@ class OdiPlugin implements Plugin<Project> {
 
                   sourcePath sourceBase
 
+               }
+
+               // Task that get all the existing projects in the Repository
+               project.task(bg.getTaskName('getProjects'), type: GetProjectsTask) {
+
+                  group 'project'
+
+                  description = "Get all the projects existing on the ODI Instance."
+
+                  instance odiInstance
                }
             }
          }

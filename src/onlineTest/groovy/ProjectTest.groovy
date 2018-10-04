@@ -95,6 +95,17 @@ class ProjectTest extends Specification {
 
    }
 
+   def "Execute :importAllXML task"() {
+
+      given:
+      taskName = 'importAllXML'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
    def "Execute :deleteProject task"() {
 
       given:
