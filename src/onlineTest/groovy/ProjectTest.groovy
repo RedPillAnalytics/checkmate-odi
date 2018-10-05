@@ -95,10 +95,32 @@ class ProjectTest extends Specification {
 
    }
 
+   def "Execute :exportProjectFolder task"() {
+
+      given:
+      taskName = 'exportProjectFolder'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
    def "Execute :importAllXML task"() {
 
       given:
       taskName = 'importAllXML'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :importProject task"() {
+
+      given:
+      taskName = 'importProject'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
