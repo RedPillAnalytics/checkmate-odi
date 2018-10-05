@@ -30,7 +30,7 @@ class SmartImportTask extends DefaultTask {
 
       if (file.directory) throw new GradleException("'${sourcePath}' points to a directory")
 
-//      if (!(file.name =~ /\.xml/)) throw new GradleException("'${sourcePath}' does not appear to be an XML file.")
+      if (!(file.name =~ /\.xml/)) throw new GradleException("'${sourcePath}' does not appear to be an XML file.")
 
       return file
    }
@@ -45,6 +45,9 @@ class SmartImportTask extends DefaultTask {
 
    @TaskAction
    def importProject() {
+
+      log.debug "sourcePath: ${sourcePath}"
+      log.debug "sourceBase: ${sourceBase}"
 
       //Make the Connection
       instance.connect()

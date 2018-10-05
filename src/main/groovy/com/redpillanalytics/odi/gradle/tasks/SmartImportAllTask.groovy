@@ -31,7 +31,7 @@ class SmartImportAllTask extends DefaultTask {
 
             def xmlFiles = ""
             def files
-            def folder = new File(sourcePath) //We need to threat the NullPointer Exception if the path is null or is not a path?
+            def folder = new File(sourcePath)
             def listOfFiles = folder.listFiles()
             listOfFiles.each { file ->
                 if (file.isFile()) {
