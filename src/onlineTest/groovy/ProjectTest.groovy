@@ -19,7 +19,7 @@ class ProjectTest extends Specification {
 
    def setupSpec() {
 
-      projectDir = new File("${System.getProperty("projectDir")}/export-folder")
+      projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
       buildFile = new File(projectDir, 'build.gradle')
       taskList = ['exportProjectFolder']

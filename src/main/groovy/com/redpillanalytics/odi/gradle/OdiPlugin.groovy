@@ -146,6 +146,8 @@ class OdiPlugin implements Plugin<Project> {
 
                   pname projectName
 
+                  pcode projectCode
+
                   instance odiInstance
 
                }
@@ -160,6 +162,8 @@ class OdiPlugin implements Plugin<Project> {
                   sourcePath sourceBase
 
                   pname projectName
+
+                  pcode projectCode
 
                   folder folderName
 
@@ -188,8 +192,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   instance odiInstance
 
-                  sourcePath sourceBase
-
+                  exportPath "$sourceBase/${projectName}.xml"
                }
 
                // Task that executes the smart import of a project
