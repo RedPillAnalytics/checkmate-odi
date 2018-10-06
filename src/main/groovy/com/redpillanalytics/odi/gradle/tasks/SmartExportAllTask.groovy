@@ -20,7 +20,7 @@ class SmartExportAllTask extends DefaultTask {
    Instance instance
 
    @Input
-   @Option(option = "sourcePath",
+   @Option(option = "source-path",
            description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
    String sourcePath
 

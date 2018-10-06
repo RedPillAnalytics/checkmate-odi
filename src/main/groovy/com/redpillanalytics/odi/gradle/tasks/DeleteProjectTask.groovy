@@ -14,17 +14,14 @@ import org.gradle.api.tasks.options.Option
 class DeleteProjectTask extends DefaultTask {
 
    @Input
-   @Option(option = "project-name",
-           description = "The name of the project to create.")
-   String pname
-
-   @Input
    @Option(option = "project-code",
-           description = "The code of the project to create.")
-   String pcode
+           description = "The Project Code of the ODI Project.")
+   String projectCode
 
    @Internal
    Instance instance
+
+   @Internal
 
    @TaskAction
    def deleteProject() {
@@ -33,16 +30,18 @@ class DeleteProjectTask extends DefaultTask {
 
       log.debug "All projects: ${instance.projects.toString()}"
 
+      def projectName = instance.findProjectName(projectCode)
+
       if (!instance.findProjectCode(pcode)) {
 
-         log.warn "Project name ${pname} does not exist."
+         log.warn "Project Code ${projectCode} does not exist."
 
       } else {
          instance.beginTxn()
-         instance.odi.getTransactionalEntityManager().remove(new OdiProject(pname, pcode))
+         instance.odi.getTransactionalEntityManager().remove(instance.getOdiProject(projectCode))
          instance.endTxn()
 
-         log.warn "Project '${pname}' deleted sucessfully."
+         log.warn "Project Code '${projectCode}' deleted sucessfully."
       }
    }
 }

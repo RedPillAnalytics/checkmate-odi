@@ -48,8 +48,8 @@ class OdiPlugin implements Plugin<Project> {
             return GradleUtils.getParameter(project, name, 'odi')
          }
 
-         String projectName
-         String projectCode
+         String defaultProjectName
+         String defaultProjectCode
          String sourceBase = getParameter('sourceBase')
 
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
@@ -59,19 +59,23 @@ class OdiPlugin implements Plugin<Project> {
          if (getParameter('projectName')) {
 
             // use this throughout for the projectName
-            projectName = getParameter('projectName')
+            defaultProjectName = getParameter('projectName')
 
             // also set our archive name to projectName
-            project.archivesBaseName = projectName
+            project.archivesBaseName = defaultProjectName
          } else {
 
             // we don't have a projectName so we need one
             // just use the default archivesBaseName
-            projectName = project.archivesBaseName
+            defaultProjectName = project.archivesBaseName
          }
 
          // if no project code is specified, create one
-         projectCode = getParameter('projectCode') ?: project.extensions.odi.getProjectCode(projectName)
+         defaultProjectCode = getParameter('projectCode') ?: project.extensions.odi.getProjectCode(defaultProjectName)
+
+         log.warn "defaultProjectCode: $defaultProjectCode"
+         log.warn "defaultProjectName: $defaultProjectName"
+
          // capture all the connection parameters
          def masterUrl = getParameter('masterUrl')
          log.debug "masterUrl: $masterUrl"
@@ -112,9 +116,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Create a new project in the ODI Instance."
 
-                  pname projectName
-
-                  pcode projectCode
+                  projectName defaultProjectName
 
                   instance odiInstance
 
@@ -127,9 +129,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Delete a new project in the ODI Instance."
 
-                  pname projectName
-
-                  pcode projectCode
+                  projectCode defaultProjectCode
 
                   instance odiInstance
 
@@ -144,9 +144,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   sourcePath sourceBase
 
-                  pname projectName
-
-                  pcode projectCode
+                  projectCode defaultProjectCode
 
                   instance odiInstance
 
@@ -161,9 +159,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   sourcePath sourceBase
 
-                  pname projectName
-
-                  pcode projectCode
+                  projectCode defaultProjectCode
 
                   folder folderName
 

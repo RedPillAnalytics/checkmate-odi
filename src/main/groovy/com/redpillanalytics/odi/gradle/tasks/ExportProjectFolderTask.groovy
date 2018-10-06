@@ -26,6 +26,11 @@ class ExportProjectFolderTask extends DefaultTask {
    String pname
 
    @Input
+   @Option(option = "project-code",
+           description = "The code of the project to create.")
+   String pcode
+
+   @Input
    @Option(option = "folder-name",
            description = "The target folder name containing the objects to export from the ODI Repository for the SmartExport.")
    String folder
@@ -56,28 +61,28 @@ class ExportProjectFolderTask extends DefaultTask {
 
       if (!instance.findProjectName(pname)) {
 
-         log.warn "Project name '${pname}' not found."
+         log.warn "Project code '${pcode}' not found."
 
-      } else if (!instance.findFolder(folder, pname)[0]) {
+      } else if (!instance.findFolder(folder, pcode)[0]) {
 
          log.warn "Folder name '${folder}' not found."
 
       } else {
 
          // list the mappings
-         instance.findMapping(pname, folder).each {
+         instance.findMapping(pcode, folder).each {
             smartExportList.add((ISmartExportable) it)
             log.info "Mapping ${it.name} added to export list..."
          }
 
          // list the packages
-         instance.findPackage(pname, folder).each {
+         instance.findPackage(pcode, folder).each {
             smartExportList.add((ISmartExportable) it)
             log.info "Package ${it.name} added to export list..."
          }
 
          // list the procedures
-         instance.findProcedure(pname, folder).each {
+         instance.findProcedure(pcode, folder).each {
             smartExportList.add((ISmartExportable) it)
             log.info "Procedure ${it.name} added to export list..."
          }

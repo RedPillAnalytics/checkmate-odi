@@ -10,6 +10,7 @@ import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -18,14 +19,20 @@ import org.gradle.api.tasks.options.Option
 class SmartExportTask extends DefaultTask {
 
    @Input
-   @Option(option = "sourcePath",
+   @Option(option = "source-path",
            description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
    String sourcePath
 
    @Input
-   @Option(option = "pname",
+   @Option(option = "project-code",
+           description = "The code of the project to create.")
+   String projectCode
+
+   @Input
+   @Optional
+   @Option(option = "project-name",
            description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
-   String pname
+   String projectName
 
    @Internal
    Instance instance
@@ -37,6 +44,13 @@ class SmartExportTask extends DefaultTask {
       return project.file(sourcePath)
    }
 
+   @Internal
+   def getProjectName() {
+
+      //instance.connect()
+      return projectName ?: instance.findProjectName(projectCode)
+   }
+
    @TaskAction
    def exportProject() {
 
@@ -46,25 +60,31 @@ class SmartExportTask extends DefaultTask {
       instance.connect()
 
       //Find The Target Project by the Project Code Value
-      List<ISmartExportable> project = new LinkedList<ISmartExportable> ()
-      project.add(((IOdiProjectFinder) instance.odi.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(pname))
+      List<ISmartExportable> projectList = new LinkedList<ISmartExportable> ()
+
+      projectList.add(((IOdiProjectFinder) instance.getProjectFinder()).findByCode(projectCode))
 
       instance.beginTxn()
+      def encoding = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
+
+      if (encoding) {
+         log.warn "encoding: $encoding"
+      }
+      log.warn "sourcePath: $sourcePath"
+      log.warn "sourceBase: $sourceBase"
 
       new SmartExportServiceImpl(instance.odi).exportToXml(
-              project,
+              projectList,
               sourceBase.canonicalPath,
-              pname,
+              projectName,
               true,
               false,
-              new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
+              encoding,
               false,
               null,
               null,
               true
       )
-
-      println(sourcePath)
 
       instance.endTxn()
 

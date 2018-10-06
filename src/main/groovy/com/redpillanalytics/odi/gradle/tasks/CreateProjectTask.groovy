@@ -6,6 +6,7 @@ import oracle.odi.domain.project.OdiProject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -13,18 +14,26 @@ import org.gradle.api.tasks.options.Option
 @Slf4j
 class CreateProjectTask extends DefaultTask {
 
-   @Input
-   @Option(option = "project-name",
-           description = "The name of the project to create.")
-   String pname
 
    @Input
+   @Optional
    @Option(option = "project-code",
-           description = "The code of the project to create.")
-   String pcode
+           description = "The ODI project code.")
+   String projectCode
+
+   @Input
+   @Option(option = "project-name",
+           description = "The ODI project name.")
+   String projectName
 
    @Internal
    Instance instance
+
+   @Internal
+   def getProjectCode() {
+
+      return projectCode ?: project.extensions.odi.getProjectCode(projectName)
+   }
 
    @TaskAction
    def createProject() {
@@ -43,7 +52,7 @@ class CreateProjectTask extends DefaultTask {
 
       } else {
          instance.beginTxn()
-         instance.odi.getTransactionalEntityManager().persist(new OdiProject(pname, pcode))
+         instance.odi.getTransactionalEntityManager().persist(new OdiProject(projectName, projectCode))
          instance.endTxn()
 
          log.warn "Project '${pname}' created sucessfully."

@@ -85,6 +85,11 @@ class Instance {
 
    }
 
+   def getOdiProject(String projectCode) {
+
+      return new OdiProject(findProjectName(projectCode), projectCode)
+   }
+
    def beginTxn() {
 
       this.transaction = odi.getTransactionManager()
@@ -105,12 +110,8 @@ class Instance {
       return (IOdiProjectFinder) odi.getTransactionalEntityManager().getFinder(OdiProject.class)
    }
 
-   def findProjectCode(String code) {
+   def findProjectName(String code) {
       return getProjectFinder().findByCode(code)
-   }
-
-   def findProjectName(String name) {
-      return getProjectFinder().findByCode(name)
    }
 
    def getFolderFinder() {

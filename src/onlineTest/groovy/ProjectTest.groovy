@@ -46,7 +46,9 @@ class ProjectTest extends Specification {
    // helper method
    def executeSingleTask(String taskName, List otherArgs, Boolean logOutput = true) {
 
-      otherArgs.push(taskName)
+      otherArgs.add(0, taskName)
+
+      log.warn "runner arguments: ${otherArgs.toString()}"
 
       // execute the Gradle test build
       result = GradleRunner.create()
@@ -106,7 +108,7 @@ class ProjectTest extends Specification {
 
    }
 
-   def "Execute :importAllXML task"() {
+   def "Execute :importAllXml task"() {
 
       given:
       taskName = 'importAllXML'
@@ -117,11 +119,22 @@ class ProjectTest extends Specification {
 
    }
 
-   def "Execute :importProject task"() {
+   def "Execute :importProject task with default values"() {
 
       given:
       taskName = 'importProject'
       result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :importProject task with --export-path value"() {
+
+      given:
+      taskName = 'importProject'
+      result = executeSingleTask(taskName, ['--export-path=src/main/odi/project-test.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
