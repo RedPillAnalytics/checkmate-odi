@@ -30,9 +30,7 @@ class DeleteProjectTask extends DefaultTask {
 
       log.debug "All projects: ${instance.projects.toString()}"
 
-      def projectName = instance.findProjectName(projectCode)
-
-      if (!instance.findProjectCode(pcode)) {
+      if (!instance.findProjectName(projectCode)) {
 
          log.warn "Project Code ${projectCode} does not exist."
 

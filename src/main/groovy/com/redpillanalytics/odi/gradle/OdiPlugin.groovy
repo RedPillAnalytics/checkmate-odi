@@ -116,6 +116,8 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Create a new project in the ODI Instance."
 
+                  projectCode defaultProjectCode
+
                   projectName defaultProjectName
 
                   instance odiInstance
@@ -188,7 +190,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   instance odiInstance
 
-                  exportPath "$sourceBase/${projectName}.xml"
+                  exportPath "$sourceBase/${defaultProjectName}.xml"
                }
 
                // Task that executes the smart import of a project

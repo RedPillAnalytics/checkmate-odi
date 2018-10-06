@@ -16,7 +16,6 @@ class CreateProjectTask extends DefaultTask {
 
 
    @Input
-   @Optional
    @Option(option = "project-code",
            description = "The ODI project code.")
    String projectCode
@@ -29,12 +28,6 @@ class CreateProjectTask extends DefaultTask {
    @Internal
    Instance instance
 
-   @Internal
-   def getProjectCode() {
-
-      return projectCode ?: project.extensions.odi.getProjectCode(projectName)
-   }
-
    @TaskAction
    def createProject() {
 
@@ -42,20 +35,16 @@ class CreateProjectTask extends DefaultTask {
 
       log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
-      if (instance.findProjectCode(pcode)) {
+      if (instance.findProjectName(projectCode)) {
 
-         log.warn "Project Code '${pcode}' already exists."
-
-      } else if (instance.findProjectName(pname)) {
-
-         log.warn "Project Name '${pname}' already exists."
+         log.warn "Project Code '${projectCode}' already exists."
 
       } else {
          instance.beginTxn()
          instance.odi.getTransactionalEntityManager().persist(new OdiProject(projectName, projectCode))
          instance.endTxn()
 
-         log.warn "Project '${pname}' created sucessfully."
+         log.warn "Project '${projectName}' with '${projectCode}' created sucessfully."
       }
    }
 }

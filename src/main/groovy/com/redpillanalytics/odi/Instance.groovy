@@ -85,9 +85,9 @@ class Instance {
 
    }
 
-   def getOdiProject(String projectCode) {
+   def getOdiProject(String projectCode ) {
 
-      return new OdiProject(findProjectName(projectCode), projectCode)
+      return findProjectName(projectCode)
    }
 
    def beginTxn() {
