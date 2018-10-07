@@ -135,11 +135,11 @@ class ProjectTest extends Specification {
 
    }
 
-   def "Execute :importProject task with --export-path value"() {
+   def "Execute :importProject task with --import-path value"() {
 
       given:
       taskName = 'importProject'
-      result = executeSingleTask(taskName, ['--export-path=src/main/odi/project-test.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--import-path=src/main/odi/project-test.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

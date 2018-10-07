@@ -18,15 +18,15 @@ class SmartImportTask extends DefaultTask {
    Instance instance
 
    @Input
-   @Option(option = "export-path",
+   @Option(option = "import-path",
            description = "The path to the Smart Export file to be imported.")
-   String exportPath
+   String sourcePath
 
    @InputFile
    def getImportFile() {
       // normalize checking logic into a single class
       // DRY
-      return new ExportFile(project.file(exportPath)).export
+      return new ExportFile(project.file(sourcePath)).export
    }
 
    @TaskAction

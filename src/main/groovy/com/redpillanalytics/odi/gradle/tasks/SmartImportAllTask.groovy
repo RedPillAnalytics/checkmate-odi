@@ -1,10 +1,12 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.common.Utils
 import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -16,9 +18,14 @@ class SmartImportAllTask extends DefaultTask {
    Instance instance
 
    @Input
-   @Option(option = "source-path",
+   @Option(option = "import-path",
            description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
    String sourcePath
+
+   @InputDirectory
+   def getSourceBase() {
+      return project.file(sourcePath)
+   }
 
    @TaskAction
    def importAllXML() {
@@ -26,44 +33,19 @@ class SmartImportAllTask extends DefaultTask {
       log.debug "sourcePath: ${sourcePath}"
       log.debug "sourceBase: ${sourceBase}"
 
-      //Reading all the XML Files from the Source Directory
-      def getXMLFiles = { String sourcePath ->
-
-         def xmlFiles = ""
-         def files
-         def folder = new File(sourcePath)
-         def listOfFiles = folder.listFiles()
-         listOfFiles.each { file ->
-            if (file.isFile()) {
-               files = file.name
-               if (files.toLowerCase().endsWith(".xml")) {
-                  xmlFiles += sourcePath + "/" + files + "#"
-               }
-            }
-         }
-
-         log.warn "xmlfiles: ${xmlFiles.dump()}"
-         xmlFiles
-      }
-
-      //Taking all the XML Files from the Source Directory and splitting to loop into each XML File to Import
-      def xmlFiles = getXMLFiles(sourcePath).split("#")
-
       //Make the Connection
       instance.connect()
-
       instance.beginTxn()
 
-      //Importing each XML File to the ODI Repository
-      xmlFiles.each { xmlfile ->
+      Utils.getFilesByExt(sourceBase,'xml').each { file ->
+         log.warn "Importing file ${file.path}..."
          new SmartImportServiceImpl(instance.odi).importObjectsFromXml(
-                 xmlfile,
+                 file.path,
                  null,
                  false,
          )
       }
 
       instance.endTxn()
-
    }
 }

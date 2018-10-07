@@ -190,7 +190,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   instance odiInstance
 
-                  exportPath "$sourceBase/${defaultProjectName}.xml"
+                  sourcePath "$sourceBase/${defaultProjectName}.xml"
                }
 
                // Task that executes the smart import of a project
