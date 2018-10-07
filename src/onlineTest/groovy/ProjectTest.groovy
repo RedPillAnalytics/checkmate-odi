@@ -26,10 +26,6 @@ class ProjectTest extends Specification {
 
       resourcesDir = new File('src/test/resources')
 
-      new AntBuilder().copy(todir: projectDir) {
-         fileset(dir: resourcesDir)
-      }
-
       buildFile.write("""
             plugins {
                 id 'com.redpillanalytics.checkmate.odi'
@@ -41,6 +37,15 @@ class ProjectTest extends Specification {
                odiPassword = 'Welcome1'
             }
         """)
+   }
+
+   def setup() {
+
+      projectDir.delete()
+
+      new AntBuilder().copy(todir: projectDir) {
+         fileset(dir: resourcesDir)
+      }
    }
 
    // helper method
@@ -101,7 +106,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportProjectFolder'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

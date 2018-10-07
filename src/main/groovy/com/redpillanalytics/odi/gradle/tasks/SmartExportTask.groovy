@@ -10,7 +10,6 @@ import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -28,12 +27,6 @@ class SmartExportTask extends DefaultTask {
            description = "The code of the project to create.")
    String projectCode
 
-   @Input
-   @Optional
-   @Option(option = "project-name",
-           description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
-   String projectName
-
    @Internal
    Instance instance
 
@@ -44,13 +37,6 @@ class SmartExportTask extends DefaultTask {
       return project.file(sourcePath)
    }
 
-   @Internal
-   def getProjectName() {
-
-      //instance.connect()
-      return projectName ?: instance.findProjectName(projectCode)
-   }
-
    @TaskAction
    def exportProject() {
 
@@ -58,6 +44,9 @@ class SmartExportTask extends DefaultTask {
       log.debug "sourceBase: ${sourceBase}"
 
       instance.connect()
+
+      // let's make sure the project exists
+      log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
       //Find The Target Project by the Project Code Value
       List<ISmartExportable> projectList = new LinkedList<ISmartExportable> ()
@@ -72,11 +61,12 @@ class SmartExportTask extends DefaultTask {
       }
       log.warn "sourcePath: $sourcePath"
       log.warn "sourceBase: $sourceBase"
+      log.warn "projectCode: $projectCode"
 
       new SmartExportServiceImpl(instance.odi).exportToXml(
               projectList,
               sourceBase.canonicalPath,
-              projectName,
+              projectCode,
               true,
               false,
               encoding,

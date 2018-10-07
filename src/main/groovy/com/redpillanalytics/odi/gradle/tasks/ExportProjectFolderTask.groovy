@@ -48,12 +48,14 @@ class ExportProjectFolderTask extends DefaultTask {
 
       instance.connect()
 
+      log.warn "All projects: ${instance.projectFinder.findAll().toString()}"
+
       // create the export list
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
 
 
       // Validate project and folder
-      if (!instance.findProjectCode(projectCode)) {
+      if (!instance.findProjectName(projectCode)) {
 
          log.warn "Project Code '${projectCode}' does not exist."
 

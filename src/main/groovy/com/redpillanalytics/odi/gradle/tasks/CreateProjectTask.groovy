@@ -44,7 +44,7 @@ class CreateProjectTask extends DefaultTask {
          instance.odi.getTransactionalEntityManager().persist(new OdiProject(projectName, projectCode))
          instance.endTxn()
 
-         log.warn "Project '${projectName}' with '${projectCode}' created sucessfully."
+         log.warn "Project Name '${projectName}' with Project Code '${projectCode}' created sucessfully."
       }
    }
 }

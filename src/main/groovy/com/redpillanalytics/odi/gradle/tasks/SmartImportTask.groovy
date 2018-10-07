@@ -27,7 +27,6 @@ class SmartImportTask extends DefaultTask {
       // normalize checking logic into a single class
       // DRY
       return new ExportFile(project.file(exportPath)).export
-      //return project.file(exportPath)
    }
 
    @TaskAction
