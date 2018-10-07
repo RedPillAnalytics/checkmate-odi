@@ -31,7 +31,7 @@ class GetProjectsTask extends DefaultTask {
 
       projects.each { OdiProject project ->
          //Action to do to the projects retrieved
-         println(project.name)
+         log.warn project.name
       }
       instance.endTxn()
 

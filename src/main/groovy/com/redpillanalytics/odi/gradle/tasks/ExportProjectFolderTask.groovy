@@ -48,7 +48,7 @@ class ExportProjectFolderTask extends DefaultTask {
 
       instance.connect()
 
-      log.warn "All projects: ${instance.projectFinder.findAll().toString()}"
+      log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
       // create the export list
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()

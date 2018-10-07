@@ -49,19 +49,15 @@ class SmartExportTask extends DefaultTask {
       log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
       //Find The Target Project by the Project Code Value
-      List<ISmartExportable> projectList = new LinkedList<ISmartExportable> ()
+      List<ISmartExportable> projectList = new LinkedList<ISmartExportable>()
 
       projectList.add(((IOdiProjectFinder) instance.getProjectFinder()).findByCode(projectCode))
 
       instance.beginTxn()
-      def encoding = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
 
-      if (encoding) {
-         log.warn "encoding: $encoding"
-      }
-      log.warn "sourcePath: $sourcePath"
-      log.warn "sourceBase: $sourceBase"
-      log.warn "projectCode: $projectCode"
+      log.debug "sourcePath: $sourcePath"
+      log.debug "sourceBase: $sourceBase"
+      log.debug "projectCode: $projectCode"
 
       new SmartExportServiceImpl(instance.odi).exportToXml(
               projectList,
@@ -69,7 +65,7 @@ class SmartExportTask extends DefaultTask {
               projectCode,
               true,
               false,
-              encoding,
+              new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
               false,
               null,
               null,

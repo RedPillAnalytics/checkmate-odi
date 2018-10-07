@@ -73,8 +73,8 @@ class OdiPlugin implements Plugin<Project> {
          // if no project code is specified, create one
          defaultProjectCode = getParameter('projectCode') ?: project.extensions.odi.getProjectCode(defaultProjectName)
 
-         log.warn "defaultProjectCode: $defaultProjectCode"
-         log.warn "defaultProjectName: $defaultProjectName"
+         log.debug "defaultProjectCode: $defaultProjectCode"
+         log.debug "defaultProjectName: $defaultProjectName"
 
          // capture all the connection parameters
          def masterUrl = getParameter('masterUrl')

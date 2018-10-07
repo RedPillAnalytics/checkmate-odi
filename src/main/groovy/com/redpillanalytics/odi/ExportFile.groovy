@@ -15,7 +15,7 @@ class ExportFile {
    ExportFile(File file) {
 
       this.export = file
-      log.warn "export file: ${export.path}"
+      log.debug "export file: ${export.path}"
 
       verify()
    }
