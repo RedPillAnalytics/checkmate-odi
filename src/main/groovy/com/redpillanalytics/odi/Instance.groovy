@@ -11,7 +11,9 @@ import oracle.odi.core.persistence.transaction.ITransactionStatus
 import oracle.odi.core.persistence.transaction.support.DefaultTransactionDefinition
 import oracle.odi.core.security.Authentication
 import oracle.odi.domain.mapping.Mapping
+import oracle.odi.domain.mapping.ReusableMapping
 import oracle.odi.domain.mapping.finder.IMappingFinder
+import oracle.odi.domain.mapping.finder.IReusableMappingFinder
 import oracle.odi.domain.project.OdiFolder
 import oracle.odi.domain.project.OdiPackage
 import oracle.odi.domain.project.OdiProject
@@ -151,6 +153,16 @@ class Instance {
    def findProcedure(String project, String folder) {
 
       return getProcedureFinder().findByProject(project, folder)
+   }
+
+   def getReusableMappingFinder() {
+
+      return (IReusableMappingFinder) odi.getTransactionalEntityManager().getFinder(ReusableMapping.class)
+   }
+
+   def findReusableMapping(String project, String folder) {
+
+      return getReusableMappingFinder().findByProject(project, folder)
    }
 
    def getProjects() {

@@ -71,6 +71,12 @@ class ExportProjectFolderTask extends DefaultTask {
             log.info "Mapping ${it.name} added to export list..."
          }
 
+         // list the reusable mappings
+         instance.findReusableMapping(projectCode, folder).each {
+            smartExportList.add((ISmartExportable) it)
+            log.info "Reusable Mapping ${it.name} added to export list..."
+         }
+
          // list the packages
          instance.findPackage(projectCode, folder).each {
             smartExportList.add((ISmartExportable) it)
@@ -82,6 +88,11 @@ class ExportProjectFolderTask extends DefaultTask {
             smartExportList.add((ISmartExportable) it)
             log.info "Procedure ${it.name} added to export list..."
          }
+      }
+
+      // Validate if Smart Export List have objects
+      if (smartExportList.size() <= 0) {
+         log.warn "Nothing to export..."
       }
 
       instance.beginTxn()
