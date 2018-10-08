@@ -69,25 +69,25 @@ class ExportObjectsTask extends DefaultTask {
                     // list the mappings
                     instance.findMapping(projectCode, folder.name).each {
                         exportList.add((IExportable) it)
-                        log.info "Mapping ${it.name} added to export list..."
+                        //log.info "Mapping ${it.name} added to export list..."
                     }
 
                     // list the reusable mappings
                     instance.findReusableMapping(projectCode, folder.name).each {
                         exportList.add((IExportable) it)
-                        log.info "Reusable Mapping ${it.name} added to export list..."
+                        //log.info "Reusable Mapping ${it.name} added to export list..."
                     }
 
                     // list the packages
                     instance.findPackage(projectCode, folder.name).each {
                         exportList.add((IExportable) it)
-                        log.info "Package ${it.name} added to export list..."
+                        //log.info "Package ${it.name} added to export list..."
                     }
 
                     // list the procedures
                     instance.findProcedure(projectCode, folder.name).each {
                         exportList.add((IExportable) it)
-                        log.info "Procedure ${it.name} added to export list..."
+                        //log.info "Procedure ${it.name} added to export list..."
                     }
             }
         }

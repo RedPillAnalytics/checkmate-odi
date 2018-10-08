@@ -91,6 +91,17 @@ class ProjectTest extends Specification {
 
    }
 
+   def "Execute :exportProjectObjects task"() {
+
+      given:
+      taskName = 'exportProjectObjects'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
    def "Execute :exportAllProjects task"() {
 
       given:
