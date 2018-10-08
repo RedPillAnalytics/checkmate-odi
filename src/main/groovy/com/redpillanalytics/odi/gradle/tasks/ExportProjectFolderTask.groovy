@@ -21,9 +21,9 @@ class ExportProjectFolderTask extends DefaultTask {
    String sourcePath
 
    @Input
-   @Option(option = "project-name",
-           description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
-   String pname
+   @Option(option = "project-code",
+           description = "The code of the project to create.")
+   String projectCode
 
    @Input
    @Option(option = "folder-name",
@@ -48,39 +48,51 @@ class ExportProjectFolderTask extends DefaultTask {
 
       instance.connect()
 
+      log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
+
       // create the export list
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
 
 
       // Validate project and folder
+      if (!instance.findProjectName(projectCode)) {
 
-      if (!instance.findProjectName(pname)) {
+         log.warn "Project Code '${projectCode}' does not exist."
 
-         log.warn "Project name '${pname}' not found."
+      } else if (!instance.findFolder(folder, projectCode)[0]) {
 
-      } else if (!instance.findFolder(folder, pname)[0]) {
-
-         log.warn "Folder name '${folder}' not found."
+         log.warn "Folder name '${folder}' does not exist."
 
       } else {
 
          // list the mappings
-         instance.findMapping(pname, folder).each {
+         instance.findMapping(projectCode, folder).each {
             smartExportList.add((ISmartExportable) it)
             log.info "Mapping ${it.name} added to export list..."
          }
 
+         // list the reusable mappings
+         instance.findReusableMapping(projectCode, folder).each {
+            smartExportList.add((ISmartExportable) it)
+            log.info "Reusable Mapping ${it.name} added to export list..."
+         }
+
          // list the packages
-         instance.findPackage(pname, folder).each {
+         instance.findPackage(projectCode, folder).each {
             smartExportList.add((ISmartExportable) it)
             log.info "Package ${it.name} added to export list..."
          }
 
          // list the procedures
-         instance.findProcedure(pname, folder).each {
+         instance.findProcedure(projectCode, folder).each {
             smartExportList.add((ISmartExportable) it)
             log.info "Procedure ${it.name} added to export list..."
          }
+      }
+
+      // Validate if Smart Export List have objects
+      if (smartExportList.size() <= 0) {
+         log.warn "Nothing to export..."
       }
 
       instance.beginTxn()
@@ -88,7 +100,7 @@ class ExportProjectFolderTask extends DefaultTask {
       new SmartExportServiceImpl(instance.odi).exportToXml(
               smartExportList,
               sourceBase.canonicalPath,
-              pname,
+              projectCode,
               true,
               false,
               new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),

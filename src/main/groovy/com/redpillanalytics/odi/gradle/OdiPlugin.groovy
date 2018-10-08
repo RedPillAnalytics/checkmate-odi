@@ -48,8 +48,8 @@ class OdiPlugin implements Plugin<Project> {
             return GradleUtils.getParameter(project, name, 'odi')
          }
 
-         String projectName
-         String projectCode
+         String defaultProjectName
+         String defaultProjectCode
          String sourceBase = getParameter('sourceBase')
 
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
@@ -59,19 +59,23 @@ class OdiPlugin implements Plugin<Project> {
          if (getParameter('projectName')) {
 
             // use this throughout for the projectName
-            projectName = getParameter('projectName')
+            defaultProjectName = getParameter('projectName')
 
             // also set our archive name to projectName
-            project.archivesBaseName = projectName
+            project.archivesBaseName = defaultProjectName
          } else {
 
             // we don't have a projectName so we need one
             // just use the default archivesBaseName
-            projectName = project.archivesBaseName
+            defaultProjectName = project.archivesBaseName
          }
 
          // if no project code is specified, create one
-         projectCode = getParameter('projectCode') ?: project.extensions.odi.getProjectCode(projectName)
+         defaultProjectCode = getParameter('projectCode') ?: project.extensions.odi.getProjectCode(defaultProjectName)
+
+         log.debug "defaultProjectCode: $defaultProjectCode"
+         log.debug "defaultProjectName: $defaultProjectName"
+
          // capture all the connection parameters
          def masterUrl = getParameter('masterUrl')
          log.debug "masterUrl: $masterUrl"
@@ -112,9 +116,9 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Create a new project in the ODI Instance."
 
-                  pname projectName
+                  projectCode defaultProjectCode
 
-                  pcode projectCode
+                  projectName defaultProjectName
 
                   instance odiInstance
 
@@ -127,9 +131,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Delete a new project in the ODI Instance."
 
-                  pname projectName
-
-                  pcode projectCode
+                  projectCode defaultProjectCode
 
                   instance odiInstance
 
@@ -142,23 +144,11 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Executes a Smart Export of a project in the ODI Instance."
 
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
-
                   sourcePath sourceBase
 
-                  pname projectName
+                  projectCode defaultProjectCode
+
+                  instance odiInstance
 
                }
 
@@ -171,7 +161,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   sourcePath sourceBase
 
-                  pname projectName
+                  projectCode defaultProjectCode
 
                   folder folderName
 
@@ -198,19 +188,19 @@ class OdiPlugin implements Plugin<Project> {
 
                   description = "Executes a Smart Import of a project to the ODI Instance."
 
-                  url masterUrl
+                  instance odiInstance
 
-                  driver masterDriver
+                  sourcePath "$sourceBase/${defaultProjectName}.xml"
+               }
 
-                  master masterRepo
+               // Task that executes the smart import of a project
+               project.task(bg.getTaskName('importAllXML'), type: SmartImportAllTask) {
 
-                  work workRepo
+                  group 'project'
 
-                  masterPass masterPassword
+                  description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
 
-                  odi odiUser
-
-                  odiPass odiPassword
+                  instance odiInstance
 
                   sourcePath sourceBase
 
@@ -224,31 +214,6 @@ class OdiPlugin implements Plugin<Project> {
                   description = "Get all the projects existing on the ODI Instance."
 
                   instance odiInstance
-               }
-
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importAllXML'), type: SmartImportAllTask) {
-
-                  group 'project'
-
-                  description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
-
-                  url masterUrl
-
-                  driver masterDriver
-
-                  master masterRepo
-
-                  work workRepo
-
-                  masterPass masterPassword
-
-                  odi odiUser
-
-                  odiPass odiPassword
-
-                  sourcePath sourceBase
-
                }
             }
          }

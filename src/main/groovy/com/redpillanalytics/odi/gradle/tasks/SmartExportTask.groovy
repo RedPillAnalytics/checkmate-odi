@@ -9,6 +9,7 @@ import oracle.odi.impexp.smartie.ISmartExportable
 import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -17,49 +18,17 @@ import org.gradle.api.tasks.options.Option
 class SmartExportTask extends DefaultTask {
 
    @Input
-   @Option(option = "url",
-           description = "The JDBC URL of the Master Repository.")
-   String url
-
-   @Input
-   @Option(option = "driver",
-           description = "The JDBC driver class of the Master Repository.")
-   String driver
-
-   @Input
-   @Option(option = "master",
-           description = "The schema name of the Master repository.")
-   String master
-
-   @Input
-   @Option(option = "work",
-           description = "The schema name of the Work repository.")
-   String work
-
-   @Input
-   @Option(option = "masterPass",
-           description = "The password for the Master repository.")
-   String masterPass
-
-   @Input
-   @Option(option = "odi",
-           description = "The name of the ODI user.")
-   String odi
-
-   @Input
-   @Option(option = "odiPass",
-           description = "The password of the ODI user.")
-   String odiPass
-
-   @Input
-   @Option(option = "sourcePath",
+   @Option(option = "source-path",
            description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
    String sourcePath
 
    @Input
-   @Option(option = "pname",
-           description = "The project name to export. Defaults to either 'projectName' or the subdirectory name in SCM.")
-   String pname
+   @Option(option = "project-code",
+           description = "The code of the project to create.")
+   String projectCode
+
+   @Internal
+   Instance instance
 
    // setSourceBase is not used, but I added it to support Gradle Incremental Build support
    @OutputDirectory
@@ -71,17 +40,37 @@ class SmartExportTask extends DefaultTask {
    @TaskAction
    def exportProject() {
 
-      def instance = new Instance(url, driver, master, work, masterPass, odi, odiPass)
-      def exportService = new SmartExportServiceImpl(instance.odi)
-      def encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9")
+      log.debug "sourcePath: ${sourcePath}"
+      log.debug "sourceBase: ${sourceBase}"
+
+      instance.connect()
+
+      // let's make sure the project exists
+      log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
       //Find The Target Project by the Project Code Value
-      List<ISmartExportable> project = new LinkedList<ISmartExportable> ()
-      project.add(((IOdiProjectFinder) instance.odi.getTransactionalEntityManager().getFinder(OdiProject.class)).findByCode(pname))
+      List<ISmartExportable> projectList = new LinkedList<ISmartExportable>()
+
+      projectList.add(((IOdiProjectFinder) instance.getProjectFinder()).findByCode(projectCode))
 
       instance.beginTxn()
 
-      exportService.exportToXml(project,sourcePath,pname,true,false,encdOption,false,null,null,true)
+      log.debug "sourcePath: $sourcePath"
+      log.debug "sourceBase: $sourceBase"
+      log.debug "projectCode: $projectCode"
+
+      new SmartExportServiceImpl(instance.odi).exportToXml(
+              projectList,
+              sourceBase.canonicalPath,
+              projectCode,
+              true,
+              false,
+              new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
+              false,
+              null,
+              null,
+              true
+      )
 
       instance.endTxn()
 
