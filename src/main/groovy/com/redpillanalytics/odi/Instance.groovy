@@ -125,6 +125,15 @@ class Instance {
       return getFolderFinder().findByName(folder, project)
    }
 
+   def getFoldersProjectFinder() {
+      return (IOdiFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiFolder.class)
+   }
+
+   def findFoldersProject(String project) {
+
+      return getFoldersProjectFinder().findByProject(project)
+   }
+
    def getMappingFinder() {
 
       return (IMappingFinder) odi.getTransactionalEntityManager().getFinder(Mapping.class)

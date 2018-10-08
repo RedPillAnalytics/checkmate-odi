@@ -5,6 +5,7 @@ import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
+import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
@@ -143,6 +144,21 @@ class OdiPlugin implements Plugin<Project> {
                   group 'project'
 
                   description = "Executes a Smart Export of a project in the ODI Instance."
+
+                  sourcePath sourceBase
+
+                  projectCode defaultProjectCode
+
+                  instance odiInstance
+
+               }
+
+               // Task that executes the export of the objects of a project, one file per object
+               project.task(bg.getTaskName('exportProjectObjects'), type: ExportObjectsTask) {
+
+                  group 'project'
+
+                  description = "Executes a Export of the objects of a project, one file per object, in the ODI Instance."
 
                   sourcePath sourceBase
 
