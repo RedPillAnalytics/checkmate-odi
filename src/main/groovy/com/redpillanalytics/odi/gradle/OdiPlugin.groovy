@@ -5,6 +5,7 @@ import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
+import com.redpillanalytics.odi.gradle.tasks.ExportModelFolderTask
 import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
 import com.redpillanalytics.odi.gradle.tasks.GetModelsTask
@@ -54,6 +55,9 @@ class OdiPlugin implements Plugin<Project> {
 
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
          String folderName = getParameter('folderName')
+
+         // Model Folder Name to find and Export
+         String modelFolder = getParameter('modelFolderName')
 
          // see if there's an explicit project name
          if (getParameter('projectName')) {
@@ -239,6 +243,21 @@ class OdiPlugin implements Plugin<Project> {
                   description = "Get all the Models existing in the ODI Instance."
 
                   instance odiInstance
+               }
+
+               // Task that exports the Model Folders by Name in the Repository
+               project.task(bg.getTaskName('exportModelFolder'), type: ExportModelFolderTask) {
+
+                  group 'project'
+
+                  description = "Export the Models with the target name in the ODI Instance."
+
+                  instance odiInstance
+
+                  sourcePath sourceBase
+
+                  modelFolderName modelFolder
+
                }
             }
          }

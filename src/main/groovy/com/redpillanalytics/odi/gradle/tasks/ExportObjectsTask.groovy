@@ -92,7 +92,7 @@ class ExportObjectsTask extends DefaultTask {
             }
         }
 
-        // Validate if Smart Export List have objects
+        // Validate if Export List have objects
         if (exportList.size() <= 0) {
             log.warn "Nothing to export..."
         }

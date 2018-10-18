@@ -21,6 +21,11 @@ class OdiPluginExtension {
    String projectCode
 
    /**
+    * The name of the ODI Model Folder target to Export
+    */
+   String modelFolderName
+
+   /**
     * The base source directory.
     */
    String sourceBase = 'src/main/odi'
