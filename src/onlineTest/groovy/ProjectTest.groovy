@@ -178,4 +178,16 @@ class ProjectTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
 
    }
+
+   def "Execute :getModels task"() {
+
+      given:
+      taskName = 'getModels'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
 }

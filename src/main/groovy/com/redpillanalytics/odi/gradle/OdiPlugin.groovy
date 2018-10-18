@@ -7,6 +7,7 @@ import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
 import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
+import com.redpillanalytics.odi.gradle.tasks.GetModelsTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
@@ -15,8 +16,6 @@ import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-
-import java.sql.DriverManager
 
 @Slf4j
 class OdiPlugin implements Plugin<Project> {
@@ -227,7 +226,17 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Get all the projects existing on the ODI Instance."
+                  description = "Get all the projects existing in the ODI Instance."
+
+                  instance odiInstance
+               }
+
+               // Task that get all the existing models in the Repository
+               project.task(bg.getTaskName('getModels'), type: GetModelsTask) {
+
+                  group 'project'
+
+                  description = "Get all the Models existing in the ODI Instance."
 
                   instance odiInstance
                }
