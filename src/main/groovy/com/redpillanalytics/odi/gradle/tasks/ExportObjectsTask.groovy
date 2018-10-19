@@ -23,7 +23,7 @@ class ExportObjectsTask extends DefaultTask {
 
     @Input
     @Option(option = "project-code",
-            description = "The code of the project to create.")
+            description = "The code of the project to Export.")
     String projectCode
 
     @Internal
