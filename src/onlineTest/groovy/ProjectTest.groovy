@@ -36,8 +36,7 @@ class ProjectTest extends Specification {
                masterPassword = 'Welcome1'
                odiPassword = 'Welcome1'
                
-               modelFolderName = 'FlatFilesHR'
-              
+               modelCode = 'FF_HR'
             }
         """)
    }
@@ -197,6 +196,17 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportModelFolder'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :exportModel task"() {
+
+      given:
+      taskName = 'exportModel'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:

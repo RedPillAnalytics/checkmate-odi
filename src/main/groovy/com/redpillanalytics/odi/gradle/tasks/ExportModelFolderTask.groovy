@@ -4,7 +4,6 @@ import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.impexp.IExportable
 import oracle.odi.domain.model.OdiModelFolder
-import oracle.odi.domain.project.OdiFolder
 import oracle.odi.impexp.EncodingOptions
 import oracle.odi.impexp.support.ExportServiceImpl
 import org.gradle.api.DefaultTask
