@@ -14,6 +14,10 @@ import oracle.odi.domain.mapping.Mapping
 import oracle.odi.domain.mapping.ReusableMapping
 import oracle.odi.domain.mapping.finder.IMappingFinder
 import oracle.odi.domain.mapping.finder.IReusableMappingFinder
+import oracle.odi.domain.model.OdiModel
+import oracle.odi.domain.model.OdiModelFolder
+import oracle.odi.domain.model.finder.IOdiModelFinder
+import oracle.odi.domain.model.finder.IOdiModelFolderFinder
 import oracle.odi.domain.project.OdiFolder
 import oracle.odi.domain.project.OdiPackage
 import oracle.odi.domain.project.OdiProject
@@ -22,6 +26,8 @@ import oracle.odi.domain.project.finder.IOdiFolderFinder
 import oracle.odi.domain.project.finder.IOdiPackageFinder
 import oracle.odi.domain.project.finder.IOdiProjectFinder
 import oracle.odi.domain.project.finder.IOdiUserProcedureFinder
+
+import static oracle.odi.domain.model.OdiModelFolder.*
 
 @Slf4j
 class Instance {
@@ -178,4 +184,31 @@ class Instance {
 
       return projectFinder.findAll().toArray()
    }
+
+   def getModelFinder() {
+      return (IOdiModelFinder) odi.getTransactionalEntityManager().getFinder(OdiModel.class)
+   }
+
+   def findAllModels() {
+      return getModelFinder().findAll().toArray()
+   }
+
+   def findModelbyCode(String modelCode){
+      return getModelFinder().findByCode(modelCode)
+   }
+
+   def getModelFolderFinder(){
+      return (IOdiModelFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiModelFolder.class)
+   }
+
+   def findAllModelFolders() {
+      return getModelFolderFinder().findAll().toArray()
+   }
+
+   def findModelFolderbyName(String pName){
+      return getModelFolderFinder().findByName(pName)
+   }
+
+
+
 }

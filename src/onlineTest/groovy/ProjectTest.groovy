@@ -178,4 +178,38 @@ class ProjectTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
 
    }
+
+   def "Execute :getModels task"() {
+
+      given:
+      taskName = 'getModels'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :exportModelFolder task"() {
+
+      given:
+      taskName = 'exportModelFolder'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :exportModel task"() {
+
+      given:
+      taskName = 'exportModel'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
 }
