@@ -11,6 +11,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
 import com.redpillanalytics.odi.gradle.tasks.GetModelsTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
+import com.redpillanalytics.odi.gradle.tasks.ImportObjectTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
 import com.redpillanalytics.odi.gradle.tasks.SmartImportAllTask
@@ -117,6 +118,43 @@ class OdiPlugin implements Plugin<Project> {
 
             if (project.extensions.odi.isDevelopment()) {
 
+               // Task that executes the smart import of a project
+               project.task(bg.getTaskName('importObject'), type: ImportObjectTask) {
+
+                  group 'project'
+
+                  description = "Executes a Object Import of a XML into the ODI Instance."
+
+                  instance odiInstance
+
+                  sourcePath "$sourceBase/${defaultProjectName}.xml"
+               }
+
+               // Task that executes the smart import of a project
+               project.task(bg.getTaskName('importProject'), type: SmartImportTask) {
+
+                  group 'project'
+
+                  description = "Executes a Smart Import of a project to the ODI Instance."
+
+                  instance odiInstance
+
+                  sourcePath "$sourceBase/${defaultProjectName}.xml"
+               }
+
+               // Task that executes the smart import of a project
+               project.task(bg.getTaskName('importAllXML'), type: SmartImportAllTask) {
+
+                  group 'project'
+
+                  description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
+
+                  instance odiInstance
+
+                  sourcePath sourceBase
+
+               }
+
                // Task that creates a project
                project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
 
@@ -197,31 +235,6 @@ class OdiPlugin implements Plugin<Project> {
                   group 'project'
 
                   description = "Executes a Smart Export of a project in the ODI Instance."
-
-                  instance odiInstance
-
-                  sourcePath sourceBase
-
-               }
-
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importProject'), type: SmartImportTask) {
-
-                  group 'project'
-
-                  description = "Executes a Smart Import of a project to the ODI Instance."
-
-                  instance odiInstance
-
-                  sourcePath "$sourceBase/${defaultProjectName}.xml"
-               }
-
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importAllXML'), type: SmartImportAllTask) {
-
-                  group 'project'
-
-                  description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
 
                   instance odiInstance
 

@@ -117,7 +117,18 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportProjectFolder'
-      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '-Si'])
+      result = executeSingleTask(taskName, ['--project-code=JUMP','--folder-name=Source Loads', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :importObject task with --import-path value"() {
+
+      given:
+      taskName = 'importObject'
+      result = executeSingleTask(taskName, ['--import-path=src/main/odi/MOD_FF_HR.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -194,18 +205,18 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportModelFolder'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR','-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
 
    }
 
-   def "Execute :exportModel task"() {
+   def "Execute :exportModel task with --model-code value"() {
 
       given:
       taskName = 'exportModel'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['--model-code=FF_HR','-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
