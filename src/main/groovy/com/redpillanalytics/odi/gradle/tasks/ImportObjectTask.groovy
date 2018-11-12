@@ -4,6 +4,7 @@ import com.redpillanalytics.odi.ExportFile
 import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
+import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -36,8 +37,10 @@ class ImportObjectTask extends DefaultTask {
         instance.connect()
         instance.beginTxn()
 
-        new SmartImportServiceImpl(instance.odi).importObjectsFromXml(
+        new ImportServiceImpl(instance.odi).importObjectFromXml(
+                ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
                 getImportFile().canonicalPath,
+                false,
                 null,
                 true,
         )

@@ -123,7 +123,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Executes a Import of a XML Object to the ODI Instance."
+                  description = "Executes a Regular Import of a XML Object to the ODI Instance."
 
                   instance odiInstance
 
