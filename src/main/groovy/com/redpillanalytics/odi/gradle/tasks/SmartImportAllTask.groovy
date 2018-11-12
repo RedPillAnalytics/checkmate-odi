@@ -42,7 +42,7 @@ class SmartImportAllTask extends DefaultTask {
          new SmartImportServiceImpl(instance.odi).importObjectsFromXml(
                  file.path,
                  null,
-                 false,
+                 true,
          )
       }
 
