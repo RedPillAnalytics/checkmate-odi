@@ -30,7 +30,7 @@ class SmartImportTask extends DefaultTask {
    }
 
    @TaskAction
-   def importProject() {
+   def importObjectXML() {
 
       //Make the Connection
       instance.connect()
@@ -39,7 +39,7 @@ class SmartImportTask extends DefaultTask {
       new SmartImportServiceImpl(instance.odi).importObjectsFromXml(
               getImportFile().canonicalPath,
               null,
-              false,
+              true,
       )
       instance.endTxn()
    }
