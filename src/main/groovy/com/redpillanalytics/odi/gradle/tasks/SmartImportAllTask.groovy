@@ -28,7 +28,7 @@ class SmartImportAllTask extends DefaultTask {
    }
 
    @TaskAction
-   def importAllXML() {
+   def importAllObjectsXML() {
 
       log.debug "sourcePath: ${sourcePath}"
       log.debug "sourceBase: ${sourceBase}"

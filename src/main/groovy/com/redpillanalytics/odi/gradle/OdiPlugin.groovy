@@ -123,7 +123,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Executes a Object Import of a XML into the ODI Instance."
+                  description = "Executes a Import of a XML Object to the ODI Instance."
 
                   instance odiInstance
 
@@ -131,11 +131,11 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importProject'), type: SmartImportTask) {
+               project.task(bg.getTaskName('importObjectXML'), type: SmartImportTask) {
 
                   group 'project'
 
-                  description = "Executes a Smart Import of a project to the ODI Instance."
+                  description = "Executes a Smart Import of a XML Object to the ODI Instance."
 
                   instance odiInstance
 
@@ -143,7 +143,7 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importAllXML'), type: SmartImportAllTask) {
+               project.task(bg.getTaskName('importAllObjectsXML'), type: SmartImportAllTask) {
 
                   group 'project'
 
@@ -218,7 +218,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Executes a Smart Export of the object in a specified folder in the ODI Instance."
+                  description = "Executes a Smart Export of the objects in a specified folder in the ODI Instance."
 
                   sourcePath sourceBase
 
@@ -234,7 +234,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Executes a Smart Export of a project in the ODI Instance."
+                  description = "Executes a Smart Export of All Projects in the ODI Instance."
 
                   instance odiInstance
 
@@ -267,7 +267,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Export the Models with the target name in the ODI Instance."
+                  description = "Export the Model Folder with the target name in the ODI Instance."
 
                   instance odiInstance
 
