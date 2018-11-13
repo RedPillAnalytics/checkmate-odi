@@ -14,20 +14,12 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class ExportObjectsTask extends DefaultTask {
+class ExportObjectsTask extends ProjectCodeTask {
 
     @Input
     @Option(option = "source-path",
             description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
     String sourcePath
-
-    @Input
-    @Option(option = "project-code",
-            description = "The code of the project to Export.")
-    String projectCode
-
-    @Internal
-    Instance instance
 
     // setSourceBase is not used, but I added it to support Gradle Incremental Build support
     @OutputDirectory

@@ -2,8 +2,10 @@ package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.Instance
+import com.redpillanalytics.odi.OdiRepository
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
+import com.redpillanalytics.odi.gradle.tasks.CreateRepositoryTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelFolderTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelTask
@@ -100,6 +102,10 @@ class OdiPlugin implements Plugin<Project> {
          log.debug "odiUser: $odiUser"
          def odiPassword = getParameter('odiPassword')
          log.debug "odiPassword: $odiPassword"
+         def dbaUser = getParameter('dbaUser')
+         log.debug "dbaUser: $dbaUser"
+         def dbaPassword = getParameter('dbaPassword')
+         log.debug "dbaPassword: $dbaPassword"
 
 
 //         // Let's JIT load the JDBC driver
@@ -113,10 +119,28 @@ class OdiPlugin implements Plugin<Project> {
          // let's go ahead and get an Instance object, but unconnected.
          def odiInstance = new Instance(masterUrl, masterDriver, masterRepo, workRepo, masterPassword, odiUser, odiPassword)
 
+         // let's go ahead and get an OdiRepository object
+         def odiRepository = new OdiRepository(
+                 url: masterUrl,
+                 driver: masterDriver,
+                 masterRepo: masterRepo,
+                 masterPassword: masterPassword,
+                 odiPassword: odiPassword,
+                 dbaUser: dbaUser,
+                 dbaPassword: dbaPassword
+         )
+
          // configure all build groups
          project.odi.buildGroups.all { bg ->
 
             if (project.extensions.odi.isDevelopment()) {
+
+               project.task(bg.getTaskName('createRepository'), type: CreateRepositoryTask) {
+
+                  group 'project'
+
+                  repository odiRepository
+               }
 
                // Task that executes the smart import of a project
                project.task(bg.getTaskName('importObject'), type: ImportObjectTask) {

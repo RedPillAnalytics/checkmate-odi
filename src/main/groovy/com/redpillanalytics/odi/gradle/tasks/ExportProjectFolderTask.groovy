@@ -13,7 +13,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class ExportProjectFolderTask extends DefaultTask {
+class ExportProjectFolderTask extends ProjectCodeTask {
 
    @Input
    @Option(option = "source-path",
@@ -21,17 +21,9 @@ class ExportProjectFolderTask extends DefaultTask {
    String sourcePath
 
    @Input
-   @Option(option = "project-code",
-           description = "The code of the project to create.")
-   String projectCode
-
-   @Input
    @Option(option = "folder-name",
            description = "The target folder name containing the objects to export from the ODI Repository for the SmartExport.")
    String folder
-
-   @Internal
-   Instance instance
 
    // setSourceBase is not used, but I added it to support Gradle Incremental Build support
    @OutputDirectory

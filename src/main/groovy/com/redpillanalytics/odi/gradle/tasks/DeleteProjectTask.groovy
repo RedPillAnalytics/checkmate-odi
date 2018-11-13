@@ -11,17 +11,7 @@ import org.gradle.api.tasks.options.Option
 
 
 @Slf4j
-class DeleteProjectTask extends DefaultTask {
-
-   @Input
-   @Option(option = "project-code",
-           description = "The Project Code of the ODI Project.")
-   String projectCode
-
-   @Internal
-   Instance instance
-
-   @Internal
+class DeleteProjectTask extends ProjectCodeTask {
 
    @TaskAction
    def deleteProject() {

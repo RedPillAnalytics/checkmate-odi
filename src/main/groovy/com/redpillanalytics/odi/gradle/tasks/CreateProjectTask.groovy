@@ -12,21 +12,12 @@ import org.gradle.api.tasks.options.Option
 
 
 @Slf4j
-class CreateProjectTask extends DefaultTask {
-
-
-   @Input
-   @Option(option = "project-code",
-           description = "The ODI project code.")
-   String projectCode
+class CreateProjectTask extends ProjectCodeTask {
 
    @Input
    @Option(option = "project-name",
            description = "The ODI project name.")
    String projectName
-
-   @Internal
-   Instance instance
 
    @TaskAction
    def createProject() {

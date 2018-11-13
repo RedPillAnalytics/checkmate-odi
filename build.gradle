@@ -71,6 +71,8 @@ dependencies {
    compile 'odi-sdk:ogg-jmx:+'
    compile 'odi-sdk:ogg-jmx:+'
    compile 'odi-sdk:XmlSchema:12.2.1.3'
+   compile 'oracle-common:SchemaVersion:12.2.1.3'
+   compile 'oracle-common:oracle-pki:12.2.1.3'
    compile 'oracle-common:jps-api:+'
    compile 'oracle-common:ojdl-core:+'
    compile 'oracle-common:ojdbc8:+'
@@ -108,7 +110,9 @@ dependencies {
 //   compile 'org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:+'
 //   compile 'org.apache.commons:commons-collections4:4.2'
 
-   testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
+   testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+   testCompile 'org.testcontainers:oracle-xe:+'
+   testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
 }
 
 // Default artifact naming.
