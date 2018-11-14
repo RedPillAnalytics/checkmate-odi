@@ -5,6 +5,7 @@ import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
+import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlansAndScenariosTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelFolderTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelTask
 import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
@@ -302,6 +303,22 @@ class OdiPlugin implements Plugin<Project> {
 
                   instance odiInstance
 
+               }
+
+               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
+               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
+
+                  group 'project'
+
+                  description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
+
+                  sourcePath sourceBase
+
+                  projectCode defaultProjectCode
+
+                  folder folderName
+
+                  instance odiInstance
                }
             }
          }
