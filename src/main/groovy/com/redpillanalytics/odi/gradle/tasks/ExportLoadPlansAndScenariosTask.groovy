@@ -43,6 +43,7 @@ class ExportLoadPlansAndScenariosTask extends DefaultTask {
         return project.file(sourcePath)
     }
 
+    @SuppressWarnings("GroovyAssignabilityCheck")
     @TaskAction
     def exportLoadPlansAndScenarios() {
 
@@ -67,8 +68,8 @@ class ExportLoadPlansAndScenariosTask extends DefaultTask {
             OdiScenario scenario = new OdiScenario()
 
             //Set up the export
-            ExportServiceImpl export = new ExportServiceImpl(instance.odi);
-            EncodingOptions encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9");
+            ExportServiceImpl export = new ExportServiceImpl(instance.odi)
+            EncodingOptions encdOption = new EncodingOptions("1.0", "ISO8859_9",  "ISO-8859-9")
             boolean useTimeStamp = true
 
             instance.beginTxn()
@@ -81,7 +82,7 @@ class ExportLoadPlansAndScenariosTask extends DefaultTask {
                             true,
                             encdOption,
                             null,
-                            true);
+                            true)
                     log.info "Scenario Mapping ${it.name} exported ..."
                 }
 
@@ -95,7 +96,7 @@ class ExportLoadPlansAndScenariosTask extends DefaultTask {
                             true,
                             encdOption,
                             null,
-                            true);
+                            true)
                     log.info "Scenario Package ${it.name} exported ..."
                 }
 
@@ -109,7 +110,7 @@ class ExportLoadPlansAndScenariosTask extends DefaultTask {
                             true,
                             encdOption,
                             null,
-                            true);
+                            true)
                     log.info "Scenario Procedure ${it.name} exported ..."
                 }
 
@@ -122,7 +123,7 @@ class ExportLoadPlansAndScenariosTask extends DefaultTask {
                             true,
                             encdOption,
                             null,
-                            true);
+                            true)
                     log.info "Load Plan ${loadPlan.name} exported ..."
                 }
             }
