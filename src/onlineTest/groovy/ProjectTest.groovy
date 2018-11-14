@@ -223,4 +223,14 @@ class ProjectTest extends Specification {
 
    }
 
+   def "Execute :getLoadPlansAndScenarios task"() {
+
+      given:
+      taskName = 'getLoadPlansAndScenarios'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
 }

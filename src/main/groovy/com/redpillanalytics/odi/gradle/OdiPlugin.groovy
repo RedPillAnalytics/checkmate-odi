@@ -9,6 +9,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportModelFolderTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelTask
 import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
+import com.redpillanalytics.odi.gradle.tasks.GetLoadPlansAndScenariosTask
 import com.redpillanalytics.odi.gradle.tasks.GetModelsTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ImportObjectTask
@@ -289,6 +290,17 @@ class OdiPlugin implements Plugin<Project> {
                   sourcePath sourceBase
 
                   modelCode modCode
+
+               }
+
+               // Task that get All the Load Plans and Scenarios existing on the ODI Repository
+               project.task(bg.getTaskName('getLoadPlansAndScenarios'), type: GetLoadPlansAndScenariosTask) {
+
+                  group 'project'
+
+                  description = "Export the Model with the target model code in the ODI Instance."
+
+                  instance odiInstance
 
                }
             }
