@@ -1,10 +1,9 @@
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.ClassRule
-import org.junit.Rule
-import org.spockframework.runtime.extension.builtin.ClassRuleExtension
-import org.testcontainers.Testcontainers
-import org.testcontainers.containers.OracleContainer
+import org.testcontainers.containers.GenericContainer
+
+import org.testcontainers.containers.wait.strategy.Wait
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -15,7 +14,9 @@ class RepositoryTest extends Specification {
 
    @ClassRule
    @Shared
-   OracleContainer oracle = new OracleContainer()
+   GenericContainer oracle = new GenericContainer('redpillanalytics/oracle-xe:11.2.0-1.0')
+           .withExposedPorts(1521)
+           .waitingFor(Wait.forLogMessage('oracle-xe available\\.\n',1))
 
    @Shared
    File projectDir, buildDir, buildFile, resourcesDir
@@ -35,18 +36,19 @@ class RepositoryTest extends Specification {
       resourcesDir = new File('src/test/resources')
 
       buildFile.write("""
-            plugins {
-                id 'com.redpillanalytics.checkmate.odi'
-            }
-            
-            odi {
-               masterUrl = '${oracle.getJdbcUrl()}'
-               masterPassword = 'Admin123'
-               odiPassword = 'Admin123'
-               dbaUser = 'system'
-               dbaPassword = 'oracle'
-            }
-        """)
+            |plugins {
+            |    id 'com.redpillanalytics.checkmate.odi'
+            |}
+            |
+            |odi {
+            |   masterUrl = 'jdbc:oracle:thin:@${oracle.getContainerIpAddress()}:${oracle.getMappedPort(1521)}/xe'
+            |   masterPassword = 'oracle'
+            |   odiPassword = 'oracle'
+            |   dbaUser = 'system'
+            |   dbaPassword = 'oracle'
+            |}
+            |""".stripMargin()
+      )
    }
 
    def setup() {
