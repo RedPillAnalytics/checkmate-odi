@@ -1,5 +1,7 @@
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
+import org.junit.ClassRule
+import org.testcontainers.containers.OracleContainer
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -8,6 +10,10 @@ import spock.lang.Title
 @Title("Execute :tasks")
 class ProjectTest extends Specification {
 
+   @ClassRule
+   @Shared
+   OracleContainer oracle = new OracleContainer()
+
    @Shared
    File projectDir, buildDir, buildFile, resourcesDir
 
@@ -15,28 +21,28 @@ class ProjectTest extends Specification {
    String taskName
 
    @Shared
-   def result, taskList
+   def result
 
    def setupSpec() {
 
       projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
       buildFile = new File(projectDir, 'build.gradle')
-      taskList = ['exportProjectFolder']
 
       resourcesDir = new File('src/test/resources')
 
       buildFile.write("""
-            plugins {
-                id 'com.redpillanalytics.checkmate.odi'
-            }
-            
-            odi {
-               masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
-               masterPassword = 'Welcome1'
-               odiPassword = 'Welcome1'
-            }
-        """)
+            |plugins {
+            |    id 'com.redpillanalytics.checkmate.odi'
+            |}
+            |
+            |odi {
+            |   masterUrl = '${oracle.getJdbcUrl()}'
+            |   masterPassword = 'oracle'
+            |   odiPassword = 'oracle'
+            |}
+            |""".stripMargin()
+      )
    }
 
    def setup() {
@@ -117,7 +123,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportProjectFolder'
-      result = executeSingleTask(taskName, ['--project-code=JUMP','--folder-name=Source Loads', '-Si'])
+      result = executeSingleTask(taskName, ['--project-code=JUMP', '--folder-name=Source Loads', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -205,7 +211,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportModelFolder'
-      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR','-Si'])
+      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -216,7 +222,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportModel'
-      result = executeSingleTask(taskName, ['--model-code=FF_HR','-Si'])
+      result = executeSingleTask(taskName, ['--model-code=FF_HR', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
