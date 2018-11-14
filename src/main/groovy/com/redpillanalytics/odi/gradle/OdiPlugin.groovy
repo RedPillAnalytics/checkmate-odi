@@ -298,7 +298,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Export the Model with the target model code in the ODI Instance."
+                  description = "Get all the Load Plans and Scenarios in the ODI Instance."
 
                   instance odiInstance
 
