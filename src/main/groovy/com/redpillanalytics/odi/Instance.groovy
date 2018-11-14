@@ -26,6 +26,10 @@ import oracle.odi.domain.project.finder.IOdiFolderFinder
 import oracle.odi.domain.project.finder.IOdiPackageFinder
 import oracle.odi.domain.project.finder.IOdiProjectFinder
 import oracle.odi.domain.project.finder.IOdiUserProcedureFinder
+import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
+import oracle.odi.domain.runtime.loadplan.finder.IOdiLoadPlanFinder
+import oracle.odi.domain.runtime.scenario.OdiScenario
+import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder
 
 import static oracle.odi.domain.model.OdiModelFolder.*
 
@@ -185,6 +189,7 @@ class Instance {
       return projectFinder.findAll().toArray()
    }
 
+   //Model Finders
    def getModelFinder() {
       return (IOdiModelFinder) odi.getTransactionalEntityManager().getFinder(OdiModel.class)
    }
@@ -197,6 +202,7 @@ class Instance {
       return getModelFinder().findByCode(modelCode)
    }
 
+   //Model Folder Finders
    def getModelFolderFinder(){
       return (IOdiModelFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiModelFolder.class)
    }
@@ -209,6 +215,35 @@ class Instance {
       return getModelFolderFinder().findByName(pName)
    }
 
+   //Scenario Finders
+   def getScenarioFinder(){
+      return (IOdiScenarioFinder) odi.getTransactionalEntityManager().getFinder(OdiScenario.class)
+   }
+
+   def findAllScenarios(){
+      return getScenarioFinder().findAll()
+   }
+
+   def findScenarioBySourceMapping(int mappingInternalID, boolean useTimestamp){
+      return getScenarioFinder().findLatestBySourceMapping(mappingInternalID,useTimestamp)
+   }
+
+   def findScenarioBySourcePackage(int packageInternalID, boolean useTimestamp){
+      return getScenarioFinder().findLatestBySourcePackage(packageInternalID,useTimestamp)
+   }
+
+   def findScenarioBySourceUserProcedure(int userProcedureInternalID, boolean useTimestamp){
+      return getScenarioFinder().findLatestBySourceUserProcedure(userProcedureInternalID,useTimestamp)
+   }
+
+   //Load Plans Finder
+   def getLoadPlanFinder(){
+      return (IOdiLoadPlanFinder) odi.getTransactionalEntityManager().getFinder(OdiLoadPlan.class)
+   }
+
+   def findAllLoadPlans(){
+      return getLoadPlanFinder().findAll()
+   }
 
 
 }
