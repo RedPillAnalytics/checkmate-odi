@@ -13,6 +13,7 @@ class ProjectTest extends Specification {
    @ClassRule
    @Shared
    OracleContainer oracle = new OracleContainer()
+           .withCreateContainerCmdModifier { cmd -> cmd.withHostName('oracle-xe') }
 
    @Shared
    File projectDir, buildDir, buildFile, resourcesDir
