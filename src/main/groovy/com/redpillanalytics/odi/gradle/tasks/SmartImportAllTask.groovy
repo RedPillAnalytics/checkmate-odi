@@ -28,7 +28,7 @@ class SmartImportAllTask extends DefaultTask {
    }
 
    @TaskAction
-   def importAllXML() {
+   def importAllObjectsXML() {
 
       log.debug "sourcePath: ${sourcePath}"
       log.debug "sourceBase: ${sourceBase}"
@@ -42,7 +42,7 @@ class SmartImportAllTask extends DefaultTask {
          new SmartImportServiceImpl(instance.odi).importObjectsFromXml(
                  file.path,
                  null,
-                 false,
+                 true,
          )
       }
 

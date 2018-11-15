@@ -138,17 +138,17 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'importObject'
-      result = executeSingleTask(taskName, ['--import-path=src/main/odi/MOD_FF_HR.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--import-path=src/main/odi/MAP_TEST_MAPPING.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
 
    }
 
-   def "Execute :importAllXml task"() {
+   def "Execute :importAllObjectsXML task"() {
 
       given:
-      taskName = 'importAllXML'
+      taskName = 'importAllObjectsXML'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
@@ -156,10 +156,10 @@ class ProjectTest extends Specification {
 
    }
 
-   def "Execute :importProject task with default values"() {
+   def "Execute :importObjectXML task with default values"() {
 
       given:
-      taskName = 'importProject'
+      taskName = 'importObjectXML'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
@@ -167,10 +167,10 @@ class ProjectTest extends Specification {
 
    }
 
-   def "Execute :importProject task with --import-path value"() {
+   def "Execute :importObjectXML task with --import-path value"() {
 
       given:
-      taskName = 'importProject'
+      taskName = 'importObjectXML'
       result = executeSingleTask(taskName, ['--import-path=src/main/odi/project-test.xml', '-Si'])
 
       expect:
@@ -233,4 +233,25 @@ class ProjectTest extends Specification {
 
    }
 
+   def "Execute :getLoadPlansAndScenarios task"() {
+
+      given:
+      taskName = 'getLoadPlansAndScenarios'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
+
+   def "Execute :exportLoadPlansAndScenarios task"() {
+
+      given:
+      taskName = 'exportLoadPlansAndScenarios'
+      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
 }

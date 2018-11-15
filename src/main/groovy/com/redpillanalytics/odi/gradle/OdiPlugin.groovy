@@ -7,10 +7,12 @@ import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.CreateRepositoryTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
+import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlansAndScenariosTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelFolderTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelTask
 import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
+import com.redpillanalytics.odi.gradle.tasks.GetLoadPlansAndScenariosTask
 import com.redpillanalytics.odi.gradle.tasks.GetModelsTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
 import com.redpillanalytics.odi.gradle.tasks.ImportObjectTask
@@ -147,7 +149,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Executes a Object Import of a XML into the ODI Instance."
+                  description = "Executes a Regular Import of a XML Object to the ODI Instance."
 
                   instance odiInstance
 
@@ -155,11 +157,11 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importProject'), type: SmartImportTask) {
+               project.task(bg.getTaskName('importObjectXML'), type: SmartImportTask) {
 
                   group 'project'
 
-                  description = "Executes a Smart Import of a project to the ODI Instance."
+                  description = "Executes a Smart Import of a XML Object to the ODI Instance."
 
                   instance odiInstance
 
@@ -167,7 +169,7 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importAllXML'), type: SmartImportAllTask) {
+               project.task(bg.getTaskName('importAllObjectsXML'), type: SmartImportAllTask) {
 
                   group 'project'
 
@@ -242,7 +244,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Executes a Smart Export of the object in a specified folder in the ODI Instance."
+                  description = "Executes a Smart Export of the objects in a specified folder in the ODI Instance."
 
                   sourcePath sourceBase
 
@@ -258,7 +260,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Executes a Smart Export of a project in the ODI Instance."
+                  description = "Executes a Smart Export of All Projects in the ODI Instance."
 
                   instance odiInstance
 
@@ -291,7 +293,7 @@ class OdiPlugin implements Plugin<Project> {
 
                   group 'project'
 
-                  description = "Export the Models with the target name in the ODI Instance."
+                  description = "Export the Model Folder with the target name in the ODI Instance."
 
                   instance odiInstance
 
@@ -314,6 +316,33 @@ class OdiPlugin implements Plugin<Project> {
 
                   modelCode modCode
 
+               }
+
+               // Task that get All the Load Plans and Scenarios existing on the ODI Repository
+               project.task(bg.getTaskName('getLoadPlansAndScenarios'), type: GetLoadPlansAndScenariosTask) {
+
+                  group 'project'
+
+                  description = "Get all the Load Plans and Scenarios in the ODI Instance."
+
+                  instance odiInstance
+
+               }
+
+               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
+               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
+
+                  group 'project'
+
+                  description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
+
+                  sourcePath sourceBase
+
+                  projectCode defaultProjectCode
+
+                  folder folderName
+
+                  instance odiInstance
                }
             }
          }
