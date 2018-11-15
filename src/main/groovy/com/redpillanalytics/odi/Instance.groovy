@@ -224,15 +224,15 @@ class Instance {
       return getScenarioFinder().findAll()
    }
 
-   def findScenarioBySourceMapping(int mappingInternalID, boolean useTimestamp){
+   def findScenarioBySourceMapping(Number mappingInternalID, boolean useTimestamp){
       return getScenarioFinder().findLatestBySourceMapping(mappingInternalID,useTimestamp)
    }
 
-   def findScenarioBySourcePackage(int packageInternalID, boolean useTimestamp){
+   def findScenarioBySourcePackage(Number packageInternalID, boolean useTimestamp){
       return getScenarioFinder().findLatestBySourcePackage(packageInternalID,useTimestamp)
    }
 
-   def findScenarioBySourceUserProcedure(int userProcedureInternalID, boolean useTimestamp){
+   def findScenarioBySourceUserProcedure(Number userProcedureInternalID, boolean useTimestamp){
       return getScenarioFinder().findLatestBySourceUserProcedure(userProcedureInternalID,useTimestamp)
    }
 
@@ -244,6 +244,5 @@ class Instance {
    def findAllLoadPlans(){
       return getLoadPlanFinder().findAll()
    }
-
 
 }

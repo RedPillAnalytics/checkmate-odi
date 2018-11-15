@@ -233,4 +233,15 @@ class ProjectTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
 
    }
+
+   def "Execute :exportLoadPlansAndScenarios task"() {
+
+      given:
+      taskName = 'exportLoadPlansAndScenarios'
+      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+
+   }
 }
