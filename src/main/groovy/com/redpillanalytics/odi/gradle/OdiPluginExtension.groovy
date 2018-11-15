@@ -7,7 +7,12 @@ import groovy.util.logging.Slf4j
 class OdiPluginExtension {
 
    /**
-    * The name of the ODI project being built. Defaults to the directory name in SCM.
+    * The group name to use for all tasks. Default: 'Checkmate'.
+    */
+   String taskGroup = 'checkmate'
+
+   /**
+    * The name of the ODI project being built. Defaults to the directory name in source control.
     */
    String projectName
 

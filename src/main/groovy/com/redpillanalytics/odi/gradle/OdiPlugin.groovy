@@ -56,6 +56,9 @@ class OdiPlugin implements Plugin<Project> {
          String defaultProjectCode
          String sourceBase = getParameter('sourceBase')
 
+         // get the taskGroup
+         String taskGroup = getParameter('taskGroup')
+
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
          String folderName = getParameter('folderName')
 
@@ -122,7 +125,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that executes the smart import of a project
                project.task(bg.getTaskName('importObject'), type: ImportObjectTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Executes a Regular Import of a XML Object to the ODI Instance."
 
@@ -134,7 +137,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that executes the smart import of a project
                project.task(bg.getTaskName('importObjectXML'), type: SmartImportTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Executes a Smart Import of a XML Object to the ODI Instance."
 
@@ -146,7 +149,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that executes the smart import of a project
                project.task(bg.getTaskName('importAllObjectsXML'), type: SmartImportAllTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
 
@@ -159,7 +162,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that creates a project
                project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Create a new project in the ODI Instance."
 
@@ -174,7 +177,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that creates a project
                project.task(bg.getTaskName('deleteProject'), type: DeleteProjectTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Delete a new project in the ODI Instance."
 
@@ -202,7 +205,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that executes the export of the objects of a project, one file per object
                project.task(bg.getTaskName('exportProjectObjects'), type: ExportObjectsTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Executes a Export of the objects of a project, one file per object, in the ODI Instance."
 
@@ -217,7 +220,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that executes the smart export of all code from a folder in the target project
                project.task(bg.getTaskName('exportProjectFolder'), type: ExportProjectFolderTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Executes a Smart Export of the objects in a specified folder in the ODI Instance."
 
@@ -233,7 +236,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that executes the smart export of a project
                project.task(bg.getTaskName('exportAllProjects'), type: SmartExportAllTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Executes a Smart Export of All Projects in the ODI Instance."
 
@@ -246,7 +249,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that get all the existing projects in the Repository
                project.task(bg.getTaskName('getProjects'), type: GetProjectsTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Get all the projects existing in the ODI Instance."
 
@@ -256,7 +259,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that get all the existing models in the Repository
                project.task(bg.getTaskName('getModels'), type: GetModelsTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Get all the Models existing in the ODI Instance."
 
@@ -266,7 +269,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that exports the Model Folders by Name in the Repository
                project.task(bg.getTaskName('exportModelFolder'), type: ExportModelFolderTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Export the Model Folder with the target name in the ODI Instance."
 
@@ -281,7 +284,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that exports a Model find by Model Code
                project.task(bg.getTaskName('exportModel'), type: ExportModelTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Export the Model with the target model code in the ODI Instance."
 
@@ -296,7 +299,7 @@ class OdiPlugin implements Plugin<Project> {
                // Task that get All the Load Plans and Scenarios existing on the ODI Repository
                project.task(bg.getTaskName('getLoadPlansAndScenarios'), type: GetLoadPlansAndScenariosTask) {
 
-                  group 'project'
+                  group taskGroup
 
                   description = "Get all the Load Plans and Scenarios in the ODI Instance."
 

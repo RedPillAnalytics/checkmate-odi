@@ -3,11 +3,11 @@ plugins {
    id 'maven-publish'
    id "com.gradle.plugin-publish" version "0.10.0"
    id 'java-gradle-plugin'
-   id "pl.allegro.tech.build.axion-release" version "1.9.2"
-   id 'org.unbroken-dome.test-sets' version '1.5.1'
-   id "com.github.johnrengelman.shadow" version "2.0.4"
+   id "pl.allegro.tech.build.axion-release" version "1.9.3"
+   id 'org.unbroken-dome.test-sets' version '2.0.1'
+   id "com.github.johnrengelman.shadow" version "4.0.2"
    id "com.github.ben-manes.versions" version "0.20.0"
-   id "com.redpillanalytics.gradle-analytics" version "1.1.6"
+   id "com.redpillanalytics.gradle-analytics" version "1.1.9"
 }
 
 scmVersion {
@@ -133,3 +133,13 @@ tasks.withType(Test) {
 testSets {
    onlineTest
 }
+
+//customize ShadowJar
+jar.enabled = false
+
+shadowJar {
+   classifier = ''
+   zip64 = true
+}
+
+tasks.build.dependsOn tasks.shadowJar

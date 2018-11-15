@@ -26,6 +26,10 @@ class ProjectTest extends Specification {
 
       resourcesDir = new File('src/test/resources')
 
+      new AntBuilder().copy(todir: projectDir) {
+         fileset(dir: resourcesDir)
+      }
+
       buildFile.write("""
             plugins {
                 id 'com.redpillanalytics.checkmate.odi'
