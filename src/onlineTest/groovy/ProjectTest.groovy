@@ -238,7 +238,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportLoadPlansAndScenarios'
-      result = executeSingleTask(taskName, ['--project-code=LONGITUDINAL','--folder-name=Abstract', '-Si'])
+      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
