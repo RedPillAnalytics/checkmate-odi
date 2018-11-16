@@ -7,12 +7,17 @@ import groovy.util.logging.Slf4j
 class OdiPluginExtension {
 
    /**
-    * The name of the ODI project being built. Defaults to the directory name in SCM.
+    * The group name to use for all tasks. Default: 'Checkmate'.
+    */
+   String taskGroup = 'checkmate'
+
+   /**
+    * The name of the ODI project being built. Defaults to the directory name in source control. Required parameter.
     */
    String projectName
 
    /**
-    * The target folder name containing the objects to export from the ODI Repository for the SmartExport (ExportProjectFolderTask)
+    * When specified, a Checkmate subproject folder can be associated with a particular ODI work repository folder. Default: NULL, or support all folders in project 'odi.projectName'.
     */
    String folderName
    /**
