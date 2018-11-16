@@ -1,116 +1,79 @@
 package com.redpillanalytics.odi.gradle.tasks
 
-import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
-import oracle.odi.domain.impexp.IExportable
 import oracle.odi.domain.project.OdiFolder
-import oracle.odi.impexp.EncodingOptions
-import oracle.odi.impexp.support.ExportServiceImpl
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class ExportObjectsTask extends DefaultTask {
+class ExportObjectsTask extends ExportTask {
 
-    @Input
-    @Option(option = "source-path",
-            description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
-    String sourcePath
+   @TaskAction
+   def exportProjectObjects() {
 
-    @Input
-    @Option(option = "project-code",
-            description = "The code of the project to Export.")
-    String projectCode
+      log.debug "sourcePath: ${sourcePath}"
+      log.debug "sourceBase: ${sourceBase}"
 
-    @Internal
-    Instance instance
+      instance.connect()
 
-    // setSourceBase is not used, but I added it to support Gradle Incremental Build support
-    @OutputDirectory
-    def getSourceBase() {
+      log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
-        return project.file(sourcePath)
-    }
+      // create the export list
+      def export = []
 
-    @TaskAction
-    def exportProjectObjects() {
+      // Validate project and folder
+      if (!instance.findProjectName(projectCode)) {
 
-        log.debug "sourcePath: ${sourcePath}"
-        log.debug "sourceBase: ${sourceBase}"
+         log.warn "Project Code '${projectCode}' does not exist."
 
-        instance.connect()
+      } else if (!instance.findFoldersProject(projectCode)[0]) {
 
-        log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
+         log.warn "No Folders founded in the Project '${projectCode}'..."
 
-        // create the export list
-        List<IExportable> exportList = new LinkedList<IExportable>()
+      } else {
+         //We have Folders! Let's go ahead and collect all the existing objects folder by folder
+         def folders = instance.findFoldersProject(projectCode)
 
-        // Validate project and folder
-        if (!instance.findProjectName(projectCode)) {
+         // begin the transaction
+         instance.beginTxn()
 
-            log.warn "Project Code '${projectCode}' does not exist."
+         // Loop through each folder
+         folders.each { OdiFolder folder ->
 
-        } else if (!instance.findFoldersProject(projectCode)[0]) {
+            log.info "Exporting objects from  ${folder.name}..."
 
-            log.warn "No Folders founded in the Project '${projectCode}'..."
-
-        } else {
-            //We have Folders! Let's go ahead and collect all the existing objects folder by folder
-            Collection<OdiFolder> folders =  instance.findFoldersProject(projectCode)
-
-            folders.each {
-                OdiFolder folder ->
-                    log.info "Exporting Objects from  ${folder.name} ..."
-
-                    // list the mappings
-                    instance.findMapping(projectCode, folder.name).each {
-                        exportList.add((IExportable) it)
-                        //log.info "Mapping ${it.name} added to export list..."
-                    }
-
-                    // list the reusable mappings
-                    instance.findReusableMapping(projectCode, folder.name).each {
-                        exportList.add((IExportable) it)
-                        //log.info "Reusable Mapping ${it.name} added to export list..."
-                    }
-
-                    // list the packages
-                    instance.findPackage(projectCode, folder.name).each {
-                        exportList.add((IExportable) it)
-                        //log.info "Package ${it.name} added to export list..."
-                    }
-
-                    // list the procedures
-                    instance.findProcedure(projectCode, folder.name).each {
-                        exportList.add((IExportable) it)
-                        //log.info "Procedure ${it.name} added to export list..."
-                    }
+            instance.findMapping(projectCode, folder.name).each { object ->
+               export << [object: object, folder: "${folder.name}/mappings"]
             }
-        }
 
-        // Validate if Export List have objects
-        if (exportList.size() <= 0) {
-            log.warn "Nothing to export..."
-        }
+            // list the reusable mappings
+            instance.findReusableMapping(projectCode, folder.name).each { object ->
+               export << [object: object, folder: "${folder.name}/reusable-mappings"]
+            }
 
-        instance.beginTxn()
-        exportList.each {
-            IExportable object ->
-                new ExportServiceImpl(this.instance.odi).exportToXmlWithParents(
-                        object,
-                        sourceBase.canonicalPath,
-                        true,
-                        true,
-                        new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
-                        null,
-                        true,
-                )
-        }
+            // list the packages
+            instance.findPackage(projectCode, folder.name).each { object ->
+               export << [object: object, folder: "${folder.name}/packages"]
+            }
 
-        instance.endTxn()
-    }
+            // list the procedures
+            instance.findProcedure(projectCode, folder.name).each { object ->
+               export << [object: object, folder: "${folder.name}/procedures"]
+            }
+         }
+      }
+
+      instance.beginTxn()
+
+      export.each {
+
+         exportObject(
+                 it.object,
+                 "${sourceBase.canonicalPath}/${it.folder}",
+                 true,
+                 true
+         )
+      }
+
+      instance.endTxn()
+   }
 }

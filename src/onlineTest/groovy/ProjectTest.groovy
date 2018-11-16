@@ -15,37 +15,36 @@ class ProjectTest extends Specification {
    String taskName
 
    @Shared
-   def result, taskList
+   def result
 
-   def setupSpec() {
+   @Shared
+   AntBuilder ant = new AntBuilder()
+
+   def setup() {
 
       projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
       buildFile = new File(projectDir, 'build.gradle')
-      taskList = ['exportProjectFolder']
 
       resourcesDir = new File('src/test/resources')
 
-      buildFile.write("""
-            plugins {
-                id 'com.redpillanalytics.checkmate.odi'
-            }
-            
-            odi {
-               masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
-               masterPassword = 'Welcome1'
-               odiPassword = 'Welcome1'
-            }
-        """)
-   }
+      ant.delete(dir: projectDir)
 
-   def setup() {
-
-      projectDir.delete()
-
-      new AntBuilder().copy(todir: projectDir) {
+      ant.copy(todir: projectDir) {
          fileset(dir: resourcesDir)
       }
+
+      buildFile.write("""
+            |plugins {
+            |    id 'com.redpillanalytics.checkmate.odi'
+            |}
+            |
+            |odi {
+            |  masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
+            |   masterPassword = 'Welcome1'
+            |   odiPassword = 'Welcome1'
+            |}
+        |""".stripMargin())
    }
 
    // helper method
@@ -117,7 +116,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportProjectFolder'
-      result = executeSingleTask(taskName, ['--project-code=JUMP','--folder-name=Source Loads', '-Si'])
+      result = executeSingleTask(taskName, ['--project-code=JUMP', '--folder-name=Source Loads', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -205,7 +204,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportModelFolder'
-      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR','-Si'])
+      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -216,7 +215,7 @@ class ProjectTest extends Specification {
 
       given:
       taskName = 'exportModel'
-      result = executeSingleTask(taskName, ['--model-code=FF_HR','-Si'])
+      result = executeSingleTask(taskName, ['--model-code=FF_HR', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
