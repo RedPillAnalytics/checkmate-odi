@@ -12,20 +12,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class SmartImportAllTask extends DefaultTask {
-
-   @Internal
-   Instance instance
-
-   @Input
-   @Option(option = "import-path",
-           description = "The path to the export location. Defaults to the 'sourceBase' parameter value.")
-   String sourcePath
-
-   @InputDirectory
-   def getSourceBase() {
-      return project.file(sourcePath)
-   }
+class SmartImportAllTask extends ImportTask {
 
    @TaskAction
    def importAllObjectsXML() {

@@ -55,6 +55,11 @@ class OdiPluginExtension {
     */
    String workType = 'development'
 
+   /**
+    * What method of content are we using in source control: 'directory' or 'file'.
+    */
+   String contentPolicy = 'directory'
+
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"
    String masterRepo = "DEV_ODI_REPO"

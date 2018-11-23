@@ -9,6 +9,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
@@ -33,8 +34,12 @@ class ExportTask extends DefaultTask {
 
    @OutputDirectory
    def getSourceBase() {
+      return project.file("${project.extensions.odi.sourceBase}/$sourcePath")
+   }
 
-      return project.file(sourcePath)
+   @OutputFile
+   def getExportFile() {
+      return "${sourceBase}.xml"
    }
 
    @Internal
