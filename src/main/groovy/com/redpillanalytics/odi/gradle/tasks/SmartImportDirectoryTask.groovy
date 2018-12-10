@@ -12,7 +12,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class SmartImportAllTask extends ImportTask {
+class SmartImportDirectoryTask extends ImportTask {
 
    @TaskAction
    def importAllObjectsXML() {

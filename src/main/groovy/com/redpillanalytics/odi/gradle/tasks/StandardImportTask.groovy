@@ -5,7 +5,7 @@ import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
-class ImportObjectTask extends ImportTask {
+class StandardImportTask extends ImportFileTask {
 
    @TaskAction
    def importObject() {

@@ -1,5 +1,6 @@
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -40,9 +41,9 @@ class ProjectTest extends Specification {
             |}
             |
             |odi {
-            |  masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
-            |   masterPassword = 'Welcome1'
-            |   odiPassword = 'Welcome1'
+            |  masterUrl = "jdbc:oracle:thin:@localhost:1521/XE"
+            |   masterPassword = 'oracle'
+            |   odiPassword = 'oracle'
             |}
         |""".stripMargin())
    }
@@ -101,6 +102,7 @@ class ProjectTest extends Specification {
 
    }
 
+   @Ignore
    def "Execute :exportAllProjects task"() {
 
       given:
@@ -123,11 +125,11 @@ class ProjectTest extends Specification {
 
    }
 
-   def "Execute :importObject task with --import-path value"() {
+   def "Execute :importObject task with --source-path value"() {
 
       given:
       taskName = 'importObject'
-      result = executeSingleTask(taskName, ['--import-path=src/main/odi/MAP_TEST_MAPPING.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-path=src/main/odi/MAP_TEST_MAPPING.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

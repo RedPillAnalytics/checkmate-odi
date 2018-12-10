@@ -13,10 +13,10 @@ import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
 import com.redpillanalytics.odi.gradle.tasks.GetLoadPlansAndScenariosTask
 import com.redpillanalytics.odi.gradle.tasks.GetModelsTask
 import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
-import com.redpillanalytics.odi.gradle.tasks.ImportObjectTask
+import com.redpillanalytics.odi.gradle.tasks.StandardImportTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
 import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
-import com.redpillanalytics.odi.gradle.tasks.SmartImportAllTask
+import com.redpillanalytics.odi.gradle.tasks.SmartImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
@@ -86,6 +86,9 @@ class OdiPlugin implements Plugin<Project> {
          log.warn "defaultProjectCode: $defaultProjectCode"
          log.warn "defaultProjectName: $defaultProjectName"
 
+         // default export file name
+         String projectXml = "${defaultProjectCode}.xml"
+
          // capture all the connection parameters
          def masterUrl = project.extensions.odi.masterUrl
          log.debug "masterUrl: $masterUrl"
@@ -122,29 +125,26 @@ class OdiPlugin implements Plugin<Project> {
 
             if (project.extensions.odi.isDevelopment()) {
 
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importObject'), type: ImportObjectTask) {
+               project.task(bg.getTaskName('standardImport'), type: StandardImportTask) {
 
                   group taskGroup
-                  description "Executes a Regular Import of a XML Object to the ODI Instance."
+                  description "Import standard import file '${projectXml}' into the ODI repository."
                   instance odiInstance
-                  sourcePath defaultProjectName
+                  sourcePath projectXml
                }
 
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importObjectXML'), type: SmartImportTask) {
+               project.task(bg.getTaskName('smartImport'), type: SmartImportTask) {
 
                   group taskGroup
-                  description "Executes a Smart Import of a XML Object to the ODI Instance."
+                  description "Import Smart Import file '${projectXml}' into the ODI repository."
                   instance odiInstance
-                  sourcePath defaultProjectName
+                  sourcePath projectXml
                }
 
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importAllObjectsXML'), type: SmartImportAllTask) {
+               project.task(bg.getTaskName('smartImportDirectory'), type: SmartImportDirectoryTask) {
 
                   group taskGroup
-                  description "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
+                  description "Import Smart Import files from directory '${projectXml}' into the ODI repository."
                   instance odiInstance
                   sourcePath sourceBase
 
@@ -154,7 +154,7 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
 
                   group taskGroup
-                  description = "Create a new project in the ODI Instance."
+                  description = "Create project name '${defaultProjectName}' with project code '${defaultProjectCode}' in the ODI repositorty."
                   projectCode defaultProjectCode
                   projectName defaultProjectName
                   instance odiInstance
@@ -165,14 +165,14 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('deleteProject'), type: DeleteProjectTask) {
 
                   group taskGroup
-                  description = "Delete a new project in the ODI Instance."
+                  description = "Delete project code '${defaultProjectCode}' from the ODI repositorty."
                   projectCode defaultProjectCode
                   instance odiInstance
 
                }
 
                // Task that executes the smart export of a project
-               project.task(bg.getTaskName('exportProject'), type: SmartExportTask) {
+               project.task(bg.getTaskName('smartExport'), type: SmartExportTask) {
 
                   group 'project'
                   description = "Executes a Smart Export of a project in the ODI Instance."
@@ -183,7 +183,7 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Task that executes the export of the objects of a project, one file per object
-               project.task(bg.getTaskName('exportProjectObjects'), type: ExportObjectsTask) {
+               project.task(bg.getTaskName('smartExportAll'), type: ExportObjectsTask) {
 
                   group taskGroup
                   description = "Executes a Export of the objects of a project, one file per object, in the ODI Instance."
