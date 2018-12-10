@@ -5,10 +5,10 @@ import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
-class StandardImportTask extends ImportFileTask {
+class StandardImportFileTask extends ImportFileTask {
 
    @TaskAction
-   def importObject() {
+   def standardImport() {
 
       //Make the Connection
       instance.connect()

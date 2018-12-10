@@ -2,7 +2,6 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
-import oracle.odi.domain.project.OdiProject
 import oracle.odi.domain.project.finder.IOdiProjectFinder
 import oracle.odi.impexp.EncodingOptions
 import oracle.odi.impexp.smartie.ISmartExportable
@@ -71,8 +70,6 @@ class SmartExportTask extends DefaultTask {
               null,
               true
       )
-
       instance.endTxn()
-
    }
 }

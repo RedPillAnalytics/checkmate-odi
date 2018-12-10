@@ -3,10 +3,12 @@ import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.lang.Title
 
 @Slf4j
-@Title("Execute :tasks")
+@Stepwise
+@Title("Execute ODI export and import tasks")
 class ProjectTest extends Specification {
 
    @Shared
@@ -41,9 +43,9 @@ class ProjectTest extends Specification {
             |}
             |
             |odi {
-            |  masterUrl = "jdbc:oracle:thin:@localhost:1521/XE"
-            |   masterPassword = 'oracle'
-            |   odiPassword = 'oracle'
+            |   masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
+            |   masterPassword = 'Welcome1'
+            |   odiPassword = 'Welcome1'
             |}
         |""".stripMargin())
    }
@@ -70,179 +72,195 @@ class ProjectTest extends Specification {
    }
 
    def "Execute :createProject task"() {
-
       given:
       taskName = 'createProject'
       result = executeSingleTask(taskName, ['clean', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
-
    }
 
-   def "Execute :exportProject task"() {
-
+   def "Execute :smartFile task with defaults"() {
       given:
-      taskName = 'exportProject'
+      taskName = 'smartFile'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
-
    }
 
-   def "Execute :exportProjectObjects task"() {
-
+   def "Execute :smartFile task with --source-file options"() {
       given:
-      taskName = 'exportProjectObjects'
-      result = executeSingleTask(taskName, ['-Si'])
+      taskName = 'smartFile'
+      result = executeSingleTask(taskName, ['--source-file=src/main/odi/JUMP.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
-
    }
 
-   @Ignore
-   def "Execute :exportAllProjects task"() {
+//   def "Execute :importObject task with --source-path value"() {
+//
+//      given:
+//      taskName = 'importObject'
+//      result = executeSingleTask(taskName, ['--source-path=src/main/odi/MAP_TEST_MAPPING.xml', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :importAllObjectsXML task"() {
+//
+//      given:
+//      taskName = 'importAllObjectsXML'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :importObjectXML task with default values"() {
+//
+//      given:
+//      taskName = 'importObjectXML'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :importObjectXML task with --import-path value"() {
+//
+//      given:
+//      taskName = 'importObjectXML'
+//      result = executeSingleTask(taskName, ['--import-path=src/main/odi/project-test.xml', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
 
-      given:
-      taskName = 'exportAllProjects'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :exportProjectFolder task"() {
-
-      given:
-      taskName = 'exportProjectFolder'
-      result = executeSingleTask(taskName, ['--project-code=JUMP', '--folder-name=Source Loads', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :importObject task with --source-path value"() {
-
-      given:
-      taskName = 'importObject'
-      result = executeSingleTask(taskName, ['--source-path=src/main/odi/MAP_TEST_MAPPING.xml', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :importAllObjectsXML task"() {
-
-      given:
-      taskName = 'importAllObjectsXML'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :importObjectXML task with default values"() {
-
-      given:
-      taskName = 'importObjectXML'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :importObjectXML task with --import-path value"() {
-
-      given:
-      taskName = 'importObjectXML'
-      result = executeSingleTask(taskName, ['--import-path=src/main/odi/project-test.xml', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :deleteProject task"() {
-
-      given:
-      taskName = 'deleteProject'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :getProjects task"() {
-
-      given:
-      taskName = 'getProjects'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :getModels task"() {
-
-      given:
-      taskName = 'getModels'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :exportModelFolder task"() {
-
-      given:
-      taskName = 'exportModelFolder'
-      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :exportModel task with --model-code value"() {
-
-      given:
-      taskName = 'exportModel'
-      result = executeSingleTask(taskName, ['--model-code=FF_HR', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :getLoadPlansAndScenarios task"() {
-
-      given:
-      taskName = 'getLoadPlansAndScenarios'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
-
-   def "Execute :exportLoadPlansAndScenarios task"() {
-
-      given:
-      taskName = 'exportLoadPlansAndScenarios'
-      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-
-   }
+//   def "Execute :exportProject task"() {
+//
+//      given:
+//      taskName = 'exportProject'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :exportProjectObjects task"() {
+//
+//      given:
+//      taskName = 'exportProjectObjects'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   @Ignore
+//   def "Execute :exportAllProjects task"() {
+//
+//      given:
+//      taskName = 'exportAllProjects'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :exportProjectFolder task"() {
+//
+//      given:
+//      taskName = 'exportProjectFolder'
+//      result = executeSingleTask(taskName, ['--project-code=JUMP', '--folder-name=Source Loads', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :deleteProject task"() {
+//
+//      given:
+//      taskName = 'deleteProject'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :getProjects task"() {
+//
+//      given:
+//      taskName = 'getProjects'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :getModels task"() {
+//
+//      given:
+//      taskName = 'getModels'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :exportModelFolder task"() {
+//
+//      given:
+//      taskName = 'exportModelFolder'
+//      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :exportModel task with --model-code value"() {
+//
+//      given:
+//      taskName = 'exportModel'
+//      result = executeSingleTask(taskName, ['--model-code=FF_HR', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :getLoadPlansAndScenarios task"() {
+//
+//      given:
+//      taskName = 'getLoadPlansAndScenarios'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
+//
+//   def "Execute :exportLoadPlansAndScenarios task"() {
+//
+//      given:
+//      taskName = 'exportLoadPlansAndScenarios'
+//      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//
+//   }
 }

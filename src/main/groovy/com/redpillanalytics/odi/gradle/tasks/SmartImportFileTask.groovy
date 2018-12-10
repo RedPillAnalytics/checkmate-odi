@@ -5,7 +5,7 @@ import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
-class SmartImportTask extends ImportFileTask {
+class SmartImportFileTask extends ImportFileTask {
 
    @TaskAction
    def importObjectXML() {
