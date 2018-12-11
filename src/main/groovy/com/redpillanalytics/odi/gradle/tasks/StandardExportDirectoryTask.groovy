@@ -30,47 +30,36 @@ class StandardExportDirectoryTask extends ExportDirectoryTask {
       // create the export list
       def export = []
 
-      // Validate project and folder
-      if (!instance.findProjectName(projectCode)) {
+      //We have Folders! Let's go ahead and collect all the existing objects folder by folder
+      def folders = projectFolder ? instance.findFolder(projectFolder, projectCode) : instance.findFoldersProject(projectCode)
 
-         log.warn "Project Code '${projectCode}' does not exist."
+      log.warn "folders: ${folders.dump()}"
 
-      } else if (!instance.findFoldersProject(projectCode)[0]) {
+      // begin the transaction
+      instance.beginTxn()
 
-         log.warn "No Folders found in the Project '${projectCode}'..."
+      // Loop through each folder
+      folders.each { OdiFolder folder ->
 
-      } else {
-         //We have Folders! Let's go ahead and collect all the existing objects folder by folder
-         def folders = instance.findFoldersProject(projectCode)
+         log.info "Exporting objects from  ${folder.name}..."
 
-         log.warn "folders: ${folders.dump()}"
+         instance.findMapping(projectCode, folder.name).each { object ->
+            export << [object: object, folder: "${folder.name}/mappings"]
+         }
 
-         // begin the transaction
-         instance.beginTxn()
+         // list the reusable mappings
+         instance.findReusableMapping(projectCode, folder.name).each { object ->
+            export << [object: object, folder: "${folder.name}/reusable-mappings"]
+         }
 
-         // Loop through each folder
-         folders.each { OdiFolder folder ->
+         // list the packages
+         instance.findPackage(projectCode, folder.name).each { object ->
+            export << [object: object, folder: "${folder.name}/packages"]
+         }
 
-            log.info "Exporting objects from  ${folder.name}..."
-
-            instance.findMapping(projectCode, folder.name).each { object ->
-               export << [object: object, folder: "${folder.name}/mappings"]
-            }
-
-            // list the reusable mappings
-            instance.findReusableMapping(projectCode, folder.name).each { object ->
-               export << [object: object, folder: "${folder.name}/reusable-mappings"]
-            }
-
-            // list the packages
-            instance.findPackage(projectCode, folder.name).each { object ->
-               export << [object: object, folder: "${folder.name}/packages"]
-            }
-
-            // list the procedures
-            instance.findProcedure(projectCode, folder.name).each { object ->
-               export << [object: object, folder: "${folder.name}/procedures"]
-            }
+         // list the procedures
+         instance.findProcedure(projectCode, folder.name).each { object ->
+            export << [object: object, folder: "${folder.name}/procedures"]
          }
       }
 

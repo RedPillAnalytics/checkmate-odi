@@ -132,7 +132,9 @@ class Instance {
 
    def findFolder(String folder, String project) {
 
-      return getFolderFinder().findByName(folder, project)
+      def odiFolders = getFolderFinder().findByName(folder, project)
+      if (!odiFolders) throw new Exception("Folder '${folder}' does not exist in project '${project}'.")
+      return odiFolders
    }
 
    def getFoldersProjectFinder() {
@@ -141,6 +143,8 @@ class Instance {
 
    def findFoldersProject(String project) {
 
+      def odiProjects = getFoldersProjectFinder().findByProject(project)
+      if (!odiProjects[0]) throw new Exception("Now folders exist in project '${project}'.")
       return getFoldersProjectFinder().findByProject(project)
    }
 
