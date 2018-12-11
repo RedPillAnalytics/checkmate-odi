@@ -22,7 +22,6 @@ class SmartImportDirectoryTask extends ImportDirectoryTask {
                  true,
          )
       }
-
       instance.endTxn()
    }
 }

@@ -68,7 +68,6 @@ class ProjectTest extends Specification {
       if (logOutput) log.warn result.getOutput()
 
       return result
-
    }
 
    def "Execute :createProject task"() {
@@ -80,19 +79,28 @@ class ProjectTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :smartFile task with defaults"() {
+   def "Execute :smartImportFile task with defaults"() {
       given:
-      taskName = 'smartFile'
+      taskName = 'smartImportFile'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :smartFile task with --source-file options"() {
+   def "Execute :smartImportFile task with --source-file option"() {
       given:
-      taskName = 'smartFile'
-      result = executeSingleTask(taskName, ['--source-file=src/main/odi/JUMP.xml', '-Si'])
+      taskName = 'smartImportFile'
+      result = executeSingleTask(taskName, ['--source-file=src/main/odi/PROJECT-TEST.xml', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :smartImportDir task with defaults"() {
+      given:
+      taskName = 'smartImportDir'
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

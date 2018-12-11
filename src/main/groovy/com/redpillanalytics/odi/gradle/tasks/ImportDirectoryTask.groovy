@@ -1,8 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
-import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
@@ -22,21 +20,18 @@ class ImportDirectoryTask extends ImportTask {
 
    @InputDirectory
    File getImportDir() {
-      File dir = project.file("${project.extensions.odi.sourceBase}/$importDir")
-
+      File dir = project.file("${project.extensions.odi.sourceBase}/$sourceDir")
       return dir.exists() ? dir : project.file(sourceDir)
    }
 
    /**
-    * Gets the hierarchical collection of export files, sorted using folder structure and alphanumeric logic.
+    * Gets the hierarchical collection of XML files, sorted using folder structure and alphanumeric logic.
     *
     * @return The List of export files.
     */
    @Internal
    List getImportFiles() {
-
-      def tree = project.fileTree(dir: importDir, includes: ['**/*.xml', '**/*.XML'])
-
+      def tree = project.fileTree(dir: importDir, include: '**/*.xml', exclude: '*.xml')
       return tree.sort()
    }
 }
