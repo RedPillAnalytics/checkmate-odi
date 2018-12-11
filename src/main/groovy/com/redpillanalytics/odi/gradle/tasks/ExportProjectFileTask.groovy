@@ -8,7 +8,7 @@ import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
-class SmartExportFileTask extends ExportFileTask {
+class ExportProjectFileTask extends ExportFileTask {
 
    @TaskAction
    def smartExportFile() {

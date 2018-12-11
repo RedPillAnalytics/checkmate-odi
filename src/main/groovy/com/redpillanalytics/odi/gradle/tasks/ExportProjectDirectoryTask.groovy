@@ -2,23 +2,10 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiFolder
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class StandardExportDirectoryTask extends ExportDirectoryTask {
-
-   /**
-    * The file to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi' as the base directory, with the file named '<PROJECTCODE>.xml'.
-    */
-   @Input
-   @Optional
-   @Option(option = "project-folder",
-           description = "The individual ODI project folder to export. Default: all folders."
-   )
-   String projectFolder
+class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
    @TaskAction
    def exportObjects() {
@@ -31,7 +18,7 @@ class StandardExportDirectoryTask extends ExportDirectoryTask {
       def export = []
 
       //We have Folders! Let's go ahead and collect all the existing objects folder by folder
-      def folders = projectFolder ? instance.findFolder(projectFolder, projectCode) : instance.findFoldersProject(projectCode)
+      def folders = folderName ? instance.findFolder(folderName, projectCode) : instance.findFoldersProject(projectCode)
 
       log.warn "folders: ${folders.dump()}"
 

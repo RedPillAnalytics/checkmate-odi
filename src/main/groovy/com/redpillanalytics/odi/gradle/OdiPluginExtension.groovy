@@ -9,7 +9,7 @@ class OdiPluginExtension {
    /**
     * The group name to use for all tasks. Default: 'Checkmate'.
     */
-   String taskGroup = 'checkmate'
+   String taskGroup = 'Checkmate ODI'
 
    /**
     * The name of the ODI project being built. Defaults to the directory name in source control. Required parameter.
