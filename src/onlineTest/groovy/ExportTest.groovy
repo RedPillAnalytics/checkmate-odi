@@ -1,6 +1,5 @@
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -8,8 +7,8 @@ import spock.lang.Title
 
 @Slf4j
 @Stepwise
-@Title("Execute ODI export and import tasks")
-class ProjectTest extends Specification {
+@Title("Execute ODI export tasks")
+class ExportTest extends Specification {
 
    @Shared
    File projectDir, buildDir, buildFile, resourcesDir
@@ -32,10 +31,7 @@ class ProjectTest extends Specification {
       resourcesDir = new File('src/test/resources')
 
       ant.delete(dir: projectDir)
-
-      ant.copy(todir: projectDir) {
-         fileset(dir: resourcesDir)
-      }
+      ant.mkdir(dir: projectDir)
 
       buildFile.write("""
             |plugins {
@@ -70,36 +66,45 @@ class ProjectTest extends Specification {
       return result
    }
 
-   def "Execute :createProject task"() {
+   def "Execute :exportFile task with defaults"() {
       given:
-      taskName = 'createProject'
-      result = executeSingleTask(taskName, ['clean', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
-
-   def "Execute :smartImportFile task with defaults"() {
-      given:
-      taskName = 'smartImportFile'
+      taskName = 'exportFile'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :smartImportFile task with --source-file option"() {
+   def "Execute :exportFile task with --source-file option"() {
       given:
-      taskName = 'smartImportFile'
-      result = executeSingleTask(taskName, ['--source-file=src/main/odi/PROJECT-TEST.xml', '-Si'])
+      taskName = 'exportFile'
+      result = executeSingleTask(taskName, ['--source-file=NEW-FILE.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :smartImportDir task with defaults"() {
+   def "Execute :exportDir task with defaults"() {
       given:
-      taskName = 'smartImportDir'
+      taskName = 'exportDir'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportDir task with --project-folder option"() {
+      given:
+      taskName = 'exportDir'
+      result = executeSingleTask(taskName, ['--project-folder=OTHER_FOLDER', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :deleteProject task"() {
+      given:
+      taskName = 'deleteProject'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:

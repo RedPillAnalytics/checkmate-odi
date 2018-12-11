@@ -8,22 +8,14 @@ import oracle.odi.impexp.support.ExportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
 class ExportTask extends DefaultTask {
 
    /**
-    * The base directory to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi'.
+    * The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.
     */
-   @Input
-   @Option(option = "source-path",
-           description = "The base directory to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi'."
-   )
-   String sourcePath
-
    @Input
    @Option(option = "project-code",
            description = "The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.")
@@ -32,26 +24,15 @@ class ExportTask extends DefaultTask {
    @Internal
    Instance instance
 
-   @OutputDirectory
-   def getSourceBase() {
-      return project.file("${project.extensions.odi.sourceBase}/$sourcePath")
-   }
-
-   @OutputFile
-   def getExportFile() {
-      return "${sourceBase}.xml"
-   }
-
    @Internal
    def getExportService() {
-
       return new ExportServiceImpl(instance.odi)
    }
 
    @Internal
    def exportObject(IExportable object, String path, Boolean overwrite, Boolean recursive) {
 
-      exportService.exportToXmlWithParents(
+      def result = exportService.exportToXmlWithParents(
               object,
               path,
               overwrite,
@@ -60,5 +41,7 @@ class ExportTask extends DefaultTask {
               null,
               true,
       )
+
+      return result
    }
 }
