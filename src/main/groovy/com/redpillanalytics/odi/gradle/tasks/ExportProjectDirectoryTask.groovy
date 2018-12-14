@@ -17,7 +17,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       // create the export list
       def export = []
 
-      //We have Folders! Let's go ahead and collect all the existing objects folder by folder
       def folders = folderName ? instance.findFolder(folderName, projectCode) : instance.findFoldersProject(projectCode)
 
       log.warn "folders: ${folders.dump()}"

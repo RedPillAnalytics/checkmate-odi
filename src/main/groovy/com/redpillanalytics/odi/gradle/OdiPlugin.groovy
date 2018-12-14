@@ -183,7 +183,6 @@ class OdiPlugin implements Plugin<Project> {
                   description = "Export the Model Folder with the target name in the ODI Instance."
                   instance odiInstance
                   sourceDir sourceBase
-                  folderName modelFolder
                }
 
                // Task that exports a Model find by Model Code
