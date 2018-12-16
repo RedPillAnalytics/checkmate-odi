@@ -42,7 +42,6 @@ class ExportTest extends Specification {
             |   masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
             |   masterPassword = 'Welcome1'
             |   odiPassword = 'Welcome1'
-            |   modelFolderName = 'JUMP'
             |}
         |""".stripMargin())
    }
@@ -103,10 +102,10 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportModelFolder task with defaults"() {
+   def "Execute :exportModelDir task with --folder-name option"() {
       given:
-      taskName = 'exportModelFolder'
-      result = executeSingleTask(taskName, ['-Si'])
+      taskName = 'exportModelDir'
+      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

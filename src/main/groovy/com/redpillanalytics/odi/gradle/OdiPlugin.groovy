@@ -6,8 +6,7 @@ import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
 import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlansAndScenariosTask
-import com.redpillanalytics.odi.gradle.tasks.ExportModelFolderTask
-import com.redpillanalytics.odi.gradle.tasks.ExportModelTask
+import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 
 import com.redpillanalytics.odi.gradle.tasks.GetLoadPlansAndScenariosTask
@@ -54,13 +53,10 @@ class OdiPlugin implements Plugin<Project> {
          String taskGroup = project.extensions.odi.taskGroup
 
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
-         String folderName = project.extensions.odi.folderName
+         String projectFolder = project.extensions.odi.projectFolder
 
          // Model Folder Name to find and Export
-         String modelFolder = project.extensions.odi.modelFolderName
-
-         // Model Folder Name to find and Export
-         String modCode = project.extensions.odi.modelCode
+         String modelFolder = project.extensions.odi.modelFolder
 
          // see if there's an explicit project name
          if (project.extensions.odi.projectName) {
@@ -174,25 +170,17 @@ class OdiPlugin implements Plugin<Project> {
                   sourceDir sourceBase
                   projectCode defaultProjectCode
                   instance odiInstance
+                  folderName projectFolder
                }
 
                // Task that exports the Model Folders by Name in the Repository
-               project.task(bg.getTaskName('exportModelFolder'), type: ExportModelFolderTask) {
+               project.task(bg.getTaskName('exportModelDir'), type: ExportModelDirectoryTask) {
 
                   group taskGroup
                   description = "Export the Model Folder with the target name in the ODI Instance."
                   instance odiInstance
                   sourceDir sourceBase
-               }
-
-               // Task that exports a Model find by Model Code
-               project.task(bg.getTaskName('exportModel'), type: ExportModelTask) {
-
-                  group taskGroup
-                  description = "Export the Model with the target model code in the ODI Instance."
-                  instance odiInstance
-                  sourcePath sourceBase
-                  modelCode modCode
+                  folderName modelFolder
                }
 
                // Task that get All the Load Plans and Scenarios existing on the ODI Repository
@@ -210,7 +198,7 @@ class OdiPlugin implements Plugin<Project> {
                   description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
                   sourcePath sourceBase
                   projectCode defaultProjectCode
-                  folder folderName
+                  folder projectFolder
                   instance odiInstance
                }
 

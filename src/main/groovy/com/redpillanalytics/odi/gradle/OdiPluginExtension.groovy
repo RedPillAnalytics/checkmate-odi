@@ -12,33 +12,39 @@ class OdiPluginExtension {
    String taskGroup = 'Checkmate ODI'
 
    /**
+    * The base directory for all source objects.
+    */
+   String sourceBase = 'src/main/odi'
+
+   /**
+    * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
+    */
+   Boolean enableProjects = true
+
+   /**
     * The name of the ODI project being built. Defaults to the directory name in source control. Required parameter.
     */
    String projectName
 
    /**
-    * When specified, a Checkmate subproject folder can be associated with a particular ODI work repository folder. Default: NULL, or support all folders in project 'odi.projectName'.
+    * When specified, a Gradle subproject folder can be associated with a particular ODI repository folder. Default: NULL, or support all folders in project 'odi.projectName'.
     */
-   String folderName
+   String projectFolder
+
    /**
     * The code of the ODI project being built. Defaults to a normalized version of the project name.
     */
    String projectCode
 
    /**
-    * The name of the ODI Model Folder target to Export
+    * When enabled, support ODI Design Models in this Gradle project directory. Default is 'true'.
     */
-   String modelFolderName
+   Boolean enableModels = true
 
    /**
-    * The code of the ODI Model target to Export
+    * When specified, a Gradle subproject folder can be associated with a particular ODI work repository folder. Default: NULL, or support all folders in the ODI repository.
     */
-   String modelCode
-
-   /**
-    * The base source directory.
-    */
-   String sourceBase = 'src/main/odi'
+   String modelFolder
 
    /**
     * The base ODI build directory, which exists inside of the project 'buildDir' directory.

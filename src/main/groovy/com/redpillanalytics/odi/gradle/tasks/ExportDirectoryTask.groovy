@@ -15,7 +15,7 @@ class ExportDirectoryTask extends ExportTask {
    @Input
    @Optional
    @Option(option = "folder-name",
-           description = "The individual ODI project folder to export. Default: all folders."
+           description = "The individual ODI Design folder to export. Default: all folders."
    )
    String folderName
 

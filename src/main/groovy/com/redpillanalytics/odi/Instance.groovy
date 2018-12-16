@@ -213,8 +213,8 @@ class Instance {
       return getModelFolderFinder().findAll().toArray()
    }
 
-   def findModelFolderbyName(String pName) {
-      def folder = getModelFolderFinder().findByName(pName)
+   def findModelFolderbyName(String name) {
+      def folder = getModelFolderFinder().findByName(name)
       if (!folder) throw new Exception("Model '${folder}' does not exist.")
       return folder
    }

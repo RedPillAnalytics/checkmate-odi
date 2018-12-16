@@ -2,10 +2,20 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiFolder
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 @Slf4j
 class ExportProjectDirectoryTask extends ExportDirectoryTask {
+
+   /**
+    * The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.
+    */
+   @Input
+   @Option(option = "project-code",
+           description = "The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.")
+   String projectCode
 
    @TaskAction
    def exportObjects() {

@@ -6,8 +6,16 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
 
 @Slf4j
-class ImportTask extends DefaultTask {
+class InstanceTask extends DefaultTask {
 
    @Internal
    Instance instance
+
+   @Internal
+   String category = ''
+
+   @Internal
+   String getSubDirectory() {
+      return (category == '') ? '' : "${category}/"
+   }
 }
