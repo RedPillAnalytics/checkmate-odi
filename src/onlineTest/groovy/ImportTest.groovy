@@ -79,36 +79,36 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :importFile task with defaults"() {
+   def "Execute :importProjectFile task with defaults"() {
       given:
-      taskName = 'importFile'
+      taskName = 'importProjectFile'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :importFile task with --source-file option"() {
+   def "Execute :importProjectFile task with --source-file option"() {
       given:
-      taskName = 'importFile'
+      taskName = 'importProjectFile'
       result = executeSingleTask(taskName, ['--source-file=src/main/odi/PROJECT-TEST.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :importDir task with defaults"() {
+   def "Execute :importProjectDir task with defaults"() {
       given:
-      taskName = 'importDir'
+      taskName = 'importProjectDir'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :importDir task with --source-dir option"() {
+   def "Execute :importProjectDir task with --source-dir option"() {
       given:
-      taskName = 'importDir'
+      taskName = 'importProjectDir'
       result = executeSingleTask(taskName, ['--source-dir=src/main/odi/OTHER_FOLDER', '-Si'])
 
       expect:
