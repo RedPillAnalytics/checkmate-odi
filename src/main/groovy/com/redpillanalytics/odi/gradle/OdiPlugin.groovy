@@ -47,7 +47,9 @@ class OdiPlugin implements Plugin<Project> {
 
          String defaultProjectName
          String defaultProjectCode
-         String sourceBase = project.extensions.odi.sourceBase
+         //String sourceBase = project.extensions.odi.sourceBase
+         String projectSource = project.extensions.odi.projectSource
+         String modelSource = project.extensions.odi.modelSource
 
          // get the taskGroup
          String taskGroup = project.extensions.odi.taskGroup
@@ -147,9 +149,9 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('importProjectDir'), type: ImportProjectDirectoryTask) {
 
                   group taskGroup
-                  description "Import smart files from directory '${sourceBase}' into the ODI repository."
+                  description "Import smart files from directory '${projectSource}' into the ODI repository."
                   instance odiInstance
-                  sourceDir sourceBase
+                  sourceDir projectSource
                }
 
                // Task that executes the smart export of a project
@@ -166,8 +168,8 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('exportProjectDir'), type: ExportProjectDirectoryTask) {
 
                   group taskGroup
-                  description "Export project '${defaultProjectCode}' from the ODI repository into directory '${sourceBase}' with a single object per file."
-                  sourceDir sourceBase
+                  description "Export project '${defaultProjectCode}' from the ODI repository into directory '${projectSource}' with a single object per file."
+                  sourceDir projectSource
                   projectCode defaultProjectCode
                   instance odiInstance
                   folderName projectFolder
@@ -178,29 +180,22 @@ class OdiPlugin implements Plugin<Project> {
 
                   group taskGroup
                   description = "Export the Model Folder with the target name in the ODI Instance."
+                  description "Export " + (modelFolder ? "model folder '${modelFolder}'" : "all models") + " from the ODI repository into directory '${modelSource}'."
                   instance odiInstance
-                  sourceDir sourceBase
+                  sourceDir modelSource
                   folderName modelFolder
                }
 
-               // Task that get All the Load Plans and Scenarios existing on the ODI Repository
-               project.task(bg.getTaskName('getLoadPlansAndScenarios'), type: GetLoadPlansAndScenariosTask) {
-
-                  group taskGroup
-                  description = "Get all the Load Plans and Scenarios in the ODI Instance."
-                  instance odiInstance
-               }
-
-               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
-               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
-
-                  group taskGroup
-                  description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
-                  sourcePath sourceBase
-                  projectCode defaultProjectCode
-                  folder projectFolder
-                  instance odiInstance
-               }
+//               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
+//               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
+//
+//                  group taskGroup
+//                  description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
+//                  sourcePath sourceBase
+//                  projectCode defaultProjectCode
+//                  folder projectFolder
+//                  instance odiInstance
+//               }
 
                project.task(bg.getTaskName('export')) {
                   group taskGroup

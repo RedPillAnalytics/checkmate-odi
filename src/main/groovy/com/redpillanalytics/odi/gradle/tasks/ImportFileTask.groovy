@@ -6,7 +6,7 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class ImportFileTask extends InstanceTask {
+class ImportFileTask extends ImportTask {
 
    /**
     * The file to import content from. Default: value of 'obi.sourceBase' or 'src/main/odi' as the base directory, with the file named '<PROJECTCODE>.xml'.
@@ -19,10 +19,10 @@ class ImportFileTask extends InstanceTask {
 
    @InputFile
    File getImportFile() {
-      File file = project.file("${project.extensions.odi.sourceBase}/$sourceFile")
+      File file = project.file("${getSourceBase()}/$sourceFile")
 
       File returnFile = file.exists() ? file : project.file(sourceFile)
-      log.info "Importing file: ${returnFile}"
+      log.info "import file: ${returnFile}"
       return returnFile
    }
 }

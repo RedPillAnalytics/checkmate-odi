@@ -7,7 +7,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class ImportDirectoryTask extends InstanceTask {
+class ImportDirectoryTask extends ImportTask {
 
    /**
     * The base directory to import content from. Default: value of 'obi.sourceBase' or 'src/main/odi'.
@@ -20,7 +20,7 @@ class ImportDirectoryTask extends InstanceTask {
 
    @InputDirectory
    File getImportDir() {
-      File dir = project.file("${project.extensions.odi.sourceBase}/${subDirectory}$sourceDir")
+      File dir = project.file("${getSourceBase()}/$sourceDir")
       return dir.exists() ? dir : project.file(sourceDir)
    }
 

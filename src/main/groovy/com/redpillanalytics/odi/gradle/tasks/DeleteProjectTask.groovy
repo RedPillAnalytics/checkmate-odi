@@ -2,7 +2,6 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
-import oracle.odi.domain.project.OdiProject
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -30,7 +29,7 @@ class DeleteProjectTask extends DefaultTask {
 
       log.debug "All projects: ${instance.projects.toString()}"
 
-      if (!instance.findProjectName(projectCode)) {
+      if (!instance.findProject(projectCode)) {
 
          log.warn "Project Code ${projectCode} does not exist."
 

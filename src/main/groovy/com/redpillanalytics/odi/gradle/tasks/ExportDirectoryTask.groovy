@@ -30,7 +30,7 @@ class ExportDirectoryTask extends ExportTask {
 
    @OutputDirectory
    File getExportDir() {
-      File dir = project.file("${project.extensions.odi.sourceBase}/$sourceDir")
+      File dir = project.file("${getSourceBase()}/$sourceDir")
       return dir.exists() ? dir : project.file(sourceDir)
    }
 }

@@ -14,7 +14,17 @@ class OdiPluginExtension {
    /**
     * The base directory for all source objects.
     */
-   String sourceBase = 'src/main/odi'
+   String sourceBase = 'src/main'
+
+   /**
+    * The directory for all project source objects.
+    */
+   String projectSource = "${sourceBase}/project"
+
+   /**
+    * The directory for all model source objects.
+    */
+   String modelSource = "${sourceBase}/model"
 
    /**
     * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.

@@ -3,6 +3,7 @@ package com.redpillanalytics.odi.gradle.tasks
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiFolder
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -17,6 +18,11 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
            description = "The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.")
    String projectCode
 
+   @Internal
+   String getCategory() {
+      return 'project'
+   }
+
    @TaskAction
    def exportObjects() {
 
@@ -27,9 +33,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       // create the export list
       def export = []
 
-      def folders = folderName ? instance.findFolder(folderName, projectCode) : instance.findFoldersProject(projectCode)
-
-      log.warn "folders: ${folders.dump()}"
+      def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
 
       // begin the transaction
       instance.beginTxn()
@@ -63,7 +67,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       export.each { object ->
 
-         exportObject(
+         exportObjectWithParents(
                  object.object,
                  "${exportDir.canonicalPath}/${object.folder}",
                  true,

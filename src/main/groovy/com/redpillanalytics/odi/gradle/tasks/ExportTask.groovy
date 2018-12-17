@@ -3,21 +3,25 @@ package com.redpillanalytics.odi.gradle.tasks
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.impexp.IExportable
 import oracle.odi.impexp.EncodingOptions
+import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import oracle.odi.impexp.support.ExportServiceImpl
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.options.Option
 
 @Slf4j
 class ExportTask extends InstanceTask {
 
    @Internal
-   def getExportService() {
+   ExportServiceImpl getExportService() {
       return new ExportServiceImpl(instance.odi)
    }
 
    @Internal
-   def exportObject(IExportable object, String path, Boolean overwrite, Boolean recursive) {
+   SmartExportServiceImpl getSmartExportService() {
+      return new ExportServiceImpl(instance.odi)
+   }
+
+   @Internal
+   def exportObjectWithParents(IExportable object, String path, Boolean overwrite, Boolean recursive) {
 
       def result = exportService.exportToXmlWithParents(
               object,

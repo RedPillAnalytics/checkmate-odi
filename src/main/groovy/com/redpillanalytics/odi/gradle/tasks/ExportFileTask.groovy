@@ -19,11 +19,11 @@ class ExportFileTask extends ExportTask {
 
    @OutputFile
    File getExportFile() {
-      File file = project.file("${project.extensions.odi.sourceBase}/$sourceFile")
+      File file = project.file("${getSourceBase()}/$sourceFile")
 
-      File returnFile = file.exists() ? file : project.file(sourceFile)
+      File returnFile = file.parentFile.exists() ? file : project.file(sourceFile)
       //todo replace warn with info
-      log.warn "Exportinging file: ${returnFile}"
+      log.debug "Export file: ${returnFile}"
       return returnFile
    }
 }
