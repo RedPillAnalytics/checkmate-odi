@@ -19,9 +19,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    String projectCode
 
    @Internal
-   String getCategory() {
-      return 'project'
-   }
+   String category = 'project'
 
    @TaskAction
    def exportObjects() {
@@ -41,7 +39,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       // Loop through each folder
       folders.each { OdiFolder folder ->
 
-         log.info "Exporting objects from  ${folder.name}..."
+         log.info "project folder: ${folder.name}"
 
          instance.findMapping(projectCode, folder.name).each { object ->
             export << [object: object, folder: "${folder.name}/mappings"]

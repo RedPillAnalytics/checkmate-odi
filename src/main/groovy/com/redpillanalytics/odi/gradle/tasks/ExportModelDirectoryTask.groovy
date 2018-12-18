@@ -19,9 +19,10 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
       instance.beginTxn()
       folders.each { IExportable folder ->
+
          exportObjectWithParents(
                  folder,
-                 "${exportDir.canonicalPath}/${folder.name}",
+                 exportDir.canonicalPath,
                  true,
                  true
          )

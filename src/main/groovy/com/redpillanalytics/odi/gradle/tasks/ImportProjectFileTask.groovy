@@ -1,8 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
-import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
-import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
@@ -10,9 +8,7 @@ import org.gradle.api.tasks.TaskAction
 class ImportProjectFileTask extends ImportFileTask {
 
    @Internal
-   String getCategory() {
-      return 'project'
-   }
+   String category = 'project'
 
    @TaskAction
    def importObjectXML() {
@@ -21,8 +17,7 @@ class ImportProjectFileTask extends ImportFileTask {
       instance.connect()
       instance.beginTxn()
 
-      importService.importObjectsFromXml(
-              ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+      smartImportService.importObjectsFromXml(
               importFile.canonicalPath,
               null,
               true,

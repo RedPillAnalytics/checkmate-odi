@@ -1,26 +1,27 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 @Slf4j
-class ImportProjectDirectoryTask extends ImportDirectoryTask {
+class ImportWorkRepoTask extends ImportDirectoryTask {
 
-   @Internal
-   String getCategory() {
-      return 'project'
-   }
-
+   /**
+    * Imports all objects returned by the {@link #getImportFiles} FileTree object.
+    */
    @TaskAction
-   def importAllObjectsXML() {
+   def importDir() {
 
       //Make the Connection
       instance.connect()
       instance.beginTxn()
 
-      getImportFiles().each { file ->
-         log.warn "Import file ${file}"
+      importFiles.each { file ->
+         importService.importObjectFromXml()
          importService.importObjectsFromXml(
                  file.path,
                  null,

@@ -17,7 +17,7 @@ class ExportTask extends InstanceTask {
 
    @Internal
    SmartExportServiceImpl getSmartExportService() {
-      return new ExportServiceImpl(instance.odi)
+      return new SmartExportServiceImpl(instance.odi)
    }
 
    @Internal

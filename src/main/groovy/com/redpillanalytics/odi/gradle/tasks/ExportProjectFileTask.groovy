@@ -21,14 +21,14 @@ class ExportProjectFileTask extends ExportFileTask {
    String projectCode
 
    @Internal
-   String getCategory() {
-      return 'project'
-   }
+   String category = 'project'
 
    @TaskAction
    def exportProjectFile() {
 
       instance.connect()
+
+      log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
       def projectList = new LinkedList<ISmartExportable>()
 

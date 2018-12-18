@@ -22,12 +22,6 @@ class InstanceTask extends DefaultTask {
 
       log.debug "category: ${category}"
 
-      switch (category) {
-         case 'project': project.extensions.odi.projectSource
-            break
-         case 'model': project.extensions.odi.modelSource
-            break
-         default: "${project.extensions.odi.sourceBase}/odi"
-      }
+      return project.file("${project.extensions.odi.sourceBase}/${category ?: 'odi'}")
    }
 }

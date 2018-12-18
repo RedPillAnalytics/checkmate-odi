@@ -17,16 +17,6 @@ class OdiPluginExtension {
    String sourceBase = 'src/main'
 
    /**
-    * The directory for all project source objects.
-    */
-   String projectSource = "${sourceBase}/project"
-
-   /**
-    * The directory for all model source objects.
-    */
-   String modelSource = "${sourceBase}/model"
-
-   /**
     * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
     */
    Boolean enableProjects = true
@@ -91,7 +81,8 @@ class OdiPluginExtension {
     */
    def getProjectCode(String name) {
 
-      return projectCode ?: name.toUpperCase().replace(' ', '_')
+      return projectCode ?: name.toUpperCase()
+              .replace(' ', '_')
    }
 
    /**

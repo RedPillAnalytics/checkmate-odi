@@ -43,9 +43,9 @@ class ImportTest extends Specification {
             |}
             |
             |odi {
-            |   masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
-            |   masterPassword = 'Welcome1'
-            |   odiPassword = 'Welcome1'
+            |   masterUrl = "jdbc:oracle:thin:@odi-repo.cv6xgykurerg.us-east-1.rds.amazonaws.com:1521/ORCL"
+            |   masterPassword = 'rpa_dev_01'
+            |   odiPassword = 'rpa_dev_01'
             |}
         |""".stripMargin())
    }
@@ -91,7 +91,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectFile task with --source-file option"() {
       given:
       taskName = 'importProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=src/main/odi/PROJECT-TEST.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-file=PROJECT-TEST.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -109,7 +109,25 @@ class ImportTest extends Specification {
    def "Execute :importProjectDir task with --source-dir option"() {
       given:
       taskName = 'importProjectDir'
-      result = executeSingleTask(taskName, ['--source-dir=src/main/odi/OTHER_FOLDER', '-Si'])
+      result = executeSingleTask(taskName, ['--source-dir=OTHER_FOLDER', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :importModelDir task with defaults"() {
+      given:
+      taskName = 'importModelDir'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :importWorkRepo task with defaults"() {
+      given:
+      taskName = 'importWorkRepo'
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

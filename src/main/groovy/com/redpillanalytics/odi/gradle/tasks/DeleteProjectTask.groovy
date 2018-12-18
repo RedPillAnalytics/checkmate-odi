@@ -10,17 +10,15 @@ import org.gradle.api.tasks.options.Option
 
 
 @Slf4j
-class DeleteProjectTask extends DefaultTask {
+class DeleteProjectTask extends InstanceTask {
 
+   /**
+    * The ODI project code to delete. Default: value of 'obi.projectName', or the name of the project subdirectory.
+    */
    @Input
    @Option(option = "project-code",
-           description = "The Project Code of the ODI Project.")
+           description = "The ODI project code to delete. Default: value of 'obi.projectName', or the name of the project subdirectory.")
    String projectCode
-
-   @Internal
-   Instance instance
-
-   @Internal
 
    @TaskAction
    def deleteProject() {
@@ -29,16 +27,14 @@ class DeleteProjectTask extends DefaultTask {
 
       log.debug "All projects: ${instance.projects.toString()}"
 
-      if (!instance.findProject(projectCode)) {
-
+      if (!instance.findProject(projectCode, true)) {
          log.warn "Project Code ${projectCode} does not exist."
-
       } else {
          instance.beginTxn()
          instance.odi.getTransactionalEntityManager().remove(instance.getOdiProject(projectCode))
          instance.endTxn()
 
-         log.warn "Project Code '${projectCode}' deleted sucessfully."
+         log.warn "Project Code '${projectCode}' deleted."
       }
    }
 }

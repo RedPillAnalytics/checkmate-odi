@@ -14,7 +14,7 @@ class ExportTest extends Specification {
    File projectDir, buildDir, buildFile, resourcesDir
 
    @Shared
-   String taskName
+   String taskName, password
 
    @Shared
    def result
@@ -33,15 +33,16 @@ class ExportTest extends Specification {
       ant.delete(dir: projectDir)
       ant.mkdir(dir: projectDir)
 
+
       buildFile.write("""
             |plugins {
             |    id 'com.redpillanalytics.checkmate.odi'
             |}
             |
             |odi {
-            |   masterUrl = "jdbc:oracle:thin:@odi-repo.csagf46svk9g.us-east-2.rds.amazonaws.com:1521/ORCL"
-            |   masterPassword = 'Welcome1'
-            |   odiPassword = 'Welcome1'
+            |   masterUrl = "jdbc:oracle:thin:@odi-repo.cv6xgykurerg.us-east-1.rds.amazonaws.com:1521/ORCL"
+            |   masterPassword = 'rpa_dev_01'
+            |   odiPassword = 'rpa_dev_01'
             |}
         |""".stripMargin())
    }
@@ -106,6 +107,15 @@ class ExportTest extends Specification {
       given:
       taskName = 'exportModelDir'
       result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportWorkRepo task with defaults"() {
+      given:
+      taskName = 'exportWorkRepo'
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

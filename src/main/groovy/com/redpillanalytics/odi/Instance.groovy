@@ -124,7 +124,7 @@ class Instance {
 
    def findProject(String code, Boolean ignore = true) {
       def project = getProjectFinder().findByCode(code)
-      if (!project && !ignore) throw new Exception("Project '${code}' does not exist.")
+      if (!project && !ignore) throw new Exception("Project code '${code}' does not exist.")
       return project
    }
 

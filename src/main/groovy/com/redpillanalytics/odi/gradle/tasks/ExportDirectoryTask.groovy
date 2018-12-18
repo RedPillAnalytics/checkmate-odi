@@ -23,6 +23,7 @@ class ExportDirectoryTask extends ExportTask {
     * The base directory to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi'.
     */
    @Input
+   @Optional
    @Option(option = "source-dir",
            description = "The base directory to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi'."
    )
@@ -30,7 +31,7 @@ class ExportDirectoryTask extends ExportTask {
 
    @OutputDirectory
    File getExportDir() {
-      File dir = project.file("${getSourceBase()}/$sourceDir")
-      return dir.exists() ? dir : project.file(sourceDir)
+
+      return sourceDir ? project.file(sourceDir) : sourceBase
    }
 }
