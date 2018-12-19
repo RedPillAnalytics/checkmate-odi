@@ -14,7 +14,7 @@ pipeline {
       stage('Release') {
          when { branch "master" }
          steps {
-            sh "$gradle ${options} clean release -Prelease.disableChecks -Prelease.localOnly"
+            sh "$gradle clean release -Prelease.disableChecks -Prelease.localOnly"
          }
       }
 
@@ -26,14 +26,14 @@ pipeline {
 
       stage('Integration') {
           steps {
-              sh "$gradle ${options} onlineImportTest onlineExportTest"
+              sh "$gradle onlineImportTest onlineExportTest"
           }
       }
 
       stage('Publish') {
          when { branch "master" }
          steps {
-            sh "$gradle ${options} publishPlugins githubRelease"
+            sh "$gradle publishPlugins githubRelease"
          }
       }
       // Place for new Stage
