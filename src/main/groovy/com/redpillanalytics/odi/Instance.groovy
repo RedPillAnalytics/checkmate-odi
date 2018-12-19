@@ -1,6 +1,6 @@
 package com.redpillanalytics.odi
 
-import com.redpillanalytics.common.Utils
+
 import groovy.util.logging.Slf4j
 import oracle.odi.core.OdiInstance
 import oracle.odi.core.config.MasterRepositoryDbInfo
@@ -30,8 +30,6 @@ import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import oracle.odi.domain.runtime.loadplan.finder.IOdiLoadPlanFinder
 import oracle.odi.domain.runtime.scenario.OdiScenario
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder
-
-import static oracle.odi.domain.model.OdiModelFolder.*
 
 @Slf4j
 class Instance {
@@ -95,11 +93,13 @@ class Instance {
       Authentication auth = odi.getSecurityManager().createAuthentication(odiUser, odiPassword as char[])
       odi.getSecurityManager().setCurrentThreadAuthentication(auth)
 
+      log.debug "Existing projects: ${projectFinder.findAll().toString()}"
+
    }
 
-   def getOdiProject(String projectCode ) {
+   def getOdiProject(String projectCode) {
 
-      return findProjectName(projectCode)
+      return findProject(projectCode)
    }
 
    def beginTxn() {
@@ -122,25 +122,29 @@ class Instance {
       return (IOdiProjectFinder) odi.getTransactionalEntityManager().getFinder(OdiProject.class)
    }
 
-   def findProjectName(String code) {
-      return getProjectFinder().findByCode(code)
+   def findProject(String code, Boolean ignore = true) {
+      def project = getProjectFinder().findByCode(code)
+      if (!project && !ignore) throw new Exception("Project code '${code}' does not exist.")
+      return project
    }
 
    def getFolderFinder() {
       return (IOdiFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiFolder.class)
    }
 
-   def findFolder(String folder, String project) {
-
-      return getFolderFinder().findByName(folder, project)
+   def findFolder(String folder, String project, Boolean ignore = true) {
+      def odiFolders = getFolderFinder().findByName(folder, project)
+      if (!odiFolders && !ignore) throw new Exception("Folder '${folder}' does not exist in project '${project}'.")
+      return odiFolders
    }
 
    def getFoldersProjectFinder() {
       return (IOdiFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiFolder.class)
    }
 
-   def findFoldersProject(String project) {
-
+   def findFoldersProject(String project, Boolean ignore = true) {
+      def odiProjects = getFoldersProjectFinder().findByProject(project)
+      if (!odiProjects[0] && !ignore) throw new Exception("No folders exist in project '${project}'.")
       return getFoldersProjectFinder().findByProject(project)
    }
 
@@ -198,12 +202,14 @@ class Instance {
       return getModelFinder().findAll().toArray()
    }
 
-   def findModelbyCode(String modelCode){
-      return getModelFinder().findByCode(modelCode)
+   def findModelbyCode(String modelCode, Boolean ignore = true) {
+      def model = getModelFinder().findByCode(modelCode)
+      if (!model && !ignore) throw new Exception("Model code '${modelCode}' does not exist.")
+      return model
    }
 
    //Model Folder Finders
-   def getModelFolderFinder(){
+   def getModelFolderFinder() {
       return (IOdiModelFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiModelFolder.class)
    }
 
@@ -211,37 +217,39 @@ class Instance {
       return getModelFolderFinder().findAll().toArray()
    }
 
-   def findModelFolderbyName(String pName){
-      return getModelFolderFinder().findByName(pName)
+   def findModelFolderbyName(String name) {
+      def folder = getModelFolderFinder().findByName(name)
+      if (!folder) throw new Exception("Model '${folder}' does not exist.")
+      return folder
    }
 
    //Scenario Finders
-   def getScenarioFinder(){
+   def getScenarioFinder() {
       return (IOdiScenarioFinder) odi.getTransactionalEntityManager().getFinder(OdiScenario.class)
    }
 
-   def findAllScenarios(){
+   def findAllScenarios() {
       return getScenarioFinder().findAll()
    }
 
-   def findScenarioBySourceMapping(Number mappingInternalID, boolean useTimestamp){
-      return getScenarioFinder().findLatestBySourceMapping(mappingInternalID,useTimestamp)
+   def findScenarioBySourceMapping(Number mappingInternalID, boolean useTimestamp) {
+      return getScenarioFinder().findLatestBySourceMapping(mappingInternalID, useTimestamp)
    }
 
-   def findScenarioBySourcePackage(Number packageInternalID, boolean useTimestamp){
-      return getScenarioFinder().findLatestBySourcePackage(packageInternalID,useTimestamp)
+   def findScenarioBySourcePackage(Number packageInternalID, boolean useTimestamp) {
+      return getScenarioFinder().findLatestBySourcePackage(packageInternalID, useTimestamp)
    }
 
-   def findScenarioBySourceUserProcedure(Number userProcedureInternalID, boolean useTimestamp){
-      return getScenarioFinder().findLatestBySourceUserProcedure(userProcedureInternalID,useTimestamp)
+   def findScenarioBySourceUserProcedure(Number userProcedureInternalID, boolean useTimestamp) {
+      return getScenarioFinder().findLatestBySourceUserProcedure(userProcedureInternalID, useTimestamp)
    }
 
    //Load Plans Finder
-   def getLoadPlanFinder(){
+   def getLoadPlanFinder() {
       return (IOdiLoadPlanFinder) odi.getTransactionalEntityManager().getFinder(OdiLoadPlan.class)
    }
 
-   def findAllLoadPlans(){
+   def findAllLoadPlans() {
       return getLoadPlanFinder().findAll()
    }
 

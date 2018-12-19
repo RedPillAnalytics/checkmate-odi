@@ -5,8 +5,6 @@ import groovy.util.logging.Slf4j
 import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import oracle.odi.domain.runtime.scenario.OdiScenario
 import oracle.odi.impexp.EncodingOptions
-import oracle.odi.impexp.smartie.ISmartExportable
-import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import oracle.odi.impexp.support.ExportServiceImpl
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
@@ -55,7 +53,7 @@ class ExportLoadPlansAndScenariosTask extends DefaultTask {
         log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
         // Validate project and folder
-        if (!instance.findProjectName(projectCode)) {
+        if (!instance.findProject(projectCode)) {
 
             log.warn "Project Code '${projectCode}' does not exist."
 

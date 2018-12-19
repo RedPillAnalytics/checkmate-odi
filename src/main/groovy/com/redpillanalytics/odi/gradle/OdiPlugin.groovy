@@ -4,20 +4,14 @@ import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
+import com.redpillanalytics.odi.gradle.tasks.DeleteModelsTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
-import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlansAndScenariosTask
-import com.redpillanalytics.odi.gradle.tasks.ExportModelFolderTask
-import com.redpillanalytics.odi.gradle.tasks.ExportModelTask
-import com.redpillanalytics.odi.gradle.tasks.ExportObjectsTask
-import com.redpillanalytics.odi.gradle.tasks.ExportProjectFolderTask
-import com.redpillanalytics.odi.gradle.tasks.GetLoadPlansAndScenariosTask
-import com.redpillanalytics.odi.gradle.tasks.GetModelsTask
-import com.redpillanalytics.odi.gradle.tasks.GetProjectsTask
-import com.redpillanalytics.odi.gradle.tasks.ImportObjectTask
-import com.redpillanalytics.odi.gradle.tasks.SmartExportAllTask
-import com.redpillanalytics.odi.gradle.tasks.SmartExportTask
-import com.redpillanalytics.odi.gradle.tasks.SmartImportAllTask
-import com.redpillanalytics.odi.gradle.tasks.SmartImportTask
+import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
+import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -43,66 +37,66 @@ class OdiPlugin implements Plugin<Project> {
       project.odi.extensions.buildGroups = project.container(BuildGroupContainer)
 
       // we'll start with only a single build group
-      project.extensions.odi.buildGroups.add(new BuildGroupContainer('current'))
+      project.extensions.odi.buildGroups.add(new BuildGroupContainer('default'))
 
       project.afterEvaluate {
 
-         // define the method to get build parameters
-         def getParameter = { name, defaultValue = null ->
-
-            return GradleUtils.getParameter(project, name, 'odi')
-         }
+         // set all 'obi.<property>' -P options to the 'obi' extension
+         GradleUtils.setParameters(project, 'odi')
 
          String defaultProjectName
          String defaultProjectCode
-         String sourceBase = getParameter('sourceBase')
+//         String projectSource = "${project.extensions.odi.sourceBase}/project"
+//         String modelSource = "${project.extensions.odi.sourceBase}/model"
+
+         // get the taskGroup
+         String taskGroup = project.extensions.odi.taskGroup
 
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
-         String folderName = getParameter('folderName')
-
-         // Model Folder Name to find and Export
-         String modelFolder = getParameter('modelFolderName')
-
-         // Model Folder Name to find and Export
-         String modCode = getParameter('modelCode')
+         String projectFolder = project.extensions.odi.projectFolder
 
          // see if there's an explicit project name
-         if (getParameter('projectName')) {
+         if (project.extensions.odi.projectName) {
 
             // use this throughout for the projectName
-            defaultProjectName = getParameter('projectName')
-
+            defaultProjectName = project.extensions.odi.projectName
             // also set our archive name to projectName
             project.archivesBaseName = defaultProjectName
-         } else {
 
+         } else {
             // we don't have a projectName so we need one
             // just use the default archivesBaseName
             defaultProjectName = project.archivesBaseName
          }
 
          // if no project code is specified, create one
-         defaultProjectCode = getParameter('projectCode') ?: project.extensions.odi.getProjectCode(defaultProjectName)
+         defaultProjectCode = project.extensions.odi.projectCode ?: project.extensions.odi.getProjectCode(defaultProjectName)
 
-         log.debug "defaultProjectCode: $defaultProjectCode"
-         log.debug "defaultProjectName: $defaultProjectName"
+         log.warn "defaultProjectCode: $defaultProjectCode"
+         log.warn "defaultProjectName: $defaultProjectName"
+
+         // default export file name
+         String sourceXml = "${defaultProjectCode}.xml"
 
          // capture all the connection parameters
-         def masterUrl = getParameter('masterUrl')
+         def masterUrl = project.extensions.odi.masterUrl
          log.debug "masterUrl: $masterUrl"
-         def masterDriver = getParameter('masterDriver')
+         def masterDriver = project.extensions.odi.masterDriver
          log.debug "masterDriver: $masterDriver"
-         def masterRepo = getParameter('masterRepo')
+         def masterRepo = project.extensions.odi.masterRepo
          log.debug "masterRepo: $masterRepo"
-         def workRepo = getParameter('workRepo')
+         def workRepo = project.extensions.odi.workRepo
          log.debug "workRepo: $workRepo"
-         def masterPassword = getParameter('masterPassword')
+         def masterPassword = project.extensions.odi.masterPassword
          log.debug "masterPassword: $masterPassword"
-         def odiUser = getParameter('odiUser')
+         def odiUser = project.extensions.odi.odiUser
          log.debug "odiUser: $odiUser"
-         def odiPassword = getParameter('odiPassword')
+         def odiPassword = project.extensions.odi.odiPassword
          log.debug "odiPassword: $odiPassword"
 
+         // What's our content policy... multiple objects, or a single file
+         def contentPolicy = project.extensions.odi.contentPolicy
+         log.debug "contentPolicy: $contentPolicy"
 
 //         // Let's JIT load the JDBC driver
 //         URLClassLoader loader = GroovyObject.class.classLoader
@@ -120,205 +114,140 @@ class OdiPlugin implements Plugin<Project> {
 
             if (project.extensions.odi.isDevelopment()) {
 
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importObject'), type: ImportObjectTask) {
-
-                  group 'project'
-
-                  description = "Executes a Regular Import of a XML Object to the ODI Instance."
-
-                  instance odiInstance
-
-                  sourcePath "$sourceBase/${defaultProjectName}.xml"
-               }
-
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importObjectXML'), type: SmartImportTask) {
-
-                  group 'project'
-
-                  description = "Executes a Smart Import of a XML Object to the ODI Instance."
-
-                  instance odiInstance
-
-                  sourcePath "$sourceBase/${defaultProjectName}.xml"
-               }
-
-               // Task that executes the smart import of a project
-               project.task(bg.getTaskName('importAllObjectsXML'), type: SmartImportAllTask) {
-
-                  group 'project'
-
-                  description = "Executes a Smart Import of all the XML Files from a Source Path to the ODI Instance."
-
-                  instance odiInstance
-
-                  sourcePath sourceBase
-
-               }
-
                // Task that creates a project
                project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
 
-                  group 'project'
-
-                  description = "Create a new project in the ODI Instance."
-
+                  group taskGroup
+                  description = "Create project name '${defaultProjectName}' with project code '${defaultProjectCode}' in the ODI repositorty."
                   projectCode defaultProjectCode
-
                   projectName defaultProjectName
-
                   instance odiInstance
-
                }
 
-               // Task that creates a project
+               // Task that deletes a project
                project.task(bg.getTaskName('deleteProject'), type: DeleteProjectTask) {
 
-                  group 'project'
-
-                  description = "Delete a new project in the ODI Instance."
-
+                  group taskGroup
+                  description = "Delete project code '${defaultProjectCode}' from the ODI repositorty."
                   projectCode defaultProjectCode
-
                   instance odiInstance
+               }
 
+               // Task that deletes a project
+//               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
+//
+//                  group taskGroup
+//                  description = "Delete one or more models from the ODI repository."
+//                  instance odiInstance
+//               }
+
+               project.task(bg.getTaskName('importProjectFile'), type: ImportProjectFileTask) {
+
+                  group taskGroup
+                  description "Import file '${sourceXml}' into the ODI repository."
+                  projectCode defaultProjectCode
+                  instance odiInstance
+               }
+
+               project.task(bg.getTaskName('importProjectDir'), type: ImportProjectDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI project objects from source into the ODI repository."
+                  instance odiInstance
+                  category 'project'
+               }
+
+               project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI model objects from source into the ODI repository."
+                  instance odiInstance
+                  category 'model'
                }
 
                // Task that executes the smart export of a project
-               project.task(bg.getTaskName('exportProject'), type: SmartExportTask) {
+               project.task(bg.getTaskName('exportProjectFile'), type: ExportProjectFileTask) {
 
-                  group 'project'
-
-                  description = "Executes a Smart Export of a project in the ODI Instance."
-
-                  sourcePath sourceBase
-
+                  group taskGroup
+                  description "Export project '${defaultProjectCode}' from the ODI repository to smart file '${sourceXml}'."
                   projectCode defaultProjectCode
-
                   instance odiInstance
-
                }
 
                // Task that executes the export of the objects of a project, one file per object
-               project.task(bg.getTaskName('exportProjectObjects'), type: ExportObjectsTask) {
+               project.task(bg.getTaskName('exportProjectDir'), type: ExportProjectDirectoryTask) {
 
-                  group 'project'
-
-                  description = "Executes a Export of the objects of a project, one file per object, in the ODI Instance."
-
-                  sourcePath sourceBase
-
+                  group taskGroup
+                  description "Export ODI project '${defaultProjectCode}' from the ODI repository into source control"
                   projectCode defaultProjectCode
-
                   instance odiInstance
-
-               }
-
-               // Task that executes the smart export of all code from a folder in the target project
-               project.task(bg.getTaskName('exportProjectFolder'), type: ExportProjectFolderTask) {
-
-                  group 'project'
-
-                  description = "Executes a Smart Export of the objects in a specified folder in the ODI Instance."
-
-                  sourcePath sourceBase
-
-                  projectCode defaultProjectCode
-
-                  folder folderName
-
-                  instance odiInstance
-               }
-
-               // Task that executes the smart export of a project
-               project.task(bg.getTaskName('exportAllProjects'), type: SmartExportAllTask) {
-
-                  group 'project'
-
-                  description = "Executes a Smart Export of All Projects in the ODI Instance."
-
-                  instance odiInstance
-
-                  sourcePath sourceBase
-
-               }
-
-               // Task that get all the existing projects in the Repository
-               project.task(bg.getTaskName('getProjects'), type: GetProjectsTask) {
-
-                  group 'project'
-
-                  description = "Get all the projects existing in the ODI Instance."
-
-                  instance odiInstance
-               }
-
-               // Task that get all the existing models in the Repository
-               project.task(bg.getTaskName('getModels'), type: GetModelsTask) {
-
-                  group 'project'
-
-                  description = "Get all the Models existing in the ODI Instance."
-
-                  instance odiInstance
+                  folderName projectFolder
                }
 
                // Task that exports the Model Folders by Name in the Repository
-               project.task(bg.getTaskName('exportModelFolder'), type: ExportModelFolderTask) {
+               project.task(bg.getTaskName('exportModelDir'), type: ExportModelDirectoryTask) {
 
-                  group 'project'
-
-                  description = "Export the Model Folder with the target name in the ODI Instance."
-
+                  group taskGroup
+                  description "Export one or more models from the ODI repository into source control."
                   instance odiInstance
-
-                  sourcePath sourceBase
-
-                  modelFolderName modelFolder
-
                }
 
-               // Task that exports a Model find by Model Code
-               project.task(bg.getTaskName('exportModel'), type: ExportModelTask) {
+//               // Task that exports the Model Folders by Name in the Repository
+//               project.task(bg.getTaskName('exportWorkRepo'), type: ExportWorkRepoTask) {
+//
+//                  group taskGroup
+//                  description = "Traditional export of all items in the ODI repository work repository."
+//                  instance odiInstance
+//                  //sourceDir projectSource
+//               }
+//
+//               // Task that exports the Model Folders by Name in the Repository
+//               project.task(bg.getTaskName('importWorkRepo'), type: ImportWorkRepoTask) {
+//
+//                  group taskGroup
+//                  description "Traditional import of all work items in the ODI repository."
+//                  instance odiInstance
+//                  sourceDir odiSource
+//                  category 'model'
+//               }
 
-                  group 'project'
+//               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
+//               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
+//
+//                  group taskGroup
+//                  description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
+//                  sourcePath sourceBase
+//                  projectCode defaultProjectCode
+//                  folder projectFolder
+//                  instance odiInstance
+//               }
 
-                  description = "Export the Model with the target model code in the ODI Instance."
-
-                  instance odiInstance
-
-                  sourcePath sourceBase
-
-                  modelCode modCode
-
+               project.task(bg.getTaskName('export')) {
+                  group taskGroup
+                  description = "Executes all configured 'export' tasks."
                }
 
-               // Task that get All the Load Plans and Scenarios existing on the ODI Repository
-               project.task(bg.getTaskName('getLoadPlansAndScenarios'), type: GetLoadPlansAndScenariosTask) {
-
-                  group 'project'
-
-                  description = "Get all the Load Plans and Scenarios in the ODI Instance."
-
-                  instance odiInstance
-
+               project.task(bg.getTaskName('import')) {
+                  group taskGroup
+                  description = "Executes all configured 'import' tasks."
                }
 
-               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
-               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
+               if (project.extensions.odi.enableProjects) {
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectDir')}"
+                  }
+                  else if (contentPolicy == 'file') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectFile')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectFile')}"
+                  }
+               }
 
-                  group 'project'
-
-                  description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
-
-                  sourcePath sourceBase
-
-                  projectCode defaultProjectCode
-
-                  folder folderName
-
-                  instance odiInstance
+               if (project.extensions.odi.enableModels) {
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importModelDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportModelDir')}"
+                  }
                }
             }
          }

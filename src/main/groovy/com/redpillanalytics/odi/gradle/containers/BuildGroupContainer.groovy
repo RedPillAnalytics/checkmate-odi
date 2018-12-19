@@ -17,7 +17,7 @@ class BuildGroupContainer {
    }
 
    // Build Group defaults
-   private static final String CURRENT_BUILD_NAME = 'current'
+   private static final String CURRENT_BUILD_NAME = 'default'
 
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()

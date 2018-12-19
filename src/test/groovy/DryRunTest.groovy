@@ -26,11 +26,15 @@ class DryRunTest extends Specification {
    def setupSpec() {
 
       buildFile = testProjectDir.newFile('build.gradle')
-      buildFile << """
-            plugins {
-                id 'com.redpillanalytics.checkmate.odi'
-            }
-        """
+      buildFile.write("""
+            |plugins {
+            |    id 'com.redpillanalytics.checkmate.odi'
+            |}
+            |
+            |odi {
+            |   projectName = 'test-project'
+            |}
+            |""".stripMargin())
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)

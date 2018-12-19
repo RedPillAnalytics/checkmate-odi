@@ -3,11 +3,11 @@ plugins {
    id 'maven-publish'
    id "com.gradle.plugin-publish" version "0.10.0"
    id 'java-gradle-plugin'
-   id "pl.allegro.tech.build.axion-release" version "1.9.2"
-   id 'org.unbroken-dome.test-sets' version '1.5.1'
-   id "com.github.johnrengelman.shadow" version "2.0.4"
+   id "pl.allegro.tech.build.axion-release" version "1.9.3"
+   id 'org.unbroken-dome.test-sets' version '2.0.1'
+   id "com.github.johnrengelman.shadow" version "4.0.2"
    id "com.github.ben-manes.versions" version "0.20.0"
-   id "com.redpillanalytics.gradle-analytics" version "1.1.6"
+   id 'com.redpillanalytics.gradle-analytics' version "1.1.15"
 }
 
 scmVersion {
@@ -43,7 +43,7 @@ pluginBundle {
       checkmateOdi {
          displayName = 'checkmate.odi'
          description = "Builds, tests and deploys Oracle Data Integrator code."
-         tags = ['oracle', 'data-integration','etl']
+         tags = ['oracle', 'data-integration', 'etl']
          version = project.version
       }
    }
@@ -55,6 +55,10 @@ dependencies {
    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+
+   // Gradle Analytics plugin
+   // It also has the Common library in it, thus the dependency here
+   compile "gradle.plugin.com.redpillanalytics:gradle-analytics:+"
 
    // ODI Core libraries -- will add more in as required
    compile 'odi-sdk:odi-core:+'
@@ -107,7 +111,7 @@ dependencies {
 //   compile 'org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:+'
 //   compile 'org.apache.commons:commons-collections4:4.2'
 
-   testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
+   testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
 }
 
 // Default artifact naming.
@@ -116,7 +120,16 @@ group = 'com.redpillanalytics'
 repositories {
    jcenter()
    maven {
+      url "https://plugins.gradle.org/m2/"
+   }
+   maven {
       url releaseUrl
+      authentication {
+         awsIm(AwsImAuthentication)
+      }
+   }
+   maven {
+      url snapshotUrl
       authentication {
          awsIm(AwsImAuthentication)
       }
@@ -128,8 +141,27 @@ tasks.withType(Test) {
    ignoreFailures = true
    testLogging.showStandardStreams = true
    systemProperty 'projectDir', temporaryDir
+   systemProperty 'odiPassword', odiPassword
+   systemProperty 'odiUrl', odiUrl
 }
 
 testSets {
-   onlineTest
+   onlineExportTest
+   onlineImportTest
 }
+
+//customize ShadowJar
+jar.enabled = false
+
+shadowJar {
+   classifier = ''
+   zip64 = true
+}
+
+tasks.build.dependsOn tasks.shadowJar
+
+task('cleanJunit', type: Delete) {
+   delete getTestResultsDir()
+}
+
+onlineExportTest.mustRunAfter onlineImportTest
