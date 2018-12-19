@@ -152,7 +152,8 @@ tasks.withType(Test) {
    testLogging.showStandardStreams = true
    systemProperty 'projectDir', temporaryDir
    systemProperty 'odiPassword', odiPassword
-   systemProperty 'odiUrl', odiUrl
+   systemProperty 'masterPassword', masterPassword
+   systemProperty 'masterUrl', masterUrl
 }
 
 testSets {
