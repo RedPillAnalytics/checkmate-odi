@@ -5,6 +5,7 @@ import oracle.odi.impexp.EncodingOptions
 import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
@@ -27,6 +28,7 @@ class ExportProjectFileTask extends ExportTask {
     * The file to export content to. Default: 'src/main/project/<PROJECTCODE>.xml'.
     */
    @Input
+   @Optional
    @Option(option = "source-file",
            description = "The file to export content to. Default: 'src/main/project/<PROJECTCODE>.xml'."
    )
