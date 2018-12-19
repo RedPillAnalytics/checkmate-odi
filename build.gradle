@@ -146,7 +146,8 @@ tasks.withType(Test) {
 }
 
 testSets {
-   onlineTest
+   onlineExportTest
+   onlineImportTest
 }
 
 //customize ShadowJar
@@ -162,3 +163,5 @@ tasks.build.dependsOn tasks.shadowJar
 task('cleanJunit', type: Delete) {
    delete getTestResultsDir()
 }
+
+onlineExportTest.mustRunAfter onlineImportTest
