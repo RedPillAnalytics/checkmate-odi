@@ -7,6 +7,7 @@ plugins {
    id 'org.unbroken-dome.test-sets' version '2.0.1'
    id "com.github.johnrengelman.shadow" version "4.0.2"
    id "com.github.ben-manes.versions" version "0.20.0"
+   id "com.github.breadmoirai.github-release" version "2.0.1"
    id 'com.redpillanalytics.gradle-analytics' version "1.1.15"
 }
 
@@ -26,7 +27,7 @@ allprojects {
 
 gradlePlugin {
    plugins {
-      checkmatePlugin {
+      checkmateOdi {
          id = 'com.redpillanalytics.checkmate.odi'
          implementationClass = 'com.redpillanalytics.odi.gradle.OdiPlugin'
       }
@@ -35,18 +36,27 @@ gradlePlugin {
 
 pluginBundle {
 
-   website = 'http://redpillanalytics.com/'
+   website = 'https://github.com/RedPillAnalytics/checkmate-odi/'
    vcsUrl = 'https://github.com/RedPillAnalytics/checkmate-odi/'
 
    plugins {
 
       checkmateOdi {
          displayName = 'checkmate.odi'
-         description = "Builds, tests and deploys Oracle Data Integrator code."
+         description = "A CI/CD framework for Oracle Data Integrator."
          tags = ['oracle', 'data-integration', 'etl']
          version = project.version
       }
    }
+}
+
+githubRelease {
+
+   token = githubToken
+   owner = 'RedPillAnalytics'
+   repo = 'checkmate-odi'
+   tagName = "v${version}"
+   releaseAssets = fileTree(dir: buildDir, includes: ["**/*${version}*", "**/*${version}*.jar"]).toList()
 }
 
 dependencies {
@@ -142,7 +152,8 @@ tasks.withType(Test) {
    testLogging.showStandardStreams = true
    systemProperty 'projectDir', temporaryDir
    systemProperty 'odiPassword', odiPassword
-   systemProperty 'odiUrl', odiUrl
+   systemProperty 'masterPassword', masterPassword
+   systemProperty 'masterUrl', masterUrl
 }
 
 testSets {
