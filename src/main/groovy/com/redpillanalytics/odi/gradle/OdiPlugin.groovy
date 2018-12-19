@@ -46,9 +46,8 @@ class OdiPlugin implements Plugin<Project> {
 
          String defaultProjectName
          String defaultProjectCode
-         String odiSource = "${project.extensions.odi.sourceBase}/odi"
-         String projectSource = "${project.extensions.odi.sourceBase}/project"
-         String modelSource = "${project.extensions.odi.sourceBase}/model"
+//         String projectSource = "${project.extensions.odi.sourceBase}/project"
+//         String modelSource = "${project.extensions.odi.sourceBase}/model"
 
          // get the taskGroup
          String taskGroup = project.extensions.odi.taskGroup
@@ -135,12 +134,12 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Task that deletes a project
-               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
-
-                  group taskGroup
-                  description = "Delete one or more models from the ODI repository."
-                  instance odiInstance
-               }
+//               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
+//
+//                  group taskGroup
+//                  description = "Delete one or more models from the ODI repository."
+//                  instance odiInstance
+//               }
 
                project.task(bg.getTaskName('importProjectFile'), type: ImportProjectFileTask) {
 
@@ -153,7 +152,7 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('importProjectDir'), type: ImportProjectDirectoryTask) {
 
                   group taskGroup
-                  description "Import files from directory '${projectSource}' into the ODI repository."
+                  description "Import ODI project objects from source into the ODI repository."
                   instance odiInstance
                   category 'project'
                }
@@ -161,7 +160,7 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
 
                   group taskGroup
-                  description "Import files from directory '${projectSource}' into the ODI repository."
+                  description "Import ODI model objects from source into the ODI repository."
                   instance odiInstance
                   category 'model'
                }
@@ -173,15 +172,13 @@ class OdiPlugin implements Plugin<Project> {
                   description "Export project '${defaultProjectCode}' from the ODI repository to smart file '${sourceXml}'."
                   projectCode defaultProjectCode
                   instance odiInstance
-                  sourceFile sourceXml
                }
 
                // Task that executes the export of the objects of a project, one file per object
                project.task(bg.getTaskName('exportProjectDir'), type: ExportProjectDirectoryTask) {
 
                   group taskGroup
-                  description "Export project '${defaultProjectCode}' from the ODI repository into directory '${projectSource}' with a single object per file."
-                  sourceDir projectSource
+                  description "Export ODI project '${defaultProjectCode}' from the ODI repository into source control"
                   projectCode defaultProjectCode
                   instance odiInstance
                   folderName projectFolder
@@ -191,9 +188,8 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('exportModelDir'), type: ExportModelDirectoryTask) {
 
                   group taskGroup
-                  description "Export one or more models from the ODI repository into directory '${modelSource}'."
+                  description "Export one or more models from the ODI repository into source control."
                   instance odiInstance
-                  sourceDir modelSource
                }
 
 //               // Task that exports the Model Folders by Name in the Repository

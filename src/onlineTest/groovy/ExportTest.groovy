@@ -123,6 +123,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :export task with defaults"() {
+      given:
+      taskName = 'export'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :deleteProject task"() {
       given:
       taskName = 'deleteProject'

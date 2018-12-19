@@ -124,4 +124,13 @@ class ImportTest extends Specification {
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
+
+   def "Execute :import task with defaults"() {
+      given:
+      taskName = 'import'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
 }
