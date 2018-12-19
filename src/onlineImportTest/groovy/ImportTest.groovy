@@ -14,7 +14,7 @@ class ImportTest extends Specification {
    File projectDir, buildDir, buildFile, resourcesDir
 
    @Shared
-   String taskName, odiPassword, odiUrl
+   String taskName, odiPassword, masterUrl, masterPassword
 
    @Shared
    def result
@@ -28,7 +28,8 @@ class ImportTest extends Specification {
       buildDir = new File(projectDir, 'build')
       buildFile = new File(projectDir, 'build.gradle')
       odiPassword = System.getProperty("odiPassword")
-      odiUrl = System.getProperty("odiUrl")
+      masterPassword = System.getProperty("masterPassword")
+      masterUrl = System.getProperty("masterUrl")
 
       resourcesDir = new File('src/test/resources')
 
@@ -44,8 +45,8 @@ class ImportTest extends Specification {
             |}
             |
             |odi {
-            |   masterUrl = '$odiUrl'
-            |   masterPassword = '$odiPassword'
+            |   masterUrl = '$masterUrl'
+            |   masterPassword = '$masterPassword'
             |   odiPassword = '$odiPassword'
             |}
         |""".stripMargin())
