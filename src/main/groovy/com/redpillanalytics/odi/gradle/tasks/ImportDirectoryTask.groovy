@@ -16,12 +16,12 @@ class ImportDirectoryTask extends ImportTask {
    String category = 'odi'
 
    /**
-    * The base directory to import content from. Default: value of 'obi.sourceBase' or 'src/main/odi'.
+    * The base directory to import content from. Default: 'src/main/project' for ODI projects, and 'src/main/model' for ODI models.
     */
    @Input
    @Optional
    @Option(option = "source-dir",
-           description = "The base directory to import content from. Default: value of 'obi.sourceBase' or 'src/main/odi'."
+           description = "The base directory to import content from. Default: 'src/main/project' for ODI projects, and 'src/main/model' for ODI models."
    )
    String sourceDir
 

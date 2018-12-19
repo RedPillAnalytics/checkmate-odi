@@ -1,6 +1,5 @@
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -15,7 +14,7 @@ class ImportTest extends Specification {
    File projectDir, buildDir, buildFile, resourcesDir
 
    @Shared
-   String taskName
+   String taskName, odiPassword, odiUrl
 
    @Shared
    def result
@@ -28,6 +27,8 @@ class ImportTest extends Specification {
       projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
       buildFile = new File(projectDir, 'build.gradle')
+      odiPassword = System.getProperty("odiPassword")
+      odiUrl = System.getProperty("odiUrl")
 
       resourcesDir = new File('src/test/resources')
 
@@ -43,9 +44,9 @@ class ImportTest extends Specification {
             |}
             |
             |odi {
-            |   masterUrl = "jdbc:oracle:thin:@odi-repo.cv6xgykurerg.us-east-1.rds.amazonaws.com:1521/ORCL"
-            |   masterPassword = 'rpa_dev_01'
-            |   odiPassword = 'rpa_dev_01'
+            |   masterUrl = '$odiUrl'
+            |   masterPassword = '$odiPassword'
+            |   odiPassword = '$odiPassword'
             |}
         |""".stripMargin())
    }

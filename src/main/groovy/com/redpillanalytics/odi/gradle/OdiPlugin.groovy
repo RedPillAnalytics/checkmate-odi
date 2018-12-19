@@ -10,6 +10,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
@@ -149,7 +150,7 @@ class OdiPlugin implements Plugin<Project> {
                   instance odiInstance
                }
 
-               project.task(bg.getTaskName('importProjectDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importProjectDir'), type: ImportProjectDirectoryTask) {
 
                   group taskGroup
                   description "Import files from directory '${projectSource}' into the ODI repository."

@@ -34,15 +34,10 @@ class DeleteModelsTask extends InstanceTask {
       } else {
          instance.beginTxn()
          models.each {
-            if (!instance.findProject(projectCode, true)) {
-               log.warn "Project Code ${projectCode} does not exist."
-            } else {
-               instance.beginTxn()
-               instance.odi.getTransactionalEntityManager().remove(instance.getOdiProject(projectCode))
-               instance.endTxn()
-
-               log.warn "Project Code '${projectCode}' deleted."
-            }
+            instance.beginTxn()
+            instance.odi.getTransactionalEntityManager().remove(instance.findModelbyCode(modelCode))
+            instance.endTxn()
+            log.warn "Model Code '${modelCode}' deleted."
          }
          instance.endTxn()
       }

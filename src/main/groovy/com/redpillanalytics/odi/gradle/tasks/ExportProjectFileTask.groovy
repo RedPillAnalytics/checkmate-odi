@@ -24,11 +24,11 @@ class ExportProjectFileTask extends ExportTask {
    String category = 'project'
 
    /**
-    * The file to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi' as the base directory, with the file named '<PROJECTCODE>.xml'.
+    * The file to export content to. Default: 'src/main/project/<PROJECTCODE>.xml'.
     */
    @Input
    @Option(option = "source-file",
-           description = "The file to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi' as the base directory, with the file named '<PROJECTCODE>.xml'."
+           description = "The file to export content to. Default: 'src/main/project/<PROJECTCODE>.xml'."
    )
    String sourceFile
 

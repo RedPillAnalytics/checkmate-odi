@@ -13,7 +13,7 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
     */
    @Internal
    List getImportFiles() {
-      def tree = project.fileTree(dir: importDir, include: '**/*.xml')
+      def tree = project.fileTree(dir: importDir, include: '**/*.xml', exclude: '*.xml')
       return tree.sort()
    }
 }

@@ -14,7 +14,7 @@ class ExportTest extends Specification {
    File projectDir, buildDir, buildFile, resourcesDir
 
    @Shared
-   String taskName, odiPassword
+   String taskName, odiPassword, odiUrl
 
    @Shared
    def result
@@ -28,6 +28,7 @@ class ExportTest extends Specification {
       buildDir = new File(projectDir, 'build')
       buildFile = new File(projectDir, 'build.gradle')
       odiPassword = System.getProperty("odiPassword")
+      odiUrl = System.getProperty("odiUrl")
 
       resourcesDir = new File('src/test/resources')
 
@@ -41,9 +42,9 @@ class ExportTest extends Specification {
             |}
             |
             |odi {
-            |   masterUrl = "jdbc:oracle:thin:@odi-repo.cv6xgykurerg.us-east-1.rds.amazonaws.com:1521/ORCL"
-            |   masterPassword = odiPassword
-            |   odiPassword = odiPassword
+            |   masterUrl = '$odiUrl'
+            |   masterPassword = '$odiPassword'
+            |   odiPassword = '$odiPassword'
             |}
         |""".stripMargin())
    }
@@ -131,21 +132,21 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :deleteModels task with --model-code option."() {
-      given:
-      taskName = 'deleteModels'
-      result = executeSingleTask(taskName, ['--model-code=STAGE_AREA','-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
-
-   def "Execute :deleteModels task with defaults."() {
-      given:
-      taskName = 'deleteModels'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
+//   def "Execute :deleteModels task with --model-code option."() {
+//      given:
+//      taskName = 'deleteModels'
+//      result = executeSingleTask(taskName, ['--model-code=STAGE_AREA','-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
+//
+//   def "Execute :deleteModels task with defaults."() {
+//      given:
+//      taskName = 'deleteModels'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
 }
