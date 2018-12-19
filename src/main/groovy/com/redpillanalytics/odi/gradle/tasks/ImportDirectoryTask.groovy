@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -17,6 +18,7 @@ class ImportDirectoryTask extends ImportTask {
     * The base directory to import content from. Default: value of 'obi.sourceBase' or 'src/main/odi'.
     */
    @Input
+   @Optional
    @Option(option = "source-dir",
            description = "The base directory to import content from. Default: value of 'obi.sourceBase' or 'src/main/odi'."
    )
@@ -24,8 +26,13 @@ class ImportDirectoryTask extends ImportTask {
 
    @InputDirectory
    File getImportDir() {
-      File dir = project.file("${getSourceBase()}/$sourceDir")
-      return dir.exists() ? dir : project.file(sourceDir)
+
+      if (sourceDir) {
+         File dir = new File(sourceBase, sourceDir)
+         return dir.exists() ? dir : project.file(sourceDir)
+      } else {
+         return sourceBase
+      }
    }
 
    /**
@@ -43,7 +50,7 @@ class ImportDirectoryTask extends ImportTask {
     * Imports all objects returned by the {@link #getImportFiles} FileTree object.
     */
    @TaskAction
-   def importDir() {
+   def importXmlFiles() {
 
       //Make the Connection
       instance.connect()

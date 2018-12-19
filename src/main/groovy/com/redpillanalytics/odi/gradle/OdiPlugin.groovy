@@ -11,6 +11,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportWorkRepoTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
+import com.redpillanalytics.odi.gradle.tasks.ImportWorkRepoTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -203,7 +204,7 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Task that exports the Model Folders by Name in the Repository
-               project.task(bg.getTaskName('importWorkRepo'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importWorkRepo'), type: ImportWorkRepoTask) {
 
                   group taskGroup
                   description "Import files from directory '${odiSource}' into the ODI repository."
