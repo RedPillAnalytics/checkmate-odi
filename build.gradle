@@ -141,6 +141,7 @@ tasks.withType(Test) {
    ignoreFailures = true
    testLogging.showStandardStreams = true
    systemProperty 'projectDir', temporaryDir
+   systemProperty 'odiPassword', odiPassword
 }
 
 testSets {

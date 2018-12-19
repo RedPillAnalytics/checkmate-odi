@@ -14,7 +14,7 @@ class ExportTest extends Specification {
    File projectDir, buildDir, buildFile, resourcesDir
 
    @Shared
-   String taskName
+   String taskName, odiPassword
 
    @Shared
    def result
@@ -27,6 +27,7 @@ class ExportTest extends Specification {
       projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
       buildFile = new File(projectDir, 'build.gradle')
+      odiPassword = System.getProperty("odiPassword")
 
       resourcesDir = new File('src/test/resources')
 
@@ -41,8 +42,8 @@ class ExportTest extends Specification {
             |
             |odi {
             |   masterUrl = "jdbc:oracle:thin:@odi-repo.cv6xgykurerg.us-east-1.rds.amazonaws.com:1521/ORCL"
-            |   masterPassword = 'rpa_dev_01'
-            |   odiPassword = 'rpa_dev_01'
+            |   masterPassword = odiPassword
+            |   odiPassword = odiPassword
             |}
         |""".stripMargin())
    }
