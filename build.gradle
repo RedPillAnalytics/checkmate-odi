@@ -50,6 +50,15 @@ pluginBundle {
    }
 }
 
+githubRelease {
+
+   token = githubToken
+   owner = 'RedPillAnalytics'
+   repo = 'checkmate-odi'
+   tagName = "v${version}"
+   releaseAssets = fileTree(dir: buildDir, includes: ["**/*${version}*", "**/*${version}*.jar"]).toList()
+}
+
 dependencies {
 
    // basic Groovy/Gradle stuff
