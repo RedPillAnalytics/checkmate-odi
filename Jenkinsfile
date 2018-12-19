@@ -26,7 +26,7 @@ pipeline {
 
       stage('Integration') {
           steps {
-              sh "$gradle onlineImportTest onlineExportTest
+              sh "$gradle ${options} onlineImportTest onlineExportTest"
           }
       }
 
