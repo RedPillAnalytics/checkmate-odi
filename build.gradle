@@ -165,3 +165,27 @@ task('cleanJunit', type: Delete) {
 }
 
 onlineExportTest.mustRunAfter onlineImportTest
+
+ext.bucket = 's3://documentation.redpillanalytics.com'
+ext.bucketPath = 'checkmate-odi'
+
+task publishDocs {
+
+   description = 'Upload Groovydocs to s3.'
+   group = 'documentation'
+
+   doLast {
+      exec {
+         executable 'aws'
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/${version}/"
+      }
+      exec {
+         executable 'aws'
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/latest/"
+      }
+   }
+
+   dependsOn groovydoc
+}
+
+tasks.publishPlugins.dependsOn publishDocs
