@@ -10,28 +10,17 @@ import org.gradle.api.tasks.options.Option
 class ExportDirectoryTask extends ExportTask {
 
    /**
-    * The file to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi' as the base directory, with the file named '<PROJECTCODE>.xml'.
-    */
-   @Input
-   @Optional
-   @Option(option = "folder-name",
-           description = "The individual ODI Design folder to export. Default: all folders."
-   )
-   String folderName
-
-   /**
-    * The base directory to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi'.
+    * The base directory to export content to. Default: 'src/main/project' for ODI projects, and 'src/main/model' for ODI models.
     */
    @Input
    @Optional
    @Option(option = "source-dir",
-           description = "The base directory to export content to. Default: value of 'obi.sourceBase' or 'src/main/odi'."
+           description = "The base directory to export content to. Default: 'src/main/project' for ODI projects, and 'src/main/model' for ODI models."
    )
    String sourceDir
 
    @OutputDirectory
    File getExportDir() {
-
       return sourceDir ? project.file(sourceDir) : sourceBase
    }
 }

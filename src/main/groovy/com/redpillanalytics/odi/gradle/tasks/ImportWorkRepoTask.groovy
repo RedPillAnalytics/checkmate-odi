@@ -12,24 +12,10 @@ import org.gradle.api.tasks.options.Option
 class ImportWorkRepoTask extends ImportDirectoryTask {
 
    /**
-    * Imports all objects returned by the {@link #getImportFiles} FileTree object.
+    * Overrides {@link #taskAction} in {@code ImportDirectoryTask}.
     */
    @TaskAction
-   def importXmlFiles() {
-
-      //Make the Connection
-      instance.connect()
-      instance.beginTxn()
-
-      importFiles.each { file ->
-         importService.importObjectFromXml(
-                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
-                 file.canonicalPath,
-                 false,
-                 null,
-                 true,
-         )
-      }
-      instance.endTxn()
+   def taskAction() {
+      importXmlFiles()
    }
 }

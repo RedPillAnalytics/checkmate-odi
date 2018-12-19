@@ -42,11 +42,6 @@ class OdiPluginExtension {
    Boolean enableModels = true
 
    /**
-    * When specified, a Gradle subproject folder can be associated with a particular ODI work repository folder. Default: NULL, or support all folders in the ODI repository.
-    */
-   String modelFolder
-
-   /**
     * The base ODI build directory, which exists inside of the project 'buildDir' directory.
     */
    String buildBase = 'odi'
@@ -62,9 +57,9 @@ class OdiPluginExtension {
    String workType = 'development'
 
    /**
-    * What method of content are we using in source control: 'directory' or 'file'.
+    * What method of content are we using in source control: 'dir' or 'file'.
     */
-   String contentPolicy = 'directory'
+   String contentPolicy = 'dir'
 
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"

@@ -123,13 +123,4 @@ class ImportTest extends Specification {
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
-
-   def "Execute :importWorkRepo task with defaults"() {
-      given:
-      taskName = 'importWorkRepo'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
 }

@@ -4,14 +4,13 @@ import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
+import com.redpillanalytics.odi.gradle.tasks.DeleteModelsTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
-import com.redpillanalytics.odi.gradle.tasks.ExportWorkRepoTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
-import com.redpillanalytics.odi.gradle.tasks.ImportWorkRepoTask
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -42,7 +41,7 @@ class OdiPlugin implements Plugin<Project> {
       project.afterEvaluate {
 
          // set all 'obi.<property>' -P options to the 'obi' extension
-         GradleUtils.setParameters(project,'odi')
+         GradleUtils.setParameters(project, 'odi')
 
          String defaultProjectName
          String defaultProjectCode
@@ -55,9 +54,6 @@ class OdiPlugin implements Plugin<Project> {
 
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
          String projectFolder = project.extensions.odi.projectFolder
-
-         // Model Folder Name to find and Export
-         String modelFolder = project.extensions.odi.modelFolder
 
          // see if there's an explicit project name
          if (project.extensions.odi.projectName) {
@@ -137,12 +133,20 @@ class OdiPlugin implements Plugin<Project> {
                   instance odiInstance
                }
 
+               // Task that deletes a project
+               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
+
+                  group taskGroup
+                  description = "Delete one or more models from the ODI repository."
+                  instance odiInstance
+               }
+
                project.task(bg.getTaskName('importProjectFile'), type: ImportProjectFileTask) {
 
                   group taskGroup
                   description "Import file '${sourceXml}' into the ODI repository."
+                  projectCode defaultProjectCode
                   instance odiInstance
-                  sourceFile sourceXml
                }
 
                project.task(bg.getTaskName('importProjectDir'), type: ImportDirectoryTask) {
@@ -150,8 +154,7 @@ class OdiPlugin implements Plugin<Project> {
                   group taskGroup
                   description "Import files from directory '${projectSource}' into the ODI repository."
                   instance odiInstance
-                  sourceDir projectSource
-                  category 'model'
+                  category 'project'
                }
 
                project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
@@ -159,7 +162,6 @@ class OdiPlugin implements Plugin<Project> {
                   group taskGroup
                   description "Import files from directory '${projectSource}' into the ODI repository."
                   instance odiInstance
-                  sourceDir modelSource
                   category 'model'
                }
 
@@ -188,30 +190,29 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('exportModelDir'), type: ExportModelDirectoryTask) {
 
                   group taskGroup
-                  description "Export " + (modelFolder ? "model folder '${modelFolder}'" : "all models") + " from the ODI repository into directory '${modelSource}'."
+                  description "Export one or more models from the ODI repository into directory '${modelSource}'."
                   instance odiInstance
                   sourceDir modelSource
-                  folderName modelFolder
                }
 
-               // Task that exports the Model Folders by Name in the Repository
-               project.task(bg.getTaskName('exportWorkRepo'), type: ExportWorkRepoTask) {
-
-                  group taskGroup
-                  description = "Export all work items from the ODI repository."
-                  instance odiInstance
-                  //sourceDir projectSource
-               }
-
-               // Task that exports the Model Folders by Name in the Repository
-               project.task(bg.getTaskName('importWorkRepo'), type: ImportWorkRepoTask) {
-
-                  group taskGroup
-                  description "Import files from directory '${odiSource}' into the ODI repository."
-                  instance odiInstance
-                  sourceDir odiSource
-                  category 'model'
-               }
+//               // Task that exports the Model Folders by Name in the Repository
+//               project.task(bg.getTaskName('exportWorkRepo'), type: ExportWorkRepoTask) {
+//
+//                  group taskGroup
+//                  description = "Traditional export of all items in the ODI repository work repository."
+//                  instance odiInstance
+//                  //sourceDir projectSource
+//               }
+//
+//               // Task that exports the Model Folders by Name in the Repository
+//               project.task(bg.getTaskName('importWorkRepo'), type: ImportWorkRepoTask) {
+//
+//                  group taskGroup
+//                  description "Traditional import of all work items in the ODI repository."
+//                  instance odiInstance
+//                  sourceDir odiSource
+//                  category 'model'
+//               }
 
 //               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
 //               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
@@ -232,6 +233,24 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('import')) {
                   group taskGroup
                   description = "Executes all configured 'import' tasks."
+               }
+
+               if (project.extensions.odi.enableProjects) {
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectDir')}"
+                  }
+                  else if (contentPolicy == 'file') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectFile')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectFile')}"
+                  }
+               }
+
+               if (project.extensions.odi.enableModels) {
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importModelDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportModelDir')}"
+                  }
                }
             }
          }

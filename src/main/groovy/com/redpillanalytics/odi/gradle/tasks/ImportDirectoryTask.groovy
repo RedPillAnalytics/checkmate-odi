@@ -1,6 +1,7 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
@@ -27,6 +28,8 @@ class ImportDirectoryTask extends ImportTask {
    @InputDirectory
    File getImportDir() {
 
+      log.debug "sourceBase: $sourceBase"
+
       if (sourceDir) {
          File dir = new File(sourceBase, sourceDir)
          return dir.exists() ? dir : project.file(sourceDir)
@@ -47,10 +50,10 @@ class ImportDirectoryTask extends ImportTask {
    }
 
    /**
-    * Imports all objects returned by the {@link #getImportFiles} FileTree object.
+    * Smart Imports all objects returned by the {@link #getImportFiles} FileTree object.
     */
-   @TaskAction
-   def importXmlFiles() {
+   @Internal
+   def smartImportXmlFiles() {
 
       //Make the Connection
       instance.connect()
@@ -64,5 +67,32 @@ class ImportDirectoryTask extends ImportTask {
          )
       }
       instance.endTxn()
+   }
+
+   /**
+    * Imports all objects returned by the {@link #getImportFiles} FileTree object.
+    */
+   @Internal
+   def importXmlFiles() {
+
+      //Make the Connection
+      instance.connect()
+      instance.beginTxn()
+
+      importFiles.each { file ->
+         importService.importObjectFromXml(
+                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+                 file.canonicalPath,
+                 false,
+                 null,
+                 true,
+         )
+      }
+      instance.endTxn()
+   }
+
+   @TaskAction
+   def taskAction() {
+      smartImportXmlFiles()
    }
 }

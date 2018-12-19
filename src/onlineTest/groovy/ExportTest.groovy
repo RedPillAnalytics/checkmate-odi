@@ -14,7 +14,7 @@ class ExportTest extends Specification {
    File projectDir, buildDir, buildFile, resourcesDir
 
    @Shared
-   String taskName, password
+   String taskName
 
    @Shared
    def result
@@ -103,19 +103,19 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportModelDir task with --folder-name option"() {
+   def "Execute :exportModelDir task defaults"() {
       given:
       taskName = 'exportModelDir'
-      result = executeSingleTask(taskName, ['--folder-name=FlatFilesHR', '-Si'])
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportWorkRepo task with defaults"() {
+   def "Execute :exportModelDir task with --model-code option"() {
       given:
-      taskName = 'exportWorkRepo'
-      result = executeSingleTask(taskName, ['-Si'])
+      taskName = 'exportModelDir'
+      result = executeSingleTask(taskName, ['--model-code=STAGE_AREA', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -124,6 +124,24 @@ class ExportTest extends Specification {
    def "Execute :deleteProject task"() {
       given:
       taskName = 'deleteProject'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :deleteModels task with --model-code option."() {
+      given:
+      taskName = 'deleteModels'
+      result = executeSingleTask(taskName, ['--model-code=STAGE_AREA','-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :deleteModels task with defaults."() {
+      given:
+      taskName = 'deleteModels'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:

@@ -202,8 +202,10 @@ class Instance {
       return getModelFinder().findAll().toArray()
    }
 
-   def findModelbyCode(String modelCode) {
-      return getModelFinder().findByCode(modelCode)
+   def findModelbyCode(String modelCode, Boolean ignore = true) {
+      def model = getModelFinder().findByCode(modelCode)
+      if (!model && !ignore) throw new Exception("Model code '${modelCode}' does not exist.")
+      return model
    }
 
    //Model Folder Finders

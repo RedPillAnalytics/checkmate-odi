@@ -14,14 +14,12 @@ class InstanceTask extends DefaultTask {
 
    @Internal
    String getCategory() {
-      return null
+      return 'odi'
    }
 
-   @OutputDirectory
+   @Internal
    def getSourceBase() {
-
       log.debug "category: ${category}"
-
-      return project.file("${project.extensions.odi.sourceBase}/${category ?: 'odi'}")
+      return project.file("${project.extensions.odi.sourceBase}/${category}")
    }
 }

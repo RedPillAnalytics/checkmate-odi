@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiFolder
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -17,6 +18,16 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    @Option(option = "project-code",
            description = "The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.")
    String projectCode
+
+   /**
+    * The individual ODI Design folder to export. Default: all folders.
+    */
+   @Input
+   @Optional
+   @Option(option = "folder-name",
+           description = "The individual ODI Design folder to export. Default: all folders."
+   )
+   String folderName
 
    @Internal
    String category = 'project'
