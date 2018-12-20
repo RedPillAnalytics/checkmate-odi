@@ -4,7 +4,6 @@ import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
-import com.redpillanalytics.odi.gradle.tasks.DeleteModelsTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
@@ -72,8 +71,8 @@ class OdiPlugin implements Plugin<Project> {
          // if no project code is specified, create one
          defaultProjectCode = project.extensions.odi.projectCode ?: project.extensions.odi.getProjectCode(defaultProjectName)
 
-         log.warn "defaultProjectCode: $defaultProjectCode"
-         log.warn "defaultProjectName: $defaultProjectName"
+         log.debug "defaultProjectCode: $defaultProjectCode"
+         log.debug "defaultProjectName: $defaultProjectName"
 
          // default export file name
          String sourceXml = "${defaultProjectCode}.xml"

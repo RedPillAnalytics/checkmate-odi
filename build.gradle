@@ -3,12 +3,12 @@ plugins {
    id 'maven-publish'
    id "com.gradle.plugin-publish" version "0.10.0"
    id 'java-gradle-plugin'
-   id "pl.allegro.tech.build.axion-release" version "1.9.3"
+   id "pl.allegro.tech.build.axion-release" version "1.10.0"
    id 'org.unbroken-dome.test-sets' version '2.0.1'
-   id "com.github.johnrengelman.shadow" version "4.0.2"
+   id "com.github.johnrengelman.shadow" version "4.0.3"
    id "com.github.ben-manes.versions" version "0.20.0"
    id "com.github.breadmoirai.github-release" version "2.0.1"
-   id 'com.redpillanalytics.gradle-analytics' version "1.1.15"
+   id 'com.redpillanalytics.gradle-analytics' version "1.1.16"
 }
 
 scmVersion {
@@ -164,14 +164,14 @@ testSets {
 }
 
 //customize ShadowJar
-jar.enabled = false
+//jar.enabled = false
 
 shadowJar {
    classifier = ''
    zip64 = true
 }
 
-tasks.build.dependsOn tasks.shadowJar
+//tasks.build.dependsOn tasks.shadowJar
 
 task('cleanJunit', type: Delete) {
    delete getTestResultsDir()
@@ -202,6 +202,7 @@ task publishDocs {
 }
 
 tasks.publishPlugins.dependsOn publishDocs
+tasks.publish.dependsOn tasks.build
 
 publishing {
    repositories {
