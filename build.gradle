@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
-
 plugins {
    id 'groovy'
    id 'maven-publish'
@@ -63,33 +61,33 @@ githubRelease {
 
 dependencies {
 
-   shadow localGroovy()
-   shadow gradleApi()
+   compile localGroovy()
+   compile gradleApi()
 
    // basic Groovy/Gradle stuff
    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
-   shadow group: 'org.slf4j', name: 'slf4j-simple', version: '+'
-   shadow group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+   compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
 
    // Gradle Analytics plugin
    // It also has the Common library in it, thus the dependency here
    compile "gradle.plugin.com.redpillanalytics:gradle-analytics:+"
 
    // ODI SDK common libraries -- will add more in as required
-   shadow 'nz.net.osnz.composite:composite-spring-jdbc:4.1'
-   shadow 'org.springframework:spring-orm:4.0.1.RELEASE'
-   shadow 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:+'
-   shadow 'bsh:bsh:+'
-   shadow 'org.apache-extras.beanshell:bsh:+'
-   shadow 'com.fasterxml.jackson.core:jackson-core:+'
-   shadow 'com.fasterxml.jackson.core:jackson-databind:+'
-   shadow 'org.glassfish:javax.json:+'
-   shadow 'org.eclipse.persistence:javax.persistence:+'
-   shadow 'org.eclipse.persistence:org.eclipse.persistence.oracle:+'
-   shadow 'org.ops4j.pax.runner:pax-runner-no-jcl:+'
-   shadow 'commons-collections:commons-collections:20040616'
-   shadow 'javolution:javolution:5.5.1'
-   shadow 'trove:trove:1.0.2'
+   compile 'nz.net.osnz.composite:composite-spring-jdbc:4.1'
+   compile 'org.springframework:spring-orm:4.0.1.RELEASE'
+   compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:+'
+   compile 'bsh:bsh:+'
+   compile 'org.apache-extras.beanshell:bsh:+'
+   compile 'com.fasterxml.jackson.core:jackson-core:+'
+   compile 'com.fasterxml.jackson.core:jackson-databind:+'
+   compile 'org.glassfish:javax.json:+'
+   compile 'org.eclipse.persistence:javax.persistence:+'
+   compile 'org.eclipse.persistence:org.eclipse.persistence.oracle:+'
+   compile 'org.ops4j.pax.runner:pax-runner-no-jcl:+'
+   compile 'commons-collections:commons-collections:20040616'
+   compile 'javolution:javolution:5.5.1'
+   compile 'trove:trove:1.0.2'
 
    // ODI Core libraries -- will add more in as required
    compile 'odi-sdk:odi-core:+'
@@ -173,12 +171,7 @@ shadowJar {
    zip64 = true
 }
 
-task relocateShadowJar(type: ConfigureShadowRelocation) {
-   target = tasks.shadowJar
-}
-
 tasks.build.dependsOn tasks.shadowJar
-tasks.shadowJar.dependsOn tasks.relocateShadowJar
 
 task('cleanJunit', type: Delete) {
    delete getTestResultsDir()
@@ -209,3 +202,14 @@ task publishDocs {
 }
 
 tasks.publishPlugins.dependsOn publishDocs
+
+publishing {
+   repositories {
+      maven {
+         url publishUrl
+         authentication {
+            awsIm(AwsImAuthentication)
+         }
+      }
+   }
+}
