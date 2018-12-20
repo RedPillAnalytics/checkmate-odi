@@ -171,6 +171,7 @@ class OdiPlugin implements Plugin<Project> {
                   description "Export project '${defaultProjectCode}' from the ODI repository to smart file '${sourceXml}'."
                   projectCode defaultProjectCode
                   instance odiInstance
+                  outputs.upToDateWhen { false }
                }
 
                // Task that executes the export of the objects of a project, one file per object
@@ -181,6 +182,7 @@ class OdiPlugin implements Plugin<Project> {
                   projectCode defaultProjectCode
                   instance odiInstance
                   folderName projectFolder
+                  outputs.upToDateWhen { false }
                }
 
                // Task that exports the Model Folders by Name in the Repository
@@ -189,6 +191,7 @@ class OdiPlugin implements Plugin<Project> {
                   group taskGroup
                   description "Export one or more models from the ODI repository into source control."
                   instance odiInstance
+                  outputs.upToDateWhen { false }
                }
 
 //               // Task that exports the Model Folders by Name in the Repository
