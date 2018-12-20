@@ -206,7 +206,7 @@ tasks.publishPlugins.dependsOn publishDocs
 publishing {
    repositories {
       maven {
-         url publishUrl
+         url project.version.endsWith('-SNAPSHOT') ? snapshotUrl : releaseUrl
          authentication {
             awsIm(AwsImAuthentication)
          }
