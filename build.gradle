@@ -64,8 +64,6 @@ dependencies {
    compile localGroovy()
    compile gradleApi()
 
-   // basic Groovy/Gradle stuff
-   compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
 
@@ -76,15 +74,15 @@ dependencies {
    // ODI SDK common libraries -- will add more in as required
    compile 'nz.net.osnz.composite:composite-spring-jdbc:4.1'
    compile 'org.springframework:spring-orm:4.0.1.RELEASE'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:+'
-   compile 'bsh:bsh:+'
-   compile 'org.apache-extras.beanshell:bsh:+'
-   compile 'com.fasterxml.jackson.core:jackson-core:+'
-   compile 'com.fasterxml.jackson.core:jackson-databind:+'
-   compile 'org.glassfish:javax.json:+'
-   compile 'org.eclipse.persistence:javax.persistence:+'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.oracle:+'
-   compile 'org.ops4j.pax.runner:pax-runner-no-jcl:+'
+   compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.7.3'
+   compile 'bsh:bsh:2.0b4'
+   compile 'org.apache-extras.beanshell:bsh:2.0b6'
+   compile 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+   compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+   compile 'org.glassfish:javax.json:1.1.4'
+   compile 'org.eclipse.persistence:javax.persistence:2.2.1'
+   compile 'org.eclipse.persistence:org.eclipse.persistence.oracle:2.7.3'
+   compile 'org.ops4j.pax.runner:pax-runner-no-jcl:1.9.0'
    compile 'commons-collections:commons-collections:20040616'
    compile 'javolution:javolution:5.5.1'
    compile 'trove:trove:1.0.2'
@@ -123,7 +121,7 @@ dependencies {
 //   compile 'org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:+'
 //   compile 'org.apache.commons:commons-collections4:4.2'
 
-   testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+   testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 }
 
 // Default artifact naming.
@@ -163,13 +161,14 @@ testSets {
    onlineImportTest
 }
 
+//customize ShadowJar
+//jar.enabled = false
+
 shadowJar {
-   classifier = ''
+   //classifier = ''
    zip64 = true
 }
 
-//customize ShadowJar
-jar.enabled = false
 tasks.build.dependsOn tasks.shadowJar
 
 task('cleanJunit', type: Delete) {
