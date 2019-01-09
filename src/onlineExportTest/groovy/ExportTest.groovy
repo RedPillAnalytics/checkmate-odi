@@ -26,21 +26,18 @@ class ExportTest extends Specification {
 
       projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
-      buildFile = new File(projectDir, 'build.gradle')
       odiPassword = System.getProperty("odiPassword")
       masterPassword = System.getProperty("masterPassword")
       masterUrl = System.getProperty("masterUrl")
 
       resourcesDir = new File('src/test/resources')
-      settingsFile = new File(projectDir, 'settings.gradle')
 
       ant.delete(dir: projectDir)
       ant.mkdir(dir: projectDir)
 
-      settingsFile.write("""rootProject.name = 'project-test'""")
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'project-test'""")
 
-
-      buildFile.write("""
+      buildFile = new File(projectDir, 'build.gradle').write("""
             |plugins {
             |    id 'com.redpillanalytics.checkmate.odi'
             |}

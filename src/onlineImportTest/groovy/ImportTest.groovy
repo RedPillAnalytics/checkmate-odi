@@ -11,7 +11,7 @@ import spock.lang.Title
 class ImportTest extends Specification {
 
    @Shared
-   File projectDir, buildDir, buildFile, resourcesDir
+   File projectDir, buildDir, buildFile, resourcesDir, settingsFile
 
    @Shared
    String taskName, odiPassword, masterUrl, masterPassword
@@ -26,7 +26,6 @@ class ImportTest extends Specification {
 
       projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
-      buildFile = new File(projectDir, 'build.gradle')
       odiPassword = System.getProperty("odiPassword")
       masterPassword = System.getProperty("masterPassword")
       masterUrl = System.getProperty("masterUrl")
@@ -39,7 +38,9 @@ class ImportTest extends Specification {
          fileset(dir: resourcesDir)
       }
 
-      buildFile.write("""
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'project-test'""")
+
+      buildFile = new File(projectDir, 'build.gradle').write("""
             |plugins {
             |    id 'com.redpillanalytics.checkmate.odi'
             |}
