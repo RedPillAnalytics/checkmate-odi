@@ -11,7 +11,7 @@ import spock.lang.Title
 class ExportTest extends Specification {
 
    @Shared
-   File projectDir, buildDir, buildFile, resourcesDir
+   File projectDir, buildDir, buildFile, resourcesDir, settingsFile
 
    @Shared
    String taskName, odiPassword, masterUrl, masterPassword
@@ -26,7 +26,6 @@ class ExportTest extends Specification {
 
       projectDir = new File("${System.getProperty("projectDir")}/project-test")
       buildDir = new File(projectDir, 'build')
-      buildFile = new File(projectDir, 'build.gradle')
       odiPassword = System.getProperty("odiPassword")
       masterPassword = System.getProperty("masterPassword")
       masterUrl = System.getProperty("masterUrl")
@@ -36,8 +35,9 @@ class ExportTest extends Specification {
       ant.delete(dir: projectDir)
       ant.mkdir(dir: projectDir)
 
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'project-test'""")
 
-      buildFile.write("""
+      buildFile = new File(projectDir, 'build.gradle').write("""
             |plugins {
             |    id 'com.redpillanalytics.checkmate.odi'
             |}

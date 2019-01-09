@@ -15,7 +15,7 @@ class GetLoadPlansAndScenariosTask extends DefaultTask {
     Instance instance
 
     @TaskAction
-    def getLoadPlansAndScenarios() {
+    def taskAction() {
 
         instance.connect()
 

@@ -33,7 +33,7 @@ pipeline {
       stage('Publish') {
          when { branch "master" }
          steps {
-            sh "$gradle publishPlugins githubRelease"
+            sh "$gradle publishPlugins publishDocs githubRelease"
          }
       }
       // Place for new Stage
