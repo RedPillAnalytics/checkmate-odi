@@ -11,7 +11,7 @@ import spock.lang.Title
 class ExportTest extends Specification {
 
    @Shared
-   File projectDir, buildDir, buildFile, resourcesDir
+   File projectDir, buildDir, buildFile, resourcesDir, settingsFile
 
    @Shared
    String taskName, odiPassword, masterUrl, masterPassword
@@ -32,9 +32,12 @@ class ExportTest extends Specification {
       masterUrl = System.getProperty("masterUrl")
 
       resourcesDir = new File('src/test/resources')
+      settingsFile = new File(projectDir, 'settings.gradle')
 
       ant.delete(dir: projectDir)
       ant.mkdir(dir: projectDir)
+
+      settingsFile.write("""rootProject.name = 'project-test'""")
 
 
       buildFile.write("""
