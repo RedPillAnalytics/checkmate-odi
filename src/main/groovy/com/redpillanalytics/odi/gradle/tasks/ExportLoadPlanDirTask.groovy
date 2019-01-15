@@ -6,10 +6,10 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
-class ExportLoadPlansDirTask extends ExportDirectoryTask {
+class ExportLoadPlanDirTask extends ExportDirectoryTask {
 
    // specify the model subdirectory
-   String category = 'model'
+   String category = 'load-plan'
 
    @Internal
    Instance instance

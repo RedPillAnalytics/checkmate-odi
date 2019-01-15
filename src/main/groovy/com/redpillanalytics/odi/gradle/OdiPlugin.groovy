@@ -194,6 +194,14 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
+               project.task(bg.getTaskName('exportLoadPlanDir'), type: ExportLoadPlanDirTask) {
+
+                  group taskGroup
+                  description "Export one or more load plans from the ODI repository into source control."
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
 //               // Task that exports the Model Folders by Name in the Repository
 //               project.task(bg.getTaskName('exportWorkRepo'), type: ExportWorkRepoTask) {
 //
