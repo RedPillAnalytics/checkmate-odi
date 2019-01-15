@@ -97,6 +97,9 @@ class OdiPlugin implements Plugin<Project> {
          def contentPolicy = project.extensions.odi.contentPolicy
          log.debug "contentPolicy: $contentPolicy"
 
+         // assertions
+         assert ['dir', 'file'].contains(contentPolicy)
+
 //         // Let's JIT load the JDBC driver
 //         URLClassLoader loader = GroovyObject.class.classLoader
 //         project.configurations.jdbc.each { File file ->
@@ -174,7 +177,6 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
-               // Task that executes the export of the objects of a project, one file per object
                project.task(bg.getTaskName('exportProjectDir'), type: ExportProjectDirectoryTask) {
 
                   group taskGroup
@@ -185,7 +187,6 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
-               // Task that exports the Model Folders by Name in the Repository
                project.task(bg.getTaskName('exportModelDir'), type: ExportModelDirectoryTask) {
 
                   group taskGroup
@@ -258,6 +259,12 @@ class OdiPlugin implements Plugin<Project> {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importModelDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportModelDir')}"
                   }
+               }
+
+               if (project.extensions.odi.enableLoadPlans) {
+                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
+                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
+
                }
             }
          }
