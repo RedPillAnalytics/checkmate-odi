@@ -59,6 +59,7 @@ class ImportDirectoryTask extends ImportTask {
       instance.beginTxn()
 
       importFiles.each { file ->
+         log.info "Importing file '$file.canonicalPath'..."
          smartImportObject(file)
       }
       instance.endTxn()
@@ -75,6 +76,7 @@ class ImportDirectoryTask extends ImportTask {
       instance.beginTxn()
 
       importFiles.each { file ->
+         log.info "Importing file '$file.canonicalPath'..."
          importObject(file)
       }
       instance.endTxn()
