@@ -17,4 +17,24 @@ class ImportTask extends InstanceTask {
    SmartImportServiceImpl getSmartImportService() {
       return new SmartImportServiceImpl(instance.odi)
    }
+
+   @Internal
+   importObject(File file) {
+      importService.importObjectFromXml(
+              ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+              file.canonicalPath,
+              false,
+              null,
+              true
+      )
+   }
+
+   @Internal
+   smartImportObject(File file) {
+      smartImportService.importObjectsFromXml(
+              file.canonicalPath,
+              null,
+              true
+      )
+   }
 }

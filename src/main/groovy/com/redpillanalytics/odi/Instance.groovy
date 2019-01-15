@@ -246,11 +246,13 @@ class Instance {
 
    //Load Plans Finder
    def getLoadPlanFinder() {
-      return (IOdiLoadPlanFinder) odi.getTransactionalEntityManager().getFinder(OdiLoadPlan.class)
+      def finder = (IOdiLoadPlanFinder) odi.getTransactionalEntityManager().getFinder(OdiLoadPlan.class)
+      return finder
    }
 
    def findAllLoadPlans() {
-      return getLoadPlanFinder().findAll()
+      def list = getLoadPlanFinder().findAll()
+      log.info "Load plan list: $list"
+      return list
    }
-
 }

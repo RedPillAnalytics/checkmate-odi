@@ -11,40 +11,40 @@ import org.gradle.api.tasks.TaskAction
 @Slf4j
 class GetLoadPlansAndScenariosTask extends DefaultTask {
 
-    @Internal
-    Instance instance
+   @Internal
+   Instance instance
 
-    @TaskAction
-    def taskAction() {
+   @TaskAction
+   def taskAction() {
 
-        instance.connect()
+      instance.connect()
 
-        def scenarios = instance.findAllScenarios()
-        def loadPlans = instance.findAllLoadPlans()
+      def scenarios = instance.findAllScenarios()
+      def loadPlans = instance.findAllLoadPlans()
 
-        instance.beginTxn()
+      instance.beginTxn()
 
-        if(scenarios.isEmpty())
-            log.warn 'Does not exist Scenarios on the ODI Repo ...'
-        else {
-            log.warn 'List of Scenarios:'
-            scenarios.each { OdiScenario scenario ->
-                //Action to do to the scenarios retrieved
-                log.warn scenario.name
-            }
-        }
+      if(scenarios.isEmpty())
+         log.warn 'Does not exist Scenarios on the ODI Repo ...'
+      else {
+         log.warn 'List of Scenarios:'
+         scenarios.each { OdiScenario scenario ->
+            //Action to do to the scenarios retrieved
+            log.warn scenario.name
+         }
+      }
 
-        if(loadPlans.isEmpty())
-            log.warn 'Does not exist Load Plans on the ODI Repo ...'
-        else {
-            log.warn 'List of Load Plans:'
-            loadPlans.each { OdiLoadPlan loadPlan ->
-                //Action to do to the Load Plans retrieved
-                log.warn loadPlan.name
-            }
-        }
+      if(loadPlans.isEmpty())
+         log.warn 'Does not exist Load Plans on the ODI Repo ...'
+      else {
+         log.warn 'List of Load Plans:'
+         loadPlans.each { OdiLoadPlan loadPlan ->
+            //Action to do to the Load Plans retrieved
+            log.warn loadPlan.name
+         }
+      }
 
-        instance.endTxn()
+      instance.endTxn()
 
-    }
+   }
 }

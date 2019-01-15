@@ -5,10 +5,12 @@ import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
+import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
 import groovy.util.logging.Slf4j
@@ -97,6 +99,9 @@ class OdiPlugin implements Plugin<Project> {
          def contentPolicy = project.extensions.odi.contentPolicy
          log.debug "contentPolicy: $contentPolicy"
 
+         // assertions
+         assert ['dir', 'file'].contains(contentPolicy)
+
 //         // Let's JIT load the JDBC driver
 //         URLClassLoader loader = GroovyObject.class.classLoader
 //         project.configurations.jdbc.each { File file ->
@@ -159,9 +164,17 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
 
                   group taskGroup
-                  description "Import ODI model objects from source into the ODI repository."
+                  description "Import ODI models from source into the ODI repository."
                   instance odiInstance
                   category 'model'
+               }
+
+               project.task(bg.getTaskName('importLoadPlanDir'), type: ImportLoadPlanDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI load plans from source into the ODI repository."
+                  instance odiInstance
+                  category 'load-plan'
                }
 
                // Task that executes the smart export of a project
@@ -174,7 +187,6 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
-               // Task that executes the export of the objects of a project, one file per object
                project.task(bg.getTaskName('exportProjectDir'), type: ExportProjectDirectoryTask) {
 
                   group taskGroup
@@ -185,11 +197,18 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
-               // Task that exports the Model Folders by Name in the Repository
                project.task(bg.getTaskName('exportModelDir'), type: ExportModelDirectoryTask) {
 
                   group taskGroup
                   description "Export one or more models from the ODI repository into source control."
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
+               project.task(bg.getTaskName('exportLoadPlanDir'), type: ExportLoadPlanDirectoryTask) {
+
+                  group taskGroup
+                  description "Export one or more load plans from the ODI repository into source control."
                   instance odiInstance
                   outputs.upToDateWhen { false }
                }
@@ -250,6 +269,12 @@ class OdiPlugin implements Plugin<Project> {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importModelDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportModelDir')}"
                   }
+               }
+
+               if (project.extensions.odi.enableLoadPlans) {
+                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
+                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
+
                }
             }
          }

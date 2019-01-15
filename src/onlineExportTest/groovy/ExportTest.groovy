@@ -124,6 +124,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportLoadPlanDir task with defaults"() {
+      given:
+      taskName = 'exportLoadPlanDir'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :export task with defaults"() {
       given:
       taskName = 'export'

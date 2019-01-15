@@ -29,7 +29,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
       instance.beginTxn()
       models.each {
-         exportObjectWithParents(it, sourceBase.canonicalPath, true, true)
+         exportObject(it, sourceBase.canonicalPath, true)
       }
       instance.endTxn()
    }
