@@ -10,6 +10,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
 import groovy.util.logging.Slf4j
@@ -168,7 +169,7 @@ class OdiPlugin implements Plugin<Project> {
                   category 'model'
                }
 
-               project.task(bg.getTaskName('importLoadPlanDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importLoadPlanDir'), type: ImportLoadPlanDirectoryTask) {
 
                   group taskGroup
                   description "Import ODI load plans from source into the ODI repository."

@@ -127,6 +127,15 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :importLoadPlanDir task with defaults"() {
+      given:
+      taskName = 'importLoadPlanDir'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :import task with defaults"() {
       given:
       taskName = 'import'
