@@ -76,13 +76,13 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       export.each { object ->
 
-         exportObjectWithParents(
+         exportObject(
                  object.object,
                  "${exportDir.canonicalPath}/${object.folder}",
-                 true,
                  true
          )
       }
+
       instance.endTxn()
    }
 }
