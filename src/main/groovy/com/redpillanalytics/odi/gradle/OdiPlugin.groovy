@@ -5,7 +5,7 @@ import com.redpillanalytics.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
-import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlanDirTask
+import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
@@ -163,9 +163,17 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
 
                   group taskGroup
-                  description "Import ODI model objects from source into the ODI repository."
+                  description "Import ODI models from source into the ODI repository."
                   instance odiInstance
                   category 'model'
+               }
+
+               project.task(bg.getTaskName('importLoadPlanDir'), type: ImportDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI load plans from source into the ODI repository."
+                  instance odiInstance
+                  category 'load-plan'
                }
 
                // Task that executes the smart export of a project
@@ -196,7 +204,7 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
-               project.task(bg.getTaskName('exportLoadPlanDir'), type: ExportLoadPlanDirTask) {
+               project.task(bg.getTaskName('exportLoadPlanDir'), type: ExportLoadPlanDirectoryTask) {
 
                   group taskGroup
                   description "Export one or more load plans from the ODI repository into source control."
