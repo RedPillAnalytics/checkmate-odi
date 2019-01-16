@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-9"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.07" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="" keyVect="1WAsHhRjnwgLW1TM0c1PWQ==" exportKeySalt="3e60f15b-0f96-46bf-8e04-f0322cf25dd0" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.07" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="" keyVect="73MlcviERQNRtHvr/V8p0w==" exportKeySalt="5ad03d64-e5b7-4822-998e-e0a1f00b974a" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpLoadPlan#2]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpScenFolder">
+		<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-01-15 17:38:44.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[c91f39a0-e7bd-435d-ba15-a5fad10d08a1]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="IScenFolder" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="ITxtDescription" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-01-15 17:40:03.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="ParIScenFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ScenFolderName" type="java.lang.String"><![CDATA[test-folder]]></Field>
+</Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpLoadPlan">
 		<Field name="CecLprBehavior" type="java.lang.String"><![CDATA[E]]></Field>
 	<Field name="CecLprPollIntv" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
@@ -12,12 +29,12 @@
 	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
 	<Field name="IndSessLog" type="java.lang.String"><![CDATA[AK]]></Field>
 	<Field name="IndStepLog" type="java.lang.String"><![CDATA[AK]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[12]]></Field>
 	<Field name="ILoadPlan" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
 	<Field name="IScenFolder" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="ITxtDesc" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="KeepLogHdays" type="com.sunopsis.sql.DbInt"><![CDATA[7]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-01-15 17:40:03.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-01-15 21:53:06.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LoadPlanName" type="java.lang.String"><![CDATA[Test Load Plan]]></Field>
 	<Field name="MaxCecLpr" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
@@ -104,9 +121,9 @@
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpReferencedObject">
 		<Field name="IObject" type="com.sunopsis.sql.DbInt"><![CDATA[4400]]></Field>
-	<Field name="ObjectPKasString" type="java.lang.String"><![CDATA[93]]></Field>
+	<Field name="ObjectPKasString" type="java.lang.String"><![CDATA[313]]></Field>
 	<Field name="ObjectAKasString" type="java.lang.String"><![CDATA[TEST_PACKAGE#001]]></Field>
-	<Field name="Description" type="java.lang.String"><![CDATA[SNP_PROJECT : project-test #SNP_FOLDER : TEST_FOLDER #SNP_PACKAGE : TEST_PACKAGE #SNP_SCEN : TEST_PACKAGE Version 001]]></Field>
+	<Field name="Description" type="java.lang.String"><![CDATA[SNP_SCEN : TEST_PACKAGE Version 001]]></Field>
  <Field name="GlobalId" type="java.lang.String"><![CDATA[436596ee-54ef-4a75-b9b7-050c834250e2]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
@@ -148,7 +165,7 @@
 	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
-	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[5]]></Field>
 	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
