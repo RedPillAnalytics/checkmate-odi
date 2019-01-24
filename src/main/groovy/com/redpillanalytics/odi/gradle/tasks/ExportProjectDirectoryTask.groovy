@@ -20,6 +20,15 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    String projectCode
 
    /**
+    * The type of ODI object to export.
+    */
+   @Input
+   @Option(option = "object-type",
+           description = "The type of ODI object to export."
+   )
+   String objectType = 'mapping'
+
+   /**
     * The individual ODI Design folder to export. Default: all folders.
     */
    @Input
@@ -35,52 +44,28 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    @TaskAction
    def exportObjects() {
 
+      assert ['mapping', 'reusable-mapping', 'package', 'procedure'].contains(objectType)
+
       instance.connect()
 
       log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
-      // create the export list
-      def export = []
-
       def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
+
+      // capture the class name to use
+      // fancy regex... but all of this is to make 'reusable-mapping' == 'ReusableMapping'
+      def finder = objectType.replaceAll(~/([^-]+)(?:-)?(\w)?(.+)/) { String all, String first, String capital, String rest ->
+         "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
+      }
 
       // begin the transaction
       instance.beginTxn()
 
-      // Loop through each folder
       folders.each { OdiFolder folder ->
-
-         log.info "project folder: ${folder.name}"
-
-         instance.findMapping(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/mappings"]
+         log.info "Exporting folder '$folder'..."
+         instance."$finder"(projectCode, folder.name).each { object ->
+            exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
          }
-
-         // list the reusable mappings
-         instance.findReusableMapping(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/reusable-mappings"]
-         }
-
-         // list the packages
-         instance.findPackage(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/packages"]
-         }
-
-         // list the procedures
-         instance.findProcedure(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/procedures"]
-         }
-      }
-
-      instance.beginTxn()
-
-      export.each { object ->
-
-         exportObject(
-                 object.object,
-                 "${exportDir.canonicalPath}/${object.folder}",
-                 true
-         )
       }
 
       instance.endTxn()
