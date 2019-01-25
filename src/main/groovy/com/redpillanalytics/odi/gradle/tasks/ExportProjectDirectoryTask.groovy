@@ -62,7 +62,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
 
       folders.each { OdiFolder folder ->
-         log.info "Exporting folder '$folder'..."
+         log.info "Exporting folder '${folder.name}'..."
          instance."$finder"(projectCode, folder.name).each { object ->
             exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
          }
