@@ -20,15 +20,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    String projectCode
 
    /**
-    * The type of ODI object to export.
-    */
-   @Input
-   @Option(option = "object-type",
-           description = "The type of ODI object to export."
-   )
-   String objectType = 'mapping'
-
-   /**
     * The individual ODI Design folder to export. Default: all folders.
     */
    @Input
@@ -37,6 +28,12 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
            description = "The individual ODI Design folder to export. Default: all folders."
    )
    String folderName
+
+   /**
+    * The type of ODI object to export.
+    */
+   @Input
+   String objectType
 
    @Internal
    String category = 'project'
