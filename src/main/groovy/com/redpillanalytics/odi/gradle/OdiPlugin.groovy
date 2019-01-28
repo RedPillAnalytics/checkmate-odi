@@ -7,6 +7,7 @@ import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
 import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ExportObjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
@@ -189,12 +190,76 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('exportProjectDir'), type: ExportProjectDirectoryTask) {
 
                   group taskGroup
-                  description "Export ODI project '${defaultProjectCode}' from the ODI repository into source control"
+                  description """Run all project directory export tasks from ODI project '${defaultProjectCode}'${
+                     projectFolder ? " for folder '$projectFolder'" : ''
+                  }."""
+                  projectCode defaultProjectCode
+                  folderName projectFolder
+               }
+
+               // enable tasks for all the different object types in a project
+               project.task(bg.getTaskName('exportMappingDir'), type: ExportObjectDirectoryTask) {
+
+                  group taskGroup
+                  description """Export mappings from ODI project '${defaultProjectCode}' ${
+                     projectFolder ? "for folder '$projectFolder'" : ''
+                  }from the ODI repository into source control."""
+                  objectType 'mapping'
+                  projectCode project.tasks."${bg.getTaskName('exportMappingDir')}".projectCode ?: defaultProjectCode
+                  folderName project.tasks."${bg.getTaskName('exportMappingDir')}".folderName ?: projectFolder
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
+               project.task(bg.getTaskName('exportReusableMappingDir'), type: ExportObjectDirectoryTask) {
+
+                  group taskGroup
+                  description """Export reusable mappings from ODI project '${defaultProjectCode}' ${
+                     projectFolder ? "for folder '$projectFolder'" : ''
+                  }from the ODI repository into source control."""
+                  objectType 'reusable-mapping'
                   projectCode defaultProjectCode
                   instance odiInstance
                   folderName projectFolder
                   outputs.upToDateWhen { false }
                }
+
+               project.task(bg.getTaskName('exportProcedureDir'), type: ExportObjectDirectoryTask) {
+
+                  group taskGroup
+                  description """Export procedures from ODI project '${defaultProjectCode}' ${
+                     projectFolder ? "for folder '$projectFolder'" : ''
+                  }from the ODI repository into source control."""
+                  objectType 'procedure'
+                  projectCode defaultProjectCode
+                  instance odiInstance
+                  folderName projectFolder
+                  outputs.upToDateWhen { false }
+               }
+
+               project.task(bg.getTaskName('exportPackageDir'), type: ExportObjectDirectoryTask) {
+
+                  group taskGroup
+                  description """Export packages from ODI project '${defaultProjectCode}' ${
+                     projectFolder ? "for folder '$projectFolder'" : ''
+                  }from the ODI repository into source control."""
+                  objectType 'package'
+                  projectCode defaultProjectCode
+                  instance odiInstance
+                  folderName projectFolder
+                  outputs.upToDateWhen { false }
+               }
+
+               project."${bg.getTaskName('exportProjectDir')}".dependsOn project."${bg.getTaskName('exportMappingDir')}",
+                       project."${bg.getTaskName('exportReusableMappingDir')}",
+                       project."${bg.getTaskName('exportProcedureDir')}",
+                       project."${bg.getTaskName('exportPackageDir')}"
+
+               //dependsOn bg.getTaskName('exportMappingDir'), bg.getTaskName('exportReusableMappingDir'), bg.getTaskName('exportProcedureDir'), bg.getTaskName('exportPackageDir')
+
+               project."${bg.getTaskName('exportMappingDir')}".mustRunAfter project."${bg.getTaskName('exportReusableMappingDir')}"
+               project."${bg.getTaskName('exportPackageDir')}".mustRunAfter project."${bg.getTaskName('exportProcedureDir')}"
+               project."${bg.getTaskName('exportPackageDir')}".mustRunAfter project."${bg.getTaskName('exportMappingDir')}"
 
                project.task(bg.getTaskName('exportModelDir'), type: ExportModelDirectoryTask) {
 
@@ -256,8 +321,7 @@ class OdiPlugin implements Plugin<Project> {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectDir')}"
-                  }
-                  else if (contentPolicy == 'file') {
+                  } else if (contentPolicy == 'file') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectFile')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectFile')}"
                   }
