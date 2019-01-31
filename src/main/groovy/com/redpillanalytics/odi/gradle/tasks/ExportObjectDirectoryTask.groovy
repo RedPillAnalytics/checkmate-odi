@@ -82,7 +82,6 @@ class ExportObjectDirectoryTask extends ExportDirectoryTask {
       }
 
       instance.endTxn()
-      if (count == 0) log.warn "No project objects match those filters."
-      if (count == 0) throw new Exception("No project objects match those filters: folders: ${folders}; object types: ${objectList}")
+      if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
    }
 }
