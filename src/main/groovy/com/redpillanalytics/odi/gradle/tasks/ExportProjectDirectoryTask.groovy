@@ -11,6 +11,9 @@ import org.gradle.api.tasks.options.Option
 @Slf4j
 class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
+   @Internal
+   List objectMaster = ['reusable-mapping', 'mapping', 'procedure', 'package']
+
    /**
     * The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.
     */
@@ -29,60 +32,68 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    )
    String folderName
 
+   /**
+    * The type of ODI object to export. Default: all object types.
+    */
+   @Input
+   @Optional
+   @Option(option = "object-type",
+           description = "The type of ODI object to export. Default: all object types."
+   )
+   List<String> objectList = objectMaster
+
+   /**
+    * The name of the ODI object to export. Default: all object names.
+    */
+   @Input
+   @Optional
+   @Option(option = "object-name",
+           description = "The name of the ODI object to export. Default: all object names."
+   )
+   List<String> nameList
+
    @Internal
    String category = 'project'
 
    @TaskAction
    def exportObjects() {
 
+      objectList.each { object ->
+         assert "'object' must be one of '${objectMaster.toString()}'." && objectMaster.contains(object)
+      }
+
       instance.connect()
 
       log.debug "All projects: ${instance.projectFinder.findAll().toString()}"
 
-      // create the export list
-      def export = []
-
       def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
 
-      // begin the transaction
-      instance.beginTxn()
+      Integer count = 0
 
-      // Loop through each folder
-      folders.each { OdiFolder folder ->
+      objectList.each { objectType ->
 
-         log.info "project folder: ${folder.name}"
+         log.info "Exporting ${objectType}s..."
 
-         instance.findMapping(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/mappings"]
+         // capture the class name to use
+         // fancy regex... but all of this is to make 'reusable-mapping' == 'ReusableMapping'
+         def finder = objectType.replaceAll(~/([^-]+)(?:-)?(\w)?(.+)/) { String all, String first, String capital, String rest ->
+            "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
          }
 
-         // list the reusable mappings
-         instance.findReusableMapping(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/reusable-mappings"]
-         }
+         // begin the transaction
+         instance.beginTxn()
 
-         // list the packages
-         instance.findPackage(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/packages"]
-         }
-
-         // list the procedures
-         instance.findProcedure(projectCode, folder.name).each { object ->
-            export << [object: object, folder: "${folder.name}/procedures"]
+         folders.each { OdiFolder folder ->
+            instance."$finder"(projectCode, folder.name).each { object ->
+               if (!nameList || nameList.contains(object.name)) {
+                  count++
+                  logger.debug "object name: ${object.name}"
+                  exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
+               }
+            }
          }
       }
-
-      instance.beginTxn()
-
-      export.each { object ->
-
-         exportObject(
-                 object.object,
-                 "${exportDir.canonicalPath}/${object.folder}",
-                 true
-         )
-      }
-
       instance.endTxn()
+      if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
    }
 }

@@ -10,7 +10,6 @@ import org.gradle.api.tasks.options.Option
 @Slf4j
 class CreateProjectTask extends InstanceTask {
 
-
    /**
     * The ODI project code to create. Default: value of 'obi.projectName', or the name of the project subdirectory.
     */

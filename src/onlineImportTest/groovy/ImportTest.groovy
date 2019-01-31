@@ -49,6 +49,7 @@ class ImportTest extends Specification {
             |   masterUrl = '$masterUrl'
             |   masterPassword = '$masterPassword'
             |   odiPassword = '$odiPassword'
+            |   projectName = 'project-test'
             |}
         |""".stripMargin())
    }

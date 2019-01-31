@@ -21,22 +21,6 @@ class ExportTask extends InstanceTask {
    }
 
    @Internal
-   def exportObjectWithParents(IExportable object, String path, Boolean overwrite, Boolean recursive) {
-
-      def result = exportService.exportToXmlWithParents(
-              object,
-              path,
-              overwrite,
-              recursive,
-              new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
-              null,
-              true,
-      )
-
-      return result
-   }
-
-   @Internal
    def exportObject(IExportable object, String path, Boolean parents, Boolean overwrite = true, Boolean recursive = true) {
 
       def encodingOptions = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")

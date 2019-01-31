@@ -46,6 +46,7 @@ class ExportTest extends Specification {
             |   masterUrl = '$masterUrl'
             |   masterPassword = '$masterPassword'
             |   odiPassword = '$odiPassword'
+            |   projectName = 'project-test'
             |}
         |""".stripMargin())
    }
@@ -53,14 +54,14 @@ class ExportTest extends Specification {
    // helper method
    def executeSingleTask(String taskName, List otherArgs, Boolean logOutput = true) {
 
-      otherArgs.add(0, taskName)
+      def args = [taskName] + otherArgs
 
-      log.warn "runner arguments: ${otherArgs.toString()}"
+      log.warn "runner arguments: ${args.toString()}"
 
       // execute the Gradle test build
       result = GradleRunner.create()
               .withProjectDir(projectDir)
-              .withArguments(otherArgs)
+              .withArguments(args)
               .withPluginClasspath()
               .build()
 
@@ -97,7 +98,7 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportProjectDir task with --folder-name option"() {
+   def "Execute :exportProjectDir task for OTHER_FOLDER folder"() {
       given:
       taskName = 'exportProjectDir'
       result = executeSingleTask(taskName, ['--folder-name=OTHER_FOLDER', '-Si'])
@@ -106,7 +107,34 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportModelDir task defaults"() {
+   def "Execute :exportProjectDir task for only procedures and packages"() {
+      given:
+      taskName = 'exportProjectDir'
+      result = executeSingleTask(taskName, ['--object-type=package', '--object-type=procedure', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportProjectDir task for TEST_FOLDER folder and only procedures and packages"() {
+      given:
+      taskName = 'exportProjectDir'
+      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '--object-type=package', '--object-type=procedure', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportProjectDir task for objects TEST_PACKAGE and TEST_MAPPING"() {
+      given:
+      taskName = 'exportProjectDir'
+      result = executeSingleTask(taskName, ['--object-name=TEST_PACKAGE', '--object-name=TEST_MAPPING', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportModelDir task with defaults"() {
       given:
       taskName = 'exportModelDir'
       result = executeSingleTask(taskName, ['-Si'])

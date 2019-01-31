@@ -44,33 +44,22 @@ class OdiPlugin implements Plugin<Project> {
          // set all 'obi.<property>' -P options to the 'obi' extension
          GradleUtils.setParameters(project, 'odi')
 
-         String defaultProjectName
-         String defaultProjectCode
-//         String projectSource = "${project.extensions.odi.sourceBase}/project"
-//         String modelSource = "${project.extensions.odi.sourceBase}/model"
-
          // get the taskGroup
          String taskGroup = project.extensions.odi.taskGroup
 
          // TargetFolder variable to exportProjectFolder, that exports the objects contained in a specified folder on a project
          String projectFolder = project.extensions.odi.projectFolder
 
-         // see if there's an explicit project name
-         if (project.extensions.odi.projectName) {
-
-            // use this throughout for the projectName
-            defaultProjectName = project.extensions.odi.projectName
-            // also set our archive name to projectName
-            project.archivesBaseName = defaultProjectName
-
-         } else {
-            // we don't have a projectName so we need one
-            // just use the default archivesBaseName
-            defaultProjectName = project.archivesBaseName
-         }
-
          // if no project code is specified, create one
-         defaultProjectCode = project.extensions.odi.projectCode ?: project.extensions.odi.getProjectCode(defaultProjectName)
+         String defaultProjectName
+         String defaultProjectCode
+
+         if (project.extensions.odi.enableProjects) {
+
+            assert "'odi.projectName' is a required property." && project.extensions.odi.projectName
+            defaultProjectName = project.extensions.odi.projectName
+            defaultProjectCode = project.extensions.odi.projectCode ?: project.extensions.odi.getProjectCode(defaultProjectName)
+         }
 
          log.debug "defaultProjectCode: $defaultProjectCode"
          log.debug "defaultProjectName: $defaultProjectName"
@@ -121,10 +110,10 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
 
                   group taskGroup
-                  description = "Create project name '${defaultProjectName}' with project code '${defaultProjectCode}' in the ODI repositorty."
                   projectCode defaultProjectCode
                   projectName defaultProjectName
                   instance odiInstance
+                  description = "Create project name '${defaultProjectName}' with project code '${defaultProjectCode}' in the ODI repositorty."
                }
 
                // Task that deletes a project
@@ -189,10 +178,12 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('exportProjectDir'), type: ExportProjectDirectoryTask) {
 
                   group taskGroup
-                  description "Export ODI project '${defaultProjectCode}' from the ODI repository into source control"
+                  description """Run all project directory export tasks from ODI project '${defaultProjectCode}'${
+                     projectFolder ? " for folder '$projectFolder'" : ''
+                  }."""
                   projectCode defaultProjectCode
-                  instance odiInstance
                   folderName projectFolder
+                  instance odiInstance
                   outputs.upToDateWhen { false }
                }
 
@@ -256,8 +247,7 @@ class OdiPlugin implements Plugin<Project> {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectDir')}"
-                  }
-                  else if (contentPolicy == 'file') {
+                  } else if (contentPolicy == 'file') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectFile')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectFile')}"
                   }
