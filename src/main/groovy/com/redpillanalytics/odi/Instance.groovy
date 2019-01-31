@@ -160,7 +160,7 @@ class Instance {
 
    def getPackageFinder() {
 
-      return (IOdiPackageFinder) odi.getTransactionalEntityManager().getFinder(OdiPackage)
+      return (IOdiPackageFinder) odi.getTransactionalEntityManager().getFinder(OdiPackage.class)
    }
 
    def findPackage(String project, String folder) {
@@ -254,5 +254,9 @@ class Instance {
       def list = getLoadPlanFinder().findAll()
       log.info "Load plan list: $list"
       return list
+   }
+
+   def flush() {
+      odi.getTransactionalEntityManager().flush()
    }
 }
