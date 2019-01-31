@@ -42,6 +42,16 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    )
    List<String> objectList = objectMaster
 
+   /**
+    * The name of the ODI object to export. Default: all object names.
+    */
+   @Input
+   @Optional
+   @Option(option = "object-name",
+           description = "The name of the ODI object to export. Default: all object names."
+   )
+   List<String> nameList
+
    @Internal
    String category = 'project'
 
@@ -75,12 +85,14 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
          folders.each { OdiFolder folder ->
             instance."$finder"(projectCode, folder.name).each { object ->
-               count++
-               exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
+               if (!nameList || nameList.contains(object.name)) {
+                  count++
+                  logger.debug "object name: ${object.name}"
+                  exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
+               }
             }
          }
       }
-
       instance.endTxn()
       if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
    }

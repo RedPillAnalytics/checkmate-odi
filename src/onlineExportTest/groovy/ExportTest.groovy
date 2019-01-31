@@ -125,6 +125,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportProjectDir task for objects TEST_PACKAGE and TEST_MAPPING"() {
+      given:
+      taskName = 'exportProjectDir'
+      result = executeSingleTask(taskName, ['--object-name=TEST_PACKAGE', '--object-name=TEST_MAPPING', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportModelDir task with defaults"() {
       given:
       taskName = 'exportModelDir'
