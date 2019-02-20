@@ -9,6 +9,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
+import com.redpillanalytics.odi.gradle.tasks.ExportScenarioDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
@@ -199,6 +200,14 @@ class OdiPlugin implements Plugin<Project> {
 
                   group taskGroup
                   description "Export one or more load plans from the ODI repository into source control."
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
+               project.task(bg.getTaskName('exportScenarioDir'), type: ExportScenarioDirectoryTask) {
+
+                  group taskGroup
+                  description "Export one or more scenarios from the ODI repository into source control."
                   instance odiInstance
                   outputs.upToDateWhen { false }
                }
