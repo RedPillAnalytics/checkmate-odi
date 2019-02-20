@@ -9,6 +9,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
+import com.redpillanalytics.odi.gradle.tasks.ExportScenarioDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
@@ -203,6 +204,14 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
+               project.task(bg.getTaskName('exportScenarioDir'), type: ExportScenarioDirectoryTask) {
+
+                  group taskGroup
+                  description "Export one or more scenarios from the ODI repository into source control."
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
 //               // Task that exports the Model Folders by Name in the Repository
 //               project.task(bg.getTaskName('exportWorkRepo'), type: ExportWorkRepoTask) {
 //
@@ -261,8 +270,14 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                if (project.extensions.odi.enableLoadPlans) {
-                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
+                  //project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
                   project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
+
+               }
+
+               if (project.extensions.odi.enableScenarios) {
+                  //project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
+                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
 
                }
             }
