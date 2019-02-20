@@ -47,6 +47,11 @@ class OdiPluginExtension {
    Boolean enableLoadPlans = true
 
    /**
+    * When enabled, support ODI Scenarios in this Gradle project directory. Default is 'true'.
+    */
+   Boolean enableScenarios = true
+
+   /**
     * The base ODI build directory, which exists inside of the project 'buildDir' directory.
     */
    String buildBase = 'odi'
