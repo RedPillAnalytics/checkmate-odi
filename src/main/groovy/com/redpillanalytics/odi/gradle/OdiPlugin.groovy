@@ -166,6 +166,14 @@ class OdiPlugin implements Plugin<Project> {
                   category 'load-plan'
                }
 
+               project.task(bg.getTaskName('importScenarioDir'), type: ImportDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI load plans from source into the ODI repository."
+                  instance odiInstance
+                  category 'scenario'
+               }
+
                // Task that executes the smart export of a project
                project.task(bg.getTaskName('exportProjectFile'), type: ExportProjectFileTask) {
 
@@ -270,13 +278,13 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                if (project.extensions.odi.enableLoadPlans) {
-                  //project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
+                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
                   project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
 
                }
 
                if (project.extensions.odi.enableScenarios) {
-                  //project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
+                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
                   project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
 
                }
