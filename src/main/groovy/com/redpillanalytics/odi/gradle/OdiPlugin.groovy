@@ -10,6 +10,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportProjectFileTask
 import com.redpillanalytics.odi.gradle.tasks.ExportScenarioDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.GetOdiConnectionTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
@@ -123,6 +124,14 @@ class OdiPlugin implements Plugin<Project> {
                   group taskGroup
                   description = "Delete project code '${defaultProjectCode}' from the ODI repositorty."
                   projectCode defaultProjectCode
+                  instance odiInstance
+               }
+
+               // Task that conect to the ODI Repository to Validate Parameters
+               project.task(bg.getTaskName('getOdiConnection'), type: GetOdiConnectionTask) {
+
+                  group taskGroup
+                  description = "Test connection to ODI repository to validate connection parameters"
                   instance odiInstance
                }
 
