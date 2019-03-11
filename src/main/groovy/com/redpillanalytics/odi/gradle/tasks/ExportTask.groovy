@@ -3,6 +3,7 @@ package com.redpillanalytics.odi.gradle.tasks
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.impexp.IExportable
 import oracle.odi.impexp.EncodingOptions
+import oracle.odi.impexp.smartie.ISmartExportable
 import oracle.odi.impexp.smartie.impl.SmartExportServiceImpl
 import oracle.odi.impexp.support.ExportServiceImpl
 import org.gradle.api.tasks.Internal
@@ -47,6 +48,29 @@ class ExportTask extends InstanceTask {
                  true,
          )
       }
+      return result
+   }
+
+   @Internal
+   def smartExportObject(ISmartExportable object, String path, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = true) {
+
+      def encodingOptions = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
+      List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
+      smartExportList.add(object)
+      def result
+
+      result = smartExportService.exportToXml(
+              smartExportList,
+              path,
+              objectName,
+              overwrite,
+              isZip,
+              encodingOptions,
+              materializeShortcut,
+              null,
+              null,
+              exportWithoutCipherData)
+
       return result
    }
 }
