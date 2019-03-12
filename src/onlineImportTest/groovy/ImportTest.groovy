@@ -137,6 +137,15 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :importScenarioDir task with defaults"() {
+      given:
+      taskName = 'importScenarioDir'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :import task with defaults"() {
       given:
       taskName = 'import'

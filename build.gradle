@@ -25,7 +25,7 @@ scmVersion {
       prefix = 'v'
       versionSeparator = ''
    }
-   ignoreUncommittedChanges = false
+   ignoreUncommittedChanges = true
 }
 
 //set Gradle version to SCM Version
@@ -187,10 +187,12 @@ onlineExportTest.mustRunAfter onlineImportTest
 
 ext.bucket = 's3://documentation.redpillanalytics.com'
 ext.bucketPath = 'checkmate-odi'
+ext.resourceBucket = 's3://rpa-build-resources'
 
-task publishDocs {
 
-   description = 'Upload Groovydocs to s3.'
+task publishVersionDocs {
+
+   description = 'Upload version Groovydocs to s3.'
    group = 'documentation'
 
    doLast {
@@ -198,17 +200,46 @@ task publishDocs {
          executable 'aws'
          args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/${version}/"
       }
+   }
+   dependsOn groovydoc
+}
+
+task publishLatestDocs {
+
+   description = 'Upload latest Groovydocs to s3.'
+   group = 'documentation'
+
+   doLast {
       exec {
          executable 'aws'
          args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/latest/"
       }
    }
-
    dependsOn groovydoc
+   onlyIf { gitBranch == 'master' }
 }
 
-tasks.publishPlugins.dependsOn publishDocs
-tasks.publish.dependsOn tasks.build
+tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
+
+task runAllTests {
+   description 'Run all defined tests.'
+   group 'verification'
+}
+
+task copyBuildResources {
+   description 'Copy build resource files from S3.'
+   group 'build'
+   doLast {
+      exec {
+         executable 'aws'
+         args 's3', 'cp',"${resourceBucket}/gradle-analytics-build-user.json", "."
+      }
+      exec {
+         executable 'aws'
+         args 's3', 'cp',"${resourceBucket}/gradle.properties", "."
+      }
+   }
+}
 
 publishing {
    repositories {

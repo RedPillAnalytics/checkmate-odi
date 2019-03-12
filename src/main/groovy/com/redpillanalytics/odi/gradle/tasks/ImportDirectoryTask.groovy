@@ -85,5 +85,6 @@ class ImportDirectoryTask extends ImportTask {
    @TaskAction
    def taskAction() {
       smartImportXmlFiles()
+      //importXmlFiles()
    }
 }
