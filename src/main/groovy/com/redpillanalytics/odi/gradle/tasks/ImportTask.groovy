@@ -23,7 +23,7 @@ class ImportTask extends InstanceTask {
       importService.importObjectFromXml(
               ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
               file.canonicalPath,
-              false,
+              true,
               null,
               true
       )

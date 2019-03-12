@@ -29,7 +29,8 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
       instance.beginTxn()
       models.each {
-         exportObject(it, sourceBase.canonicalPath, true)
+         //exportObject(it, sourceBase.canonicalPath, true)
+         smartExportObject(it,sourceBase.canonicalPath,it.name)
       }
       instance.endTxn()
    }
