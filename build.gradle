@@ -219,7 +219,7 @@ task publishLatestDocs {
    onlyIf { gitBranch == 'master' }
 }
 
-tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
+tasks.publish.dependsOn publishVersionDocs, publishLatestDocs, publishPlugins
 
 task runAllTests {
    description 'Run all defined tests.'
@@ -241,13 +241,13 @@ task copyBuildResources {
    }
 }
 
-publishing {
-   repositories {
-      maven {
-         url project.version.endsWith('-SNAPSHOT') ? snapshotUrl : releaseUrl
-         authentication {
-            awsIm(AwsImAuthentication)
-         }
-      }
-   }
-}
+//publishing {
+//   repositories {
+//      maven {
+//         url project.version.endsWith('-SNAPSHOT') ? snapshotUrl : releaseUrl
+//         authentication {
+//            awsIm(AwsImAuthentication)
+//         }
+//      }
+//   }
+//}
