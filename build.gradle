@@ -1,22 +1,14 @@
-buildscript {
-   dependencies {
-      classpath 'com.squareup.okhttp3:okhttp:3.12.0'
-      classpath 'com.j256.simplemagic:simplemagic:1.10'
-      classpath 'org.zeroturnaround:zt-exec:1.10'
-   }
-}
-
 plugins {
    id 'groovy'
    id 'maven-publish'
-   id "com.gradle.plugin-publish" version "0.10.0"
+   id "com.gradle.plugin-publish" version "0.10.1"
    id 'java-gradle-plugin'
    id "pl.allegro.tech.build.axion-release" version "1.10.0"
    id 'org.unbroken-dome.test-sets' version '2.0.3'
-   id "com.github.johnrengelman.shadow" version "4.0.3"
-   id "com.github.ben-manes.versions" version "0.20.0"
-   id "com.github.breadmoirai.github-release" version "2.2.3"
-   id 'com.redpillanalytics.gradle-analytics' version "1.1.20"
+   //id "com.github.johnrengelman.shadow" version "4.0.3"
+   id "com.github.ben-manes.versions" version "0.21.0"
+   id "com.github.breadmoirai.github-release" version "2.2.6"
+   id 'com.redpillanalytics.gradle-analytics' version "1.1.21"
 }
 
 scmVersion {
@@ -172,12 +164,12 @@ testSets {
 //customize ShadowJar
 //jar.enabled = false
 
-shadowJar {
-   classifier = 'all'
-   zip64 = true
-}
+//shadowJar {
+//   classifier = 'all'
+//   zip64 = true
+//}
 
-tasks.build.dependsOn tasks.shadowJar
+//tasks.build.dependsOn tasks.shadowJar
 
 task('cleanJunit', type: Delete) {
    delete getTestResultsDir()
@@ -219,7 +211,7 @@ task publishLatestDocs {
    onlyIf { gitBranch == 'master' }
 }
 
-tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
+tasks.publish.dependsOn publishVersionDocs, publishLatestDocs, publishPlugins
 
 task runAllTests {
    description 'Run all defined tests.'
@@ -241,13 +233,13 @@ task copyBuildResources {
    }
 }
 
-publishing {
-   repositories {
-      maven {
-         url project.version.endsWith('-SNAPSHOT') ? snapshotUrl : releaseUrl
-         authentication {
-            awsIm(AwsImAuthentication)
-         }
-      }
-   }
-}
+//publishing {
+//   repositories {
+//      maven {
+//         url project.version.endsWith('-SNAPSHOT') ? snapshotUrl : releaseUrl
+//         authentication {
+//            awsIm(AwsImAuthentication)
+//         }
+//      }
+//   }
+//}
