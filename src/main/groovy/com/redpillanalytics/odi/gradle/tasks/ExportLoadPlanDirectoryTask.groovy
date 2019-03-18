@@ -2,6 +2,7 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.Instance
 import groovy.util.logging.Slf4j
+import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
@@ -22,8 +23,8 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
 
       instance.findAllLoadPlans().each {
-         exportObject(it, sourceBase.canonicalPath, true, true, true)
-         //smartExportObject(it, sourceBase.canonicalPath, it.name)
+         //exportObject(it, sourceBase.canonicalPath, true)
+         smartExportObject(it, sourceBase.canonicalPath, it.name)
       }
       instance.endTxn()
    }
