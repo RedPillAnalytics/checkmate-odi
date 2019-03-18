@@ -22,7 +22,8 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
         instance.beginTxn()
 
         instance.findAllScenarios().each {
-            exportObject(it, sourceBase.canonicalPath, true)
+            //exportObject(it, sourceBase.canonicalPath, true)
+            smartExportObject(it, sourceBase.canonicalPath, it.name)
         }
         instance.endTxn()
     }
