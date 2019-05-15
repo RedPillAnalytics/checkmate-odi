@@ -33,7 +33,7 @@ ext.pluginName = 'checkmate.odi'
 gradlePlugin {
    plugins {
       checkmateOdi {
-         id = 'com.redpillanalytics.checkmate.odi'
+         id = "com.redpillanalytics.${pluginName}"
          implementationClass = 'com.redpillanalytics.odi.gradle.OdiPlugin'
       }
    }
@@ -41,14 +41,14 @@ gradlePlugin {
 
 pluginBundle {
 
-   website = 'https://github.com/RedPillAnalytics/checkmate-odi/'
-   vcsUrl = 'https://github.com/RedPillAnalytics/checkmate-odi/'
+   description = "A CI/CD framework for Oracle Data Integrator."
+   website = "https://github.com/RedPillAnalytics/${rootProject.name}/"
+   vcsUrl = "https://github.com/RedPillAnalytics/${rootProject.name}/"
 
    plugins {
 
       checkmateOdi {
-         displayName = 'checkmate.odi'
-         description = "A CI/CD framework for Oracle Data Integrator."
+         displayName = pluginName
          tags = ['oracle', 'data-integration', 'etl']
          version = project.version
       }
