@@ -235,17 +235,23 @@ task copyGoogleJson(type: S3DownloadTask) {
    keyName "gradle-analytics-build-user.json"
 }
 
-task copyBuildResources {
-   description 'Copy build resource files from S3.'
-   dependsOn copyGoogleJson, copyGradleProps
-}
-
 task copyGradleProps(type: S3DownloadTask) {
    description 'Copy Gradle Properties file from S3.'
    group 'build'
 
    bucketName resourceBucket
    keyName "gradle.properties"
+}
+
+task copyBuildResources {
+   description 'Copy build resource files from S3.'
+   dependsOn copyGoogleJson, copyGradleProps
+}
+
+task runAllTests {
+   description = 'Run all defined tests.'
+   group = 'verification'
+   dependsOn onlineExportTest, onlineImportTest
 }
 
 //publishing {
@@ -257,8 +263,4 @@ task copyGradleProps(type: S3DownloadTask) {
 //         }
 //      }
 //   }
-//}task runAllTests {
-   description = 'Run all defined tests.'
-   group = 'verification'
-   dependsOn onlineExportTest, onlineImportTest
-}
+//}
