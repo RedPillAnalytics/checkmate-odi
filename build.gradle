@@ -1,15 +1,30 @@
+import com.redpillanalytics.aws.tasks.S3DownloadTask
+import com.redpillanalytics.aws.tasks.S3UploadSyncTask
+
 plugins {
-   id 'groovy'
-   id 'maven-publish'
    id "com.gradle.plugin-publish" version "0.10.1"
-   id 'java-gradle-plugin'
    id "pl.allegro.tech.build.axion-release" version "1.10.1"
+   id "com.github.breadmoirai.github-release" version "2.2.8"
+   id 'groovy'
+   id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '2.1.1'
    //id "com.github.johnrengelman.shadow" version "4.0.3"
    id "com.github.ben-manes.versions" version "0.21.0"
-   id "com.github.breadmoirai.github-release" version "2.2.8"
-   id 'com.redpillanalytics.gradle-analytics' version "1.2.3"
-   id "com.github.mgk.gradle.s3" version "1.4.0"
+   id 'com.adarshr.test-logger' version '1.6.0'
+   id "com.redpillanalytics.gradle-analytics" version "1.2.3"
+   id "com.avast.gradle.docker-compose" version "0.9.4"
+   id "com.redpillanalytics.gradle-aws" version "0.1.0"
+}
+
+// send analytics
+analytics {
+   organization = 'Red Pill Analytics'
+   sinks {
+      pubsub
+      s3 {
+         prefix = 'rpa-gradle-analytics'
+      }
+   }
 }
 
 scmVersion {
@@ -66,8 +81,8 @@ githubRelease {
 
 dependencies {
 
-   compile localGroovy()
    compile gradleApi()
+   compile localGroovy()
 
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
@@ -127,7 +142,13 @@ dependencies {
 //   compile 'org.apache.commons:commons-collections4:4.2'
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
+
+   // Plugin so classes can be used
+   compile "gradle.plugin.com.redpillanalytics:gradle-aws:0.1.0"
 }
+
+// Default artifact naming.
+group = 'com.redpillanalytics'
 
 repositories {
    jcenter()
@@ -150,8 +171,7 @@ repositories {
 
 // Options for all tests
 tasks.withType(Test) {
-   ignoreFailures = true
-   testLogging.showStandardStreams = true
+   testLogging.showStandardStreams true
    systemProperty 'projectDir', temporaryDir
    systemProperty 'odiPassword', odiPassword
    systemProperty 'masterPassword', masterPassword
@@ -179,60 +199,53 @@ task('cleanJunit', type: Delete) {
 
 onlineExportTest.mustRunAfter onlineImportTest
 
-ext.bucket = 's3://documentation.redpillanalytics.com'
-ext.bucketPath = 'checkmate-odi'
-ext.resourceBucket = 's3://rpa-build-resources'
 
+ext.bucket = 'documentation.redpillanalytics.com'
+ext.resourceBucket = 'rpa-build-resources'
 
-task publishVersionDocs {
+task publishVersionDocs(type: S3UploadSyncTask) {
 
    description = 'Upload version Groovydocs to s3.'
    group = 'documentation'
 
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/${version}/"
-      }
-   }
+   bucketName bucket
+   filePath groovydoc.destinationDir.getPath()
+   keyName "${rootProject.name}/${version}"
+
    dependsOn groovydoc
 }
 
-task publishLatestDocs {
+task publishLatestDocs(type: S3UploadSyncTask) {
 
    description = 'Upload latest Groovydocs to s3.'
    group = 'documentation'
 
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/latest/"
-      }
-   }
+   bucketName bucket
+   filePath groovydoc.destinationDir.getPath()
+   keyName "${rootProject.name}/latest"
+
    dependsOn groovydoc
-   onlyIf { gitBranch == 'master' }
 }
 
-tasks.publish.dependsOn publishVersionDocs, publishLatestDocs, publishPlugins
+task copyGoogleJson(type: S3DownloadTask) {
+   description 'Copy Google JSON credentials file from S3.'
+   group 'build'
 
-task runAllTests {
-   description 'Run all defined tests.'
-   group 'verification'
+   bucketName resourceBucket
+   keyName "gradle-analytics-build-user.json"
 }
 
 task copyBuildResources {
    description 'Copy build resource files from S3.'
+   dependsOn copyGoogleJson, copyGradleProps
+}
+
+task copyGradleProps(type: S3DownloadTask) {
+   description 'Copy Gradle Properties file from S3.'
    group 'build'
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'cp',"${resourceBucket}/gradle-analytics-build-user.json", "."
-      }
-      exec {
-         executable 'aws'
-         args 's3', 'cp',"${resourceBucket}/gradle.properties", "."
-      }
-   }
+
+   bucketName resourceBucket
+   keyName "gradle.properties"
 }
 
 //publishing {
@@ -244,4 +257,8 @@ task copyBuildResources {
 //         }
 //      }
 //   }
-//}
+//}task runAllTests {
+   description = 'Run all defined tests.'
+   group = 'verification'
+   dependsOn onlineExportTest, onlineImportTest
+}
