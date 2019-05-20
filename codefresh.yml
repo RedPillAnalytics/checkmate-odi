@@ -28,7 +28,7 @@ steps:
         - cp ${{ODI_HOME}}/odi/sdk/lib/*.jar ${{ODI_SDK}}
         - cp ${{ODI_HOME}}/jdeveloper/external/oracle.external.ucp.jar ${{ODI_SDK}}
         - cp ${{ODI_HOME}}/jdeveloper/ide/extensions/oracle.ide.persistence.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/jps-api.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.jps/jps-api.jar ${{ODI_SDK}}
         - cp ${{ODI_HOME}}/oracle_common/modules/oracle.ucp.jar ${{ODI_SDK}}
         - cp ${{ODI_HOME}}/oracle_common/modules/javax.persistence.jar ${{ODI_SDK}}
         - cp ${{ODI_HOME}}/oracle_common/modules/oracle.idm/identitystore.jar ${{ODI_SDK}}
