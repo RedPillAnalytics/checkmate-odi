@@ -54,6 +54,12 @@ steps:
         - cp ${{ODI_HOME}}/wlserver/modules/com.oracle.weblogic.rac.ucp.jar ${{ODI_SDK}}
         - cp ${{ODI_HOME}}/wlserver/modules/com.oracle.weblogic.persistence.jar ${{ODI_SDK}}
 
+    publish_sdk:
+      title: Publish ODI SDK
+      image: ${{gradle_image}}
+      cmd:
+        - publishOdiSdk
+
     release_plugin:
       title: Release Plugin
       image: ${{gradle_image}}
