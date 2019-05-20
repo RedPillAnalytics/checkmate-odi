@@ -177,6 +177,7 @@ task publishOdiSdk(type: S3UploadSyncTask) {
    group 'publish'
    bucketName sdkBucket
    keyName odiVersion
+   logger.warn "filepath: ${odiSdkHome}/${odiVersion}"
    filePath "${odiSdkHome}/${odiVersion}"
 }
 
