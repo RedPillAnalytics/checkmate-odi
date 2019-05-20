@@ -109,7 +109,7 @@ dependencies {
    compile "gradle.plugin.com.redpillanalytics:gradle-analytics:+"
 
    // ODI SDK copied down from S3
-   compile fileTree(dir: odiSdkHome, include: '*.jar')
+   compile fileTree(dir: "$odiSdkHome/$odiVersion", include: '*.jar')
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 
@@ -177,7 +177,6 @@ task publishOdiSdk(type: S3UploadSyncTask) {
    group 'publish'
    bucketName sdkBucket
    keyName odiVersion
-   logger.warn "filepath: ${odiSdkHome}/${odiVersion}"
    filePath "${odiSdkHome}/${odiVersion}"
 }
 
