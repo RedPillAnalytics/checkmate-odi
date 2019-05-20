@@ -1,14 +1,26 @@
 version: '1.0'
 steps:
 
-    build_image:
-      title: Build Image
+    gradle_image:
+      title: Build Gradle Image
       type: build
       image_name: gradle
 
+    odi_image:
+      title: Build ODI Image
+      type: build
+      image_name: odi
+      dockerfile: odi/Dockerfile
+
+    copy_jars:
+      title: Copy ODI JARs
+      image: ${{odi_image}}
+      commands:
+        - cp /u01/oracle/odi1/odi/sdk/lib/*.jar ${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/odi-sdk
+
     release_plugin:
       title: Release Plugin
-      image: ${{build_image}}
+      image: ${{gradle_image}}
       cmd:
         - clean
         - release
@@ -23,7 +35,7 @@ steps:
     
     build_plugin:
       title: Build Plugin
-      image: ${{build_image}}
+      image: ${{gradle_image}}
       cmd:
         - build
         - copyBuildResources
@@ -42,7 +54,7 @@ steps:
 
     publish_plugin:
       title: Publish Plugin
-      image: ${{build_image}}
+      image: ${{gradle_image}}
       cmd:
         - publishPlugins
         - publishLatestDocs
@@ -56,6 +68,6 @@ steps:
 
     analytics_producer:
       title: Analytics Producer
-      image: ${{build_image}}
+      image: ${{gradle_image}}
       cmd:
         - producer
