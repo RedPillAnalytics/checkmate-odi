@@ -11,7 +11,7 @@ steps:
       image: ${{gradle_image}}
       commands:
         - cf_export WORKSPACE=$CF_VOLUME_PATH/$CF_REPO_NAME
-        - cf_export ODI_SDK=$WORKSPACE/odi-sdk/12.2.1.3.0
+        - cf_export ODI_SDK=$WORKSPACE/odi-sdk/12.2.1.3.0 ODI_HOME=/u01/oracle/odi1
 
     odi_image:
       title: Build ODI Image
@@ -24,7 +24,34 @@ steps:
       image: ${{odi_image}}
       commands:
         - mkdir -p ${{ODI_SDK}}
-        - cp /u01/oracle/odi1/odi/sdk/lib/*.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/odi/sdk/lib/*.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/jdeveloper/external/oracle.external.ucp.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/jdeveloper/ide/extensions/oracle.ide.persistence.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/jps-api.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.ucp.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/javax.persistence.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.idm/identitystore.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.jdbc/ojdbc8.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.odl/ojdl.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/eclipselink.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.jpql.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.jpql.source.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.modelgen.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.modelgen.source.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.nosql.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.nosql.source.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.oracle.nosql.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.oracle.nosql.source.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.tools.oracleddl.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.tools.oracleddl.source.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/org.apache.maven_3.2.5/lib/commons-lang-2.6.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/bsh-2.0b4.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/commons-collections-3.2.2.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/jackson-core-2.7.9.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/jackson-databind-2.7.9.1.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/features/bsh.vb4.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/wlserver/modules/com.oracle.weblogic.rac.ucp.jar ${{ODI_SDK}}
+        - cp ${{ODI_HOME}}/wlserver/modules/com.oracle.weblogic.persistence.jar ${{ODI_SDK}}
 
     release_plugin:
       title: Release Plugin

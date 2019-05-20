@@ -1,4 +1,4 @@
-FROM oraclelinux:7-slim AS builder
+FROM oraclelinux:7-slim
 
 ENV JAVA_HOME=/usr/java/jdk1.8.0_211-amd64 \
     ODI_JAR=fmw_12.2.1.3.0_odi.jar \
