@@ -11,7 +11,8 @@ steps:
       image: ${{gradle_image}}
       commands:
         - cf_export WORKSPACE=$CF_VOLUME_PATH/$CF_REPO_NAME
-        - cf_export ODI_SDK=$WORKSPACE/odi-sdk/12.2.1.3.0 ODI_HOME=/u01/oracle/odi1
+        - cf_export ODI_SDK=$WORKSPACE/odi-sdk/12.2.1.3.0 
+        - cf_export ODI_HOME=/u01/oracle/odi1
 
     odi_image:
       title: Build ODI Image
