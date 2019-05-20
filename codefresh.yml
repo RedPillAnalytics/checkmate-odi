@@ -16,7 +16,6 @@ steps:
       title: Build ODI Image
       type: build
       image_name: odi
-      dockerfile: odi/Dockerfile
       working_directory: ${{WORKSPACE}}/odi
 
     copy_jars:
