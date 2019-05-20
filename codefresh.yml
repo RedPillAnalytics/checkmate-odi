@@ -6,17 +6,25 @@ steps:
       type: build
       image_name: gradle
 
+    define_vars:
+      title: Define Variables
+      image: ${{gradle_image}}
+      commands:
+        - cf_export WORKSPACE=$CF_VOLUME_PATH/$CF_REPO_NAME
+        - env | grep WORKSPACE
+
     odi_image:
       title: Build ODI Image
       type: build
       image_name: odi
       dockerfile: odi/Dockerfile
+      working_directory: ${{WORKSPACE}}/odi
 
     copy_jars:
       title: Copy ODI JARs
       image: ${{odi_image}}
       commands:
-        - cp /u01/oracle/odi1/odi/sdk/lib/*.jar ${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/odi-sdk
+        - cp /u01/oracle/odi1/odi/sdk/lib/*.jar ${{WORKSPACE}}/odi-sdk
 
     release_plugin:
       title: Release Plugin
