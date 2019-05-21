@@ -1,5 +1,7 @@
 import com.redpillanalytics.aws.tasks.S3UploadSyncTask
 import com.redpillanalytics.aws.tasks.S3DownloadSyncTask
+import com.bmuschko.gradle.docker.tasks.image.*
+import com.bmuschko.gradle.docker.tasks.container.*
 
 plugins {
    id "com.gradle.plugin-publish" version "0.10.1"
@@ -12,8 +14,8 @@ plugins {
    id "com.github.ben-manes.versions" version "0.21.0"
    id 'com.adarshr.test-logger' version '1.6.0'
    id "com.redpillanalytics.gradle-analytics" version "1.2.3"
-   id "com.avast.gradle.docker-compose" version "0.9.4"
    id "com.redpillanalytics.gradle-aws" version "0.1.2"
+   id "com.bmuschko.docker-remote-api" version "4.8.1"
 }
 
 // send analytics
@@ -51,16 +53,16 @@ ext.odiVersion = '12.2.1.3.0'
 ext.odiSdkHome = "odi-sdk"
 
 // Download ODI SDK
-task copyOdiSdk(type: S3DownloadSyncTask) {
-   description 'Copy the ODI SDK JAR files from S3.'
-   group 'build'
-   bucketName sdkBucket
-   keyName odiVersion
-   filePath odiSdkHome
-}
+// task copyOdiSdk(type: S3DownloadSyncTask) {
+//    description 'Copy the ODI SDK JAR files from S3.'
+//    group 'build'
+//    bucketName sdkBucket
+//    keyName odiVersion
+//    filePath odiSdkHome
+// }
 
-tasks.compileGroovy.dependsOn tasks.copyOdiSdk
-tasks.compileJava.dependsOn tasks.copyOdiSdk
+//tasks.compileGroovy.dependsOn tasks.copyOdiSdk
+//tasks.compileJava.dependsOn tasks.copyOdiSdk
 
 gradlePlugin {
    plugins {
@@ -227,3 +229,34 @@ task runAllTests {
 //      }
 //   }
 //}
+
+task buildImage(type: DockerBuildImage) {
+   description "Build ODI image."
+   group "docker"
+   inputDir = file('odi')
+   tags.add('odi:latest')
+}
+
+task createContainer(type: DockerCreateContainer) {
+   description "Create ODI container."
+   group "docker"
+   dependsOn buildImage
+   targetImageId buildImage.getImageId()
+   autoRemove = true
+}
+
+task startContainer(type: DockerStartContainer) {
+   description "Start ODI container."
+   group "docker"
+   dependsOn createContainer
+   targetContainerId createContainer.getContainerId()
+}
+
+task copyContainerFiles(type: DockerCopyFileFromContainer) {
+   description "Copy JAR files from 'odi/sdk/lib'."
+   group "docker"
+   dependsOn startContainer
+   remotePath = "/u01/oracle/odi1/odi/sdk/lib"
+   hostPath = "${buildDir}/odi-sdk"
+   targetContainerId startContainer.getContainerId()
+}

@@ -38,5 +38,3 @@ RUN chown oracle:oracle -R /u01 && \
     chmod a+xr /u01/oracle/container-scripts/*.*
 
 RUN su-exec oracle $JAVA_HOME/bin/java -jar $ODI_JAR -silent -invPtrLoc /u01/oraInst.loc -jreLoc $JAVA_HOME -ignoreSysPrereqs -force -novalidation ORACLE_HOME=$ORACLE_HOME INSTALL_TYPE="Standalone Installation"
-
-ENTRYPOINT [ "bash" ]
