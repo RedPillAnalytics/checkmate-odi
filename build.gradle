@@ -104,18 +104,6 @@ repositories {
    maven {
       url "https://plugins.gradle.org/m2/"
    }
-   maven {
-      url releaseUrl
-      authentication {
-         awsIm(AwsImAuthentication)
-      }
-   }
-   maven {
-      url snapshotUrl
-      authentication {
-         awsIm(AwsImAuthentication)
-      }
-   }
 }
 
 // Options for all tests
@@ -125,6 +113,9 @@ tasks.withType(Test) {
    systemProperty 'odiPassword', odiPassword
    systemProperty 'masterPassword', masterPassword
    systemProperty 'masterUrl', masterUrl
+   doFirst {
+      logger.warn "masterUrl: ${masterUrl}"
+   }
 }
 
 testSets {
@@ -171,6 +162,9 @@ task copyBuildResources(type: S3DownloadSyncTask) {
    bucketName resourceBucket
    keyName 'gradle'
    filePath gradle.getGradleUserHomeDir().toString()
+   doFirst {
+      logger.warn "gradle home: ${gradle.getGradleUserHomeDir().toString()}"
+   }
 }
 
 task runAllTests {
@@ -178,5 +172,3 @@ task runAllTests {
    group = 'verification'
    dependsOn onlineExportTest, onlineImportTest
 }
-
-

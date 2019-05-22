@@ -47,8 +47,8 @@ steps:
         - REPORT_DIR=test
         - REPORT_INDEX_FILE=index.html
         - CLEAR_TEST_REPORT=true
-        - BUCKET_NAME=rpa-checkmate-odi-reports
-        - CF_STORAGE_INTEGRATION=google-rpa-devops
+        - BUCKET_NAME=${{CF_REPO_NAME}}
+        - CF_STORAGE_INTEGRATION=rpa-test-reports
 
     publish_plugin:
       title: Publish Plugin
