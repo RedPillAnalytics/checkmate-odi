@@ -1,71 +1,22 @@
 version: '1.0'
 steps:
 
+    main_clone:
+      title: Cloning main repository...
+      type: git-clone
+      repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
+      revision: '${{CF_REVISION}}'
+
     gradle_image:
       title: Build Gradle Image
       type: build
       image_name: gradle
 
-    define_vars:
-      title: Define Variables
-      image: ${{gradle_image}}
-      commands:
-        - cf_export WORKSPACE=$CF_VOLUME_PATH/$CF_REPO_NAME
-        - cf_export ODI_SDK=$CF_VOLUME_PATH/$CF_REPO_NAME/odi-sdk/12.2.1.3.0 
-        - cf_export ODI_HOME=/u01/oracle/odi1
-
-    odi_image:
-      title: Build ODI Image
-      type: build
-      image_name: odi
-      working_directory: ${{WORKSPACE}}/odi
-
-    copy_jars:
-      title: Copy ODI JARs
-      image: ${{odi_image}}
-      commands:
-        - mkdir -p ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/odi/sdk/lib/*.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/jdeveloper/external/oracle.external.ucp.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/jdeveloper/ide/extensions/oracle.ide.persistence.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.jps/jps-api.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.ucp.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/javax.persistence.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.idm/identitystore.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.jdbc/ojdbc8.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.odl/ojdl.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/eclipselink.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.jpql.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.jpql.source.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.modelgen.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.jpa.modelgen.source.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.nosql.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.nosql.source.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.oracle.nosql.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.oracle.nosql.source.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.tools.oracleddl.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/oracle.toplink/org.eclipse.persistence.tools.oracleddl.source.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/org.apache.maven_3.2.5/lib/commons-lang-2.6.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/bsh-2.0b4.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/commons-collections-3.2.2.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/jackson-core-2.7.9.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/jackson-databind-2.7.9.1.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/oracle_common/modules/thirdparty/features/bsh.vb4.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/wlserver/modules/com.oracle.weblogic.rac.ucp.jar ${{ODI_SDK}}
-        - cp ${{ODI_HOME}}/wlserver/modules/com.oracle.weblogic.persistence.jar ${{ODI_SDK}}
-        - ls -l ${{ODI_SDK}}
-
-    publish_sdk:
-      title: Publish ODI SDK
-      image: ${{gradle_image}}
-      cmd:
-        - publishOdiSdk
-
     release_plugin:
       title: Release Plugin
       image: ${{gradle_image}}
       cmd:
-        - clean
+        - cleanLibs
         - release
         - -Prelease.disableChecks
         - -Prelease.localOnly
@@ -75,14 +26,17 @@ steps:
             validateTargetBranch: '"${{CF_PULL_REQUEST_TARGET}}" == "master"'
             prActionClose: '"${{CF_PULL_REQUEST_ACTION}}" == "closed"'
             prActionMerge: '"${{CF_PULL_REQUEST_MERGED}}" == "true"'
-    
+
     build_plugin:
       title: Build Plugin
       image: ${{gradle_image}}
       cmd:
+        - release
+        - -Prelease.disableChecks
+        - -Prelease.localOnly
+        - -Prelease.dryRun
         - build
         - copyBuildResources
-        - publishVersionDocs
 
     unit_tests:
       title: Parse Gradle Test Reports
@@ -99,9 +53,10 @@ steps:
       title: Publish Plugin
       image: ${{gradle_image}}
       cmd:
-        - publishPlugins
+        - publishVersionDocs
         - publishLatestDocs
         - githubRelease
+        - publishPlugins
       when:
         condition:
           all:
