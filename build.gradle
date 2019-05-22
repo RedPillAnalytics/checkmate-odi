@@ -170,6 +170,7 @@ task copyBuildResources(type: S3DownloadSyncTask) {
    group 'build'
    bucketName resourceBucket
    keyName 'gradle'
+   filePath gradle.getGradleUserHomeDir().toString()
 }
 
 task runAllTests {
