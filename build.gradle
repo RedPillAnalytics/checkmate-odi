@@ -11,7 +11,7 @@ plugins {
    id "com.github.ben-manes.versions" version "0.21.0"
    id 'com.adarshr.test-logger' version '1.6.0'
    id "com.redpillanalytics.gradle-analytics" version "1.2.3"
-   id "com.redpillanalytics.gradle-aws" version "0.1.3"
+   id "com.redpillanalytics.gradle-aws" version "0.1.4"
 }
 
 // send analytics
@@ -89,6 +89,9 @@ dependencies {
    // It also has the Common library in it, thus the dependency here
    compile "gradle.plugin.com.redpillanalytics:gradle-analytics:+"
 
+   // REST API library
+   compile 'com.mashape.unirest:unirest-java:+'
+
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 
    // Plugin so classes can be used
@@ -121,6 +124,7 @@ tasks.withType(Test) {
 testSets {
    onlineExportTest
    onlineImportTest
+   githubTest
 }
 
 task('cleanJunit', type: Delete) {

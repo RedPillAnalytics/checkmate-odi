@@ -1,6 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
-import com.redpillanalytics.odi.Instance
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import oracle.odi.domain.runtime.scenario.OdiScenario

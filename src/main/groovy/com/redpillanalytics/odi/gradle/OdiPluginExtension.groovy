@@ -71,6 +71,11 @@ class OdiPluginExtension {
     */
    String contentPolicy = 'dir'
 
+   /**
+    * ODI API ZIP location.
+    */
+   String apiPath = 'odi-sdk'
+
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"
    String masterRepo = "DEV_ODI_REPO"

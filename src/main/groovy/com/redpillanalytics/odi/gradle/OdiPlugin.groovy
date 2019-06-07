@@ -1,7 +1,8 @@
 package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
-import com.redpillanalytics.odi.Instance
+import com.redpillanalytics.odi.gradle.tasks.DownloadFileTask
+import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
@@ -14,9 +15,11 @@ import com.redpillanalytics.odi.gradle.tasks.GetOdiConnectionTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
+import com.redpillanalytics.odi.rest.GitHub
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.Copy
 
 @Slf4j
 class OdiPlugin implements Plugin<Project> {
@@ -92,16 +95,24 @@ class OdiPlugin implements Plugin<Project> {
          // assertions
          assert ['dir', 'file'].contains(contentPolicy)
 
-//         // Let's JIT load the JDBC driver
-//         URLClassLoader loader = GroovyObject.class.classLoader
-//         project.configurations.jdbc.each { File file ->
-//            log.warn "jdbc driver JAR: $file"
-//            loader.addURL(file.toURI().toURL())
-//            DriverManager.registerDriver(loader.loadClass(masterDriver).newInstance())
-//         }
-
          // let's go ahead and get an Instance object, but unconnected.
          def odiInstance = new Instance(masterUrl, masterDriver, masterRepo, workRepo, masterPassword, odiUser, odiPassword)
+         GitHub gitHub = new GitHub(owner: 'RedPillAnalytics', repo: 'odi-api')
+
+         // create task to download ODI API file
+         project.task('downloadApi', type: DownloadFileTask) {
+            taskGroup
+            url gitHub.getLatestAssetUrl()
+            filePath "${project.odi.apiPath}.zip"
+         }
+
+         project.task('extractApi', type: Copy) {
+            group taskGroup
+            description = "Extract the ODI API zip file."
+            from project.zipTree("${project.odi.apiPath}.zip")
+            into { project.odi.apiPath }
+            dependsOn project.tasks.downloadApi
+         }
 
          // configure all build groups
          project.odi.buildGroups.all { bg ->

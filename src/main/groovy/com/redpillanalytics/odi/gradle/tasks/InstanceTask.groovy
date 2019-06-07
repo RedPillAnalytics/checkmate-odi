@@ -1,10 +1,9 @@
 package com.redpillanalytics.odi.gradle.tasks
 
-import com.redpillanalytics.odi.Instance
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputDirectory
 
 @Slf4j
 class InstanceTask extends DefaultTask {

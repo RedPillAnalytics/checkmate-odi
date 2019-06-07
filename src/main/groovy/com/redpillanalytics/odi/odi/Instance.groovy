@@ -1,4 +1,4 @@
-package com.redpillanalytics.odi
+package com.redpillanalytics.odi.odi
 
 
 import groovy.util.logging.Slf4j
