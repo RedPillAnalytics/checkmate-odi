@@ -8,6 +8,10 @@ import org.gradle.api.tasks.Internal
 @Slf4j
 class InstanceTask extends DefaultTask {
 
+   InstanceTask() {
+      dependsOn project.tasks.extractApi
+   }
+
    @Internal
    Instance instance
 

@@ -22,6 +22,11 @@ class ApiTest extends Specification {
    @Shared
    AntBuilder ant = new AntBuilder()
 
+   def setupSpec() {
+      ant.delete(dir: projectDir)
+      ant.mkdir(dir: projectDir)
+   }
+
    def setup() {
 
       projectDir = new File("${System.getProperty("projectDir")}/$projectName")

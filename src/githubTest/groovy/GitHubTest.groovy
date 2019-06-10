@@ -12,7 +12,7 @@ class GitHubTest extends Specification{
    def "Latest release of 'odi-api' returned"() {
 
       when:
-      def result = gitHub.getLatestAsset(/(odi-api)(.+)(\.zip)/)
+      def result = gitHub.getAsset(/(odi-api)(.+)(\.zip)/)
 
       then:
       log.warn "asset: ${result.toString()}"

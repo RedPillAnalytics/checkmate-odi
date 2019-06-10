@@ -5,10 +5,6 @@ import com.mashape.unirest.http.Unirest
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
-
 @Slf4j
 class GitHub {
 
@@ -39,10 +35,12 @@ class GitHub {
     *
     * @param pattern A regex to use for matching assets.
     *
+    * @param version The release version to get. Defaults to 'latest'.
+    *
     * @return JSON payload describing the first matching asset returned from the latest release.
     */
-   def getLatestAsset(String pattern = /.+/) {
-      String url = "${repoUrl}/releases/latest"
+   def getAsset(String pattern = /.+/, String version = 'latest') {
+      String url = "${repoUrl}/releases/$version"
       log.debug "url: $url"
       HttpResponse<String> response = Unirest.get(url)
               .asString()
@@ -58,14 +56,16 @@ class GitHub {
    }
 
    /**
-    * Get a download URL for the first matching asset returned from the latest release.
+    * Get a download URL for the first matching asset returned from the release.
     *
     * @param pattern A regex to use for matching assets.
     *
-    * @return Download URL for the first matching asset returned from the latest release.
+    * @param version The release version to get. Defaults to 'latest'.
+    *
+    * @return Download URL for the first matching asset returned from the release.
     */
-   def getLatestAssetUrl(String pattern = /.+/) {
+   def getAssetUrl(String pattern = /.+/, String version = 'latest') {
 
-      return getLatestAsset(/(odi-api)(.+)(\.zip)/).browser_download_url
+      return getAsset(pattern, version).browser_download_url
    }
 }

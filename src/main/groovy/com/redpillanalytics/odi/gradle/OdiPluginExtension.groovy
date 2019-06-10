@@ -72,9 +72,30 @@ class OdiPluginExtension {
    String contentPolicy = 'dir'
 
    /**
+    * ODI API Repo owner.
+    */
+   String apiRepoOwner = 'RedPillAnalytics'
+
+   /**
+    * ODI API Repo.
+    */
+   String apiRepo = 'odi-api'
+
+   /**
     * ODI API ZIP location.
     */
    String apiPath = 'odi-sdk'
+
+   /**
+    * ODI API pattern.
+    */
+   String apiPattern = /(odi-api)(.+)(\.zip)/
+
+   /**
+    * ODI API version.
+    */
+   String apiVersion = 'latest'
+
 
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"
