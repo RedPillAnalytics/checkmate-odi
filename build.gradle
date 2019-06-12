@@ -1,14 +1,29 @@
+import com.redpillanalytics.aws.tasks.S3UploadSyncTask
+import com.redpillanalytics.aws.tasks.S3DownloadSyncTask
+
 plugins {
-   id 'groovy'
-   id 'maven-publish'
    id "com.gradle.plugin-publish" version "0.10.1"
+   id "pl.allegro.tech.build.axion-release" version "1.10.1"
+   id "com.github.breadmoirai.github-release" version "2.2.8"
+   id 'groovy'
    id 'java-gradle-plugin'
-   id "pl.allegro.tech.build.axion-release" version "1.10.0"
-   id 'org.unbroken-dome.test-sets' version '2.0.3'
-   //id "com.github.johnrengelman.shadow" version "4.0.3"
+   id 'org.unbroken-dome.test-sets' version '2.1.1'
    id "com.github.ben-manes.versions" version "0.21.0"
-   id "com.github.breadmoirai.github-release" version "2.2.6"
-   id 'com.redpillanalytics.gradle-analytics' version "1.1.21"
+   id 'com.adarshr.test-logger' version '1.6.0'
+   id "com.redpillanalytics.gradle-analytics" version "1.2.3"
+   id "com.redpillanalytics.gradle-aws" version "0.1.4"
+   id "com.redpillanalytics.checkmate.odi.api" version "0.1.16"
+}
+
+// send analytics
+analytics {
+   organization = 'Red Pill Analytics'
+   sinks {
+      pubsub
+      s3 {
+         prefix = 'rpa-gradle-analytics'
+      }
+   }
 }
 
 scmVersion {
@@ -25,10 +40,15 @@ allprojects {
    project.version = scmVersion.version
 }
 
+// Default artifact naming.
+group = 'com.redpillanalytics'
+ext.pluginName = 'checkmate.odi'
+
+
 gradlePlugin {
    plugins {
       checkmateOdi {
-         id = 'com.redpillanalytics.checkmate.odi'
+         id = "com.redpillanalytics.${pluginName}"
          implementationClass = 'com.redpillanalytics.odi.gradle.OdiPlugin'
       }
    }
@@ -36,14 +56,14 @@ gradlePlugin {
 
 pluginBundle {
 
-   website = 'https://github.com/RedPillAnalytics/checkmate-odi/'
-   vcsUrl = 'https://github.com/RedPillAnalytics/checkmate-odi/'
+   description = "A CI/CD framework for Oracle Data Integrator."
+   website = "https://github.com/RedPillAnalytics/${rootProject.name}/"
+   vcsUrl = "https://github.com/RedPillAnalytics/${rootProject.name}/"
 
    plugins {
 
       checkmateOdi {
-         displayName = 'checkmate.odi'
-         description = "A CI/CD framework for Oracle Data Integrator."
+         displayName = pluginName
          tags = ['oracle', 'data-integration', 'etl']
          version = project.version
       }
@@ -54,74 +74,27 @@ githubRelease {
 
    token = githubToken
    owner = 'RedPillAnalytics'
-   repo = 'checkmate-odi'
+   repo = rootProject.name
    tagName = "v${version}"
    releaseAssets = fileTree(dir: buildDir, includes: ["**/*${version}*", "**/*${version}*.jar"]).toList()
 }
 
 dependencies {
 
-   compile localGroovy()
    compile gradleApi()
+   compile localGroovy()
 
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
-   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
 
    // Gradle Analytics plugin
    // It also has the Common library in it, thus the dependency here
    compile "gradle.plugin.com.redpillanalytics:gradle-analytics:+"
 
-   // ODI SDK common libraries -- will add more in as required
-   compile 'nz.net.osnz.composite:composite-spring-jdbc:4.1'
-   compile 'org.springframework:spring-orm:4.0.1.RELEASE'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:2.7.3'
-   compile 'bsh:bsh:2.0b4'
-   compile 'org.apache-extras.beanshell:bsh:2.0b6'
-   compile 'com.fasterxml.jackson.core:jackson-core:2.9.8'
-   compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-   compile 'org.glassfish:javax.json:1.1.4'
-   compile 'org.eclipse.persistence:javax.persistence:2.2.1'
-   compile 'org.eclipse.persistence:org.eclipse.persistence.oracle:2.7.3'
-   compile 'org.ops4j.pax.runner:pax-runner-no-jcl:1.9.0'
-   compile 'commons-collections:commons-collections:20040616'
-   compile 'javolution:javolution:5.5.1'
-   compile 'trove:trove:1.0.2'
-
-   // ODI Core libraries -- will add more in as required
-   compile 'odi-sdk:odi-core:+'
-   compile 'odi-sdk:odi-connector:+'
-   compile 'odi-sdk:odi-cpld:+'
-   compile 'odi-sdk:odi-jse:+'
-   compile 'odi-sdk:odi-jaxrsri:+'
-   compile 'odi-sdk:spring-core:+'
-   compile 'odi-sdk:odi-happ-common:+'
-   compile 'odi-sdk:odi-happ-essbase:+'
-   compile 'odi-sdk:odi-happ-planning:+'
-   compile 'odi-sdk:odi-sap:+'
-   compile 'odi-sdk:odi-wls:+'
-   compile 'odi-sdk:ogg-jmx:+'
-   compile 'odi-sdk:ogg-jmx:+'
-   compile 'oracle-common:jps-api:+'
-   compile 'oracle-common:ojdl-core:+'
-   compile 'oracle-common:ojdbc8:+'
-   compile 'oracle-common:ucp-core:+'
-   compile 'wls-modules:wls-rac-ucp:+'
-   compile 'wls-modules:identitystore-core:+'
-
-   // Libraries that don't appear to be needed, but we will keep them commented out just in case
-//   compile 'org.springframework.integration:spring-integration-jdbc:4.0.0.RELEASE'
-//   compile 'oracle-common:persistence-api:+'
-//   compile 'wls-modules:persistence-core:+'
-//   compile 'javax.persistence:javax.persistence-api:+'
-//   compile 'org.eclipse.persistence:org.eclipse.persistence.asm:+'
-//   compile 'org.eclipse.persistence:org.eclipse.persistence.core:+'
-//   compile 'org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:+'
-//   compile 'org.eclipse.persistence:org.eclipse.persistence.nosql:+'
-//   compile 'org.eclipse.persistence:org.eclipse.persistence.oracle.nosql:+'
-//   compile 'org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:+'
-//   compile 'org.apache.commons:commons-collections4:4.2'
-
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
+
+   // Plugin so classes can be used
+   //implementation "gradle.plugin.com.redpillanalytics:odi-api:0.1.14"
+   implementation fileTree(dir: project.odiApi.libsDir, include: '*.jar')
 }
 
 // Default artifact naming.
@@ -132,24 +105,11 @@ repositories {
    maven {
       url "https://plugins.gradle.org/m2/"
    }
-   maven {
-      url releaseUrl
-      authentication {
-         awsIm(AwsImAuthentication)
-      }
-   }
-   maven {
-      url snapshotUrl
-      authentication {
-         awsIm(AwsImAuthentication)
-      }
-   }
 }
 
 // Options for all tests
 tasks.withType(Test) {
-   ignoreFailures = true
-   testLogging.showStandardStreams = true
+   testLogging.showStandardStreams true
    systemProperty 'projectDir', temporaryDir
    systemProperty 'odiPassword', odiPassword
    systemProperty 'masterPassword', masterPassword
@@ -161,85 +121,59 @@ testSets {
    onlineImportTest
 }
 
-//customize ShadowJar
-//jar.enabled = false
-
-//shadowJar {
-//   classifier = 'all'
-//   zip64 = true
-//}
-
-//tasks.build.dependsOn tasks.shadowJar
-
-task('cleanJunit', type: Delete) {
+task cleanJunit(type: Delete) {
    delete getTestResultsDir()
+}
+
+task cleanLibs(type: Delete) {
+   delete getLibsDir()
 }
 
 onlineExportTest.mustRunAfter onlineImportTest
 
-ext.bucket = 's3://documentation.redpillanalytics.com'
-ext.bucketPath = 'checkmate-odi'
-ext.resourceBucket = 's3://rpa-build-resources'
+ext.docsBucket = 'documentation.redpillanalytics.com'
+ext.resourceBucket = 'rpa-build-resources'
 
-
-task publishVersionDocs {
+task publishVersionDocs(type: S3UploadSyncTask) {
 
    description = 'Upload version Groovydocs to s3.'
    group = 'documentation'
 
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/${version}/"
-      }
-   }
+   bucketName docsBucket
+   filePath groovydoc.destinationDir.getPath()
+   keyName "${rootProject.name}/${version}"
+
    dependsOn groovydoc
 }
 
-task publishLatestDocs {
+task publishLatestDocs(type: S3UploadSyncTask) {
 
    description = 'Upload latest Groovydocs to s3.'
    group = 'documentation'
 
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/latest/"
-      }
-   }
+   bucketName docsBucket
+   filePath groovydoc.destinationDir.getPath()
+   keyName "${rootProject.name}/latest"
+
    dependsOn groovydoc
-   onlyIf { gitBranch == 'master' }
 }
 
-tasks.publish.dependsOn publishVersionDocs, publishLatestDocs, publishPlugins
-
-task runAllTests {
-   description 'Run all defined tests.'
-   group 'verification'
-}
-
-task copyBuildResources {
+task copyBuildResources(type: S3DownloadSyncTask) {
    description 'Copy build resource files from S3.'
    group 'build'
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'cp',"${resourceBucket}/gradle-analytics-build-user.json", "."
-      }
-      exec {
-         executable 'aws'
-         args 's3', 'cp',"${resourceBucket}/gradle.properties", "."
-      }
+   bucketName resourceBucket
+   keyName 'gradle'
+   filePath gradle.getGradleUserHomeDir().toString()
+   doFirst {
+      logger.warn "gradle home: ${gradle.getGradleUserHomeDir().toString()}"
    }
 }
 
-//publishing {
-//   repositories {
-//      maven {
-//         url project.version.endsWith('-SNAPSHOT') ? snapshotUrl : releaseUrl
-//         authentication {
-//            awsIm(AwsImAuthentication)
-//         }
-//      }
-//   }
-//}
+task runAllTests {
+   description = 'Run all defined tests.'
+   group = 'verification'
+   dependsOn onlineExportTest, onlineImportTest
+}
+
+tasks.build.dependsOn tasks.extractApi
+tasks.compileGroovy.mustRunAfter tasks.extractApi

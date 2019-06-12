@@ -59,7 +59,7 @@ class OdiPluginExtension {
    /**
     * The version of ODI that Checkmate will maintain compatibility with.
     */
-   String compatibility = '12.2.1.3'
+   String compatibility = '12.2.1.3.2'
 
    /**
     * The type of Work Repository: 'development' or 'execution'.
@@ -70,6 +70,11 @@ class OdiPluginExtension {
     * What method of content are we using in source control: 'dir' or 'file'.
     */
    String contentPolicy = 'dir'
+
+   /**
+    * When enabled, all Instance Tasks ensure that the ODI API zip file is downloaded and extracted. Only applicable with the 'com.redpillanalytics.checkmate.odi.api' plugin is enabled.
+    */
+   Boolean extractOdiApi = false
 
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"

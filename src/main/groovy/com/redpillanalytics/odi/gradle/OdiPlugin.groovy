@@ -1,7 +1,7 @@
 package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
-import com.redpillanalytics.odi.Instance
+import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
 import com.redpillanalytics.odi.gradle.tasks.DeleteProjectTask
@@ -40,6 +40,12 @@ class OdiPlugin implements Plugin<Project> {
 
       // we'll start with only a single build group
       project.extensions.odi.buildGroups.add(new BuildGroupContainer('default'))
+
+      // add ODI API plugin
+//      if (project.plugins.findPlugin('com.redpillanalytics.checkmate.odi.api')) {
+//         // add libsDir dependency
+//         project.buildscript.dependencies.add('classpath', project.fileTree(dir: project.file(project.extensions.odiApi.libsDir), include: '*.jar'))
+//      }
 
       project.afterEvaluate {
 
@@ -91,14 +97,6 @@ class OdiPlugin implements Plugin<Project> {
 
          // assertions
          assert ['dir', 'file'].contains(contentPolicy)
-
-//         // Let's JIT load the JDBC driver
-//         URLClassLoader loader = GroovyObject.class.classLoader
-//         project.configurations.jdbc.each { File file ->
-//            log.warn "jdbc driver JAR: $file"
-//            loader.addURL(file.toURI().toURL())
-//            DriverManager.registerDriver(loader.loadClass(masterDriver).newInstance())
-//         }
 
          // let's go ahead and get an Instance object, but unconnected.
          def odiInstance = new Instance(masterUrl, masterDriver, masterRepo, workRepo, masterPassword, odiUser, odiPassword)
