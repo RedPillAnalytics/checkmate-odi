@@ -52,7 +52,7 @@ steps:
         - REPORT_DIR=test
         - REPORT_INDEX_FILE=index.html
         - CLEAR_TEST_REPORT=true
-        - BUCKET_NAME=${{CF_REPO_NAME}}
+        - BUCKET_NAME=rpa-gradle-reports
         - CF_STORAGE_INTEGRATION=rpa-test-reports
 
     publish_plugin:

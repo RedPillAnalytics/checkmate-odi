@@ -12,6 +12,7 @@ plugins {
    id 'com.adarshr.test-logger' version '1.6.0'
    id "com.redpillanalytics.gradle-analytics" version "1.2.3"
    id "com.redpillanalytics.gradle-aws" version "0.1.4"
+   id "com.redpillanalytics.checkmate.odi.api" version "0.1.15"
 }
 
 // send analytics
@@ -89,14 +90,11 @@ dependencies {
    // It also has the Common library in it, thus the dependency here
    compile "gradle.plugin.com.redpillanalytics:gradle-analytics:+"
 
-   // REST API library
-   compile 'com.mashape.unirest:unirest-java:+'
-
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 
    // Plugin so classes can be used
-   //compile "gradle.plugin.com.redpillanalytics:gradle-aws:0.1.2"
-   //compile "gradle.plugin.com.redpillanalytics:odi-api:+"
+   //implementation "gradle.plugin.com.redpillanalytics:odi-api:0.1.14"
+   implementation fileTree(dir: project.odiApi.libsDir, include: '*.jar')
 }
 
 // Default artifact naming.
@@ -116,15 +114,11 @@ tasks.withType(Test) {
    systemProperty 'odiPassword', odiPassword
    systemProperty 'masterPassword', masterPassword
    systemProperty 'masterUrl', masterUrl
-   doFirst {
-      logger.warn "masterUrl: ${masterUrl}"
-   }
 }
 
 testSets {
    onlineExportTest
    onlineImportTest
-   githubTest
 }
 
 task('cleanJunit', type: Delete) {
@@ -176,3 +170,6 @@ task runAllTests {
    group = 'verification'
    dependsOn onlineExportTest, onlineImportTest
 }
+
+tasks.build.dependsOn tasks.extractApi
+tasks.compileGroovy.mustRunAfter tasks.extractApi

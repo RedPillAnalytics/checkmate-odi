@@ -1,7 +1,6 @@
 package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
-import com.redpillanalytics.odi.gradle.tasks.DownloadFileTask
 import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
@@ -15,11 +14,9 @@ import com.redpillanalytics.odi.gradle.tasks.GetOdiConnectionTask
 import com.redpillanalytics.odi.gradle.tasks.ImportDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportProjectFileTask
-import com.redpillanalytics.odi.rest.GitHub
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.Copy
 
 @Slf4j
 class OdiPlugin implements Plugin<Project> {
@@ -44,13 +41,16 @@ class OdiPlugin implements Plugin<Project> {
       // we'll start with only a single build group
       project.extensions.odi.buildGroups.add(new BuildGroupContainer('default'))
 
+      // add ODI API plugin
+//      if (project.plugins.findPlugin('com.redpillanalytics.checkmate.odi.api')) {
+//         // add libsDir dependency
+//         project.buildscript.dependencies.add('classpath', project.fileTree(dir: project.file(project.extensions.odiApi.libsDir), include: '*.jar'))
+//      }
+
       project.afterEvaluate {
 
          // set all 'obi.<property>' -P options to the 'obi' extension
          GradleUtils.setParameters(project, 'odi')
-
-         // set the ODI API directory
-         project.dependencies {}
 
          // get the taskGroup
          String taskGroup = project.extensions.odi.taskGroup
@@ -100,20 +100,6 @@ class OdiPlugin implements Plugin<Project> {
 
          // let's go ahead and get an Instance object, but unconnected.
          def odiInstance = new Instance(masterUrl, masterDriver, masterRepo, workRepo, masterPassword, odiUser, odiPassword)
-         GitHub gitHub = new GitHub(owner: project.odi.apiRepoOwner, repo:  project.odi.apiRepo)
-
-         // create task to download ODI API file
-         project.task('downloadApi', type: DownloadFileTask) {
-            url gitHub.getAssetUrl( project.odi.apiPattern,  project.odi.apiVersion)
-            filePath "${project.odi.apiPath}.zip"
-         }
-
-         project.task('extractApi', type: Copy) {
-            description = "Extract the ODI API zip file."
-            from project.zipTree("${project.odi.apiPath}.zip")
-            into { project.odi.apiPath }
-            dependsOn project.tasks.downloadApi
-         }
 
          // configure all build groups
          project.odi.buildGroups.all { bg ->
@@ -311,8 +297,6 @@ class OdiPlugin implements Plugin<Project> {
                }
             }
          }
-
-
       }
    }
 }

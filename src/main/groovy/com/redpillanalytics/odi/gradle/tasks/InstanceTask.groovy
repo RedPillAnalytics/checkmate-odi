@@ -9,7 +9,10 @@ import org.gradle.api.tasks.Internal
 class InstanceTask extends DefaultTask {
 
    InstanceTask() {
-      dependsOn project.tasks.extractApi
+      // if the ODI API plugin is installed, then ensure the API is there
+      if (project.plugins.findPlugin('com.redpillanalytics.checkmate.odi.api') && project.odi.extractOdiApi) {
+         dependsOn project.tasks.extractApi
+      }
    }
 
    @Internal
