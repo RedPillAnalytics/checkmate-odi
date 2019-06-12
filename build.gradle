@@ -70,13 +70,14 @@ pluginBundle {
    }
 }
 
-githubRelease {
+FilenameFilter filter = { dir, filename -> filename.contains("${rootProject.name}-${project.version}") }
 
+githubRelease {
    token = githubToken
    owner = 'RedPillAnalytics'
    repo = rootProject.name
    tagName = "v${version}"
-   releaseAssets = fileTree(dir: buildDir, includes: ["**/*${version}*", "**/*${version}*.jar"]).toList()
+   releaseAssets = [jar.destinationDir.listFiles(filter)]
 }
 
 dependencies {

@@ -20,12 +20,20 @@ steps:
         - release
         - -Prelease.disableChecks
         - -Prelease.localOnly
+        - -Si
       when:
         condition:
           all:
             validateTargetBranch: '"${{CF_PULL_REQUEST_TARGET}}" == "master"'
             prActionClose: '"${{CF_PULL_REQUEST_ACTION}}" == "closed"'
             prActionMerge: '"${{CF_PULL_REQUEST_MERGED}}" == "true"'
+
+    build_resources:
+      title: Copy Build Resources
+      image: ${{gradle_image}}
+      cmd:
+        - copyBuildResources
+        - -Si
 
     build_plugin:
       title: Build Plugin
@@ -37,8 +45,13 @@ steps:
         - -Prelease.dryRun
         - build
         - runAllTests
-        - copyBuildResources
         - -Si
+
+    inspect_build:
+      title: Inspect Build Directory
+      image: alpine:latest
+      commands:
+        - ls -lhR build
 
     unit_tests:
       title: Parse Gradle Test Reports
