@@ -27,12 +27,6 @@ steps:
             prActionClose: '"${{CF_PULL_REQUEST_ACTION}}" == "closed"'
             prActionMerge: '"${{CF_PULL_REQUEST_MERGED}}" == "true"'
 
-    copy_resources:
-      title: Copy Build Resources
-      image: ${{gradle_image}}
-      cmd:
-        - copyBuildResources
-
     build_plugin:
       title: Build Plugin
       image: ${{gradle_image}}
@@ -42,7 +36,8 @@ steps:
         - -Prelease.localOnly
         - -Prelease.dryRun
         - build
-        - runAllTests
+        - copyBuildResources
+        - -Si
 
     unit_tests:
       title: Parse Gradle Test Reports
