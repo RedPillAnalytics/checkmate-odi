@@ -47,6 +47,12 @@ steps:
         - runAllTests
         - -Si
 
+    inspect_build:
+      title: Inspect Build Directory
+      image: alpine:latest
+      commands:
+        - ls -lhR build
+
     unit_tests:
       title: Parse Gradle Test Reports
       image: codefresh/cf-docker-test-reporting
