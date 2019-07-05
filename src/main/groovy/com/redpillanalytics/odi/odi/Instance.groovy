@@ -234,6 +234,7 @@ class Instance {
    }
 
    // Model Finders
+
    def getModelFinder() {
       return (IOdiModelFinder) odi.getTransactionalEntityManager().getFinder(OdiModel.class)
    }
@@ -249,6 +250,7 @@ class Instance {
    }
 
    // Model Folder Finders
+
    def getModelFolderFinder() {
       return (IOdiModelFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiModelFolder.class)
    }
@@ -264,6 +266,7 @@ class Instance {
    }
 
    // Scenario Finders
+
    def getScenarioFinder() {
       return (IOdiScenarioFinder) odi.getTransactionalEntityManager().getFinder(OdiScenario.class)
    }
@@ -285,6 +288,7 @@ class Instance {
    }
 
    // Load Plans Finder
+
    def getLoadPlanFinder() {
       def finder = (IOdiLoadPlanFinder) odi.getTransactionalEntityManager().getFinder(OdiLoadPlan.class)
       return finder
@@ -297,6 +301,7 @@ class Instance {
    }
 
    // Variable Finder
+
    def getVariableFinder() {
       def finder = (IOdiVariableFinder) odi.getTransactionalEntityManager().getFinder(OdiVariable.class)
       return finder
@@ -314,25 +319,27 @@ class Instance {
       return list
    }
 
-   // KM Finder
-   def getKMFinder() {
+   // KnowledgeModule Finder
+
+   def getKnowledgeModuleFinder() {
       def finder = (IOdiKMFinder) odi.getTransactionalEntityManager().getFinder(OdiKM.class)
       return finder
    }
 
-   def findAllGlobalKMs() {
-      def list = getKMFinder().findAllGlobals()
-      log.info "Global KMs list: $list"
+   def findAllGlobalKnowledgeModule() {
+      def list = getKnowledgeModuleFinder().findAllGlobals()
+      log.info "Global KnowledgeModule list: $list"
       return list
    }
 
-   def findKM(String projectCode) {
-      def list = getKMFinder().findByProject(projectCode)
-      log.info "KM list: $list"
+   def findKnowledgeModule(String projectCode) {
+      def list = getKnowledgeModuleFinder().findByProject(projectCode)
+      log.info "KnowledgeModuleFinder list: $list"
       return list
    }
 
    // Sequence Finder
+
    def getSequenceFinder() {
       def finder = (IOdiSequenceFinder) odi.getTransactionalEntityManager().getFinder(OdiSequence.class)
       return finder
@@ -351,6 +358,7 @@ class Instance {
    }
 
    // UserFunction Finder
+
    def getUserFunctionFinder() {
       def finder = (IOdiUserFunctionFinder) odi.getTransactionalEntityManager().getFinder(OdiUserFunction.class)
       return finder
@@ -369,6 +377,7 @@ class Instance {
    }
 
    // Context Finder
+
    def getContextFinder() {
       def finder = (IOdiContextFinder) odi.getTransactionalEntityManager().getFinder(OdiContext.class)
       return finder
@@ -381,6 +390,7 @@ class Instance {
    }
 
    // Technology Finder
+
    def getTechnologyFinder() {
       def finder = (IOdiTechnologyFinder) odi.getTransactionalEntityManager().getFinder(OdiTechnology.class)
       return finder
@@ -399,6 +409,7 @@ class Instance {
    }
 
    // DataServer Finder
+
    def getDataServerFinder() {
       def finder = (IOdiDataServerFinder) odi.getTransactionalEntityManager().getFinder(OdiDataServer.class)
       return finder
@@ -411,6 +422,7 @@ class Instance {
    }
 
    // PhysicalSchema Finder
+
    def getPhysicalSchemaFinder() {
       def finder = (IOdiPhysicalSchemaFinder) odi.getTransactionalEntityManager().getFinder(OdiPhysicalSchema.class)
       return finder
@@ -423,6 +435,7 @@ class Instance {
    }
 
    // PhysicalAgent Finder
+
    def getPhysicalAgentFinder() {
       def finder = (IOdiPhysicalAgentFinder) odi.getTransactionalEntityManager().getFinder(OdiPhysicalAgent.class)
       return finder
@@ -435,6 +448,7 @@ class Instance {
    }
 
    // LogicalAgent Finder
+
    def getLogicalAgentFinder() {
       def finder = (IOdiLogicalAgentFinder) odi.getTransactionalEntityManager().getFinder(OdiLogicalAgent.class)
       return finder
@@ -447,6 +461,7 @@ class Instance {
    }
 
    // LogicalSchema Finder
+
    def getLogicalSchemaFinder() {
       def finder = (IOdiLogicalSchemaFinder) odi.getTransactionalEntityManager().getFinder(OdiLogicalSchema.class)
       return finder

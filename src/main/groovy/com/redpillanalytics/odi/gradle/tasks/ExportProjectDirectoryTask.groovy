@@ -12,7 +12,7 @@ import org.gradle.api.tasks.options.Option
 class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
    @Internal
-   List objectMaster = ['reusable-mapping', 'mapping', 'procedure', 'package']
+   List objectMaster = ['variable', 'sequence', 'knowledge-module', 'user-function', 'reusable-mapping', 'mapping', 'procedure', 'package']
 
    /**
     * The ODI project code to export. Default: value of 'odi.projectName', or the name of the project subdirectory.
@@ -82,14 +82,27 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
          // begin the transaction
          instance.beginTxn()
-
-         folders.each { OdiFolder folder ->
-            instance."$finder"(projectCode, folder.name).each { object ->
+         // export the project objects
+         if (finder.contains('Variable') || finder.contains('Sequence') || finder.contains('KnowledgeModule') || finder.contains('UserFunction')) {
+            instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
                   count++
                   logger.debug "object name: ${object.name}"
-                  exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
-                  //smartExportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", object.name)
+                  exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                  //smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
+               }
+            }
+         }
+         else {
+            // export the folder objects
+            folders.each { OdiFolder folder ->
+               instance."$finder"(projectCode, folder.name).each { object ->
+                  if (!nameList || nameList.contains(object.name)) {
+                     count++
+                     logger.debug "object name: ${object.name}"
+                     exportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", true)
+                     //smartExportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", object.name)
+                  }
                }
             }
          }
