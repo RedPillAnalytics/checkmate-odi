@@ -285,15 +285,17 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                if (project.extensions.odi.enableLoadPlans) {
-                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
-                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
-
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
+                  }
                }
 
                if (project.extensions.odi.enableScenarios) {
-                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
-                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
-
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
+                  }
                }
             }
          }

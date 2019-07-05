@@ -118,6 +118,14 @@ class Instance {
       odi.close()
    }
 
+   def flush() {
+      odi.getTransactionalEntityManager().flush()
+   }
+
+   // IFinder Objects
+
+   // Project Finders
+
    def getProjectFinder() {
       return (IOdiProjectFinder) odi.getTransactionalEntityManager().getFinder(OdiProject.class)
    }
@@ -127,6 +135,13 @@ class Instance {
       if (!project && !ignore) throw new Exception("Project code '${code}' does not exist.")
       return project
    }
+
+   def getProjects() {
+
+      return projectFinder.findAll().toArray()
+   }
+
+   // Folder Finders
 
    def getFolderFinder() {
       return (IOdiFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiFolder.class)
@@ -148,6 +163,8 @@ class Instance {
       return getFoldersProjectFinder().findByProject(project)
    }
 
+   // Mapping Finders
+
    def getMappingFinder() {
 
       return (IMappingFinder) odi.getTransactionalEntityManager().getFinder(Mapping.class)
@@ -157,6 +174,8 @@ class Instance {
 
       return getMappingFinder().findByProject(project, folder)
    }
+
+   // Package Finders
 
    def getPackageFinder() {
 
@@ -168,6 +187,8 @@ class Instance {
       return getPackageFinder().findByProject(project, folder)
    }
 
+   // Procedure Finders
+
    def getProcedureFinder() {
 
       return (IOdiUserProcedureFinder) odi.getTransactionalEntityManager().getFinder(OdiUserProcedure.class)
@@ -177,6 +198,8 @@ class Instance {
 
       return getProcedureFinder().findByProject(project, folder)
    }
+
+   // Reusable-Mapping Finders
 
    def getReusableMappingFinder() {
 
@@ -188,12 +211,7 @@ class Instance {
       return getReusableMappingFinder().findByProject(project, folder)
    }
 
-   def getProjects() {
-
-      return projectFinder.findAll().toArray()
-   }
-
-   //Model Finders
+   // Model Finders
    def getModelFinder() {
       return (IOdiModelFinder) odi.getTransactionalEntityManager().getFinder(OdiModel.class)
    }
@@ -208,7 +226,7 @@ class Instance {
       return model
    }
 
-   //Model Folder Finders
+   // Model Folder Finders
    def getModelFolderFinder() {
       return (IOdiModelFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiModelFolder.class)
    }
@@ -223,7 +241,7 @@ class Instance {
       return folder
    }
 
-   //Scenario Finders
+   // Scenario Finders
    def getScenarioFinder() {
       return (IOdiScenarioFinder) odi.getTransactionalEntityManager().getFinder(OdiScenario.class)
    }
@@ -244,7 +262,7 @@ class Instance {
       return getScenarioFinder().findLatestBySourceUserProcedure(userProcedureInternalID, useTimestamp)
    }
 
-   //Load Plans Finder
+   // Load Plans Finder
    def getLoadPlanFinder() {
       def finder = (IOdiLoadPlanFinder) odi.getTransactionalEntityManager().getFinder(OdiLoadPlan.class)
       return finder
@@ -254,9 +272,5 @@ class Instance {
       def list = getLoadPlanFinder().findAll()
       log.info "Load plan list: $list"
       return list
-   }
-
-   def flush() {
-      odi.getTransactionalEntityManager().flush()
    }
 }

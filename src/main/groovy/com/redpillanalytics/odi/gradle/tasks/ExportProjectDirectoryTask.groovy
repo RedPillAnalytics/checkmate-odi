@@ -15,11 +15,11 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    List objectMaster = ['reusable-mapping', 'mapping', 'procedure', 'package']
 
    /**
-    * The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.
+    * The ODI project code to export. Default: value of 'odi.projectName', or the name of the project subdirectory.
     */
    @Input
    @Option(option = "project-code",
-           description = "The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.")
+           description = "The ODI project code to export. Default: value of 'odi.projectName', or the name of the project subdirectory.")
    String projectCode
 
    /**
@@ -88,8 +88,8 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                if (!nameList || nameList.contains(object.name)) {
                   count++
                   logger.debug "object name: ${object.name}"
-                  //exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
-                  smartExportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", object.name)
+                  exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
+                  //smartExportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", object.name)
                }
             }
          }
