@@ -22,6 +22,11 @@ class OdiPluginExtension {
    Boolean enableProjects = true
 
    /**
+    * When enabled, support ODI Global Objects in this Gradle project directory. Default is 'true'.
+    */
+   Boolean enableGlobals = true
+
+   /**
     * The name of the ODI project being built. Defaults to the directory name in source control. Required parameter.
     */
    String projectName

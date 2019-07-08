@@ -1,6 +1,7 @@
 package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
+import com.redpillanalytics.odi.gradle.tasks.ExportGlobalDirectoryTask
 import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
@@ -223,6 +224,14 @@ class OdiPlugin implements Plugin<Project> {
 
                   group taskGroup
                   description "Export one or more scenarios from the ODI repository into source control."
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
+               project.task(bg.getTaskName('exportGlobalDir'), type: ExportGlobalDirectoryTask) {
+
+                  group taskGroup
+                  description "Export global objects from the ODI repository into source control."
                   instance odiInstance
                   outputs.upToDateWhen { false }
                }

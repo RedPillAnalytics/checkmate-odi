@@ -188,49 +188,45 @@ class Instance {
    // Mapping Finders
 
    def getMappingFinder() {
-
       return (IMappingFinder) odi.getTransactionalEntityManager().getFinder(Mapping.class)
    }
 
    def findMapping(String project, String folder) {
-
       return getMappingFinder().findByProject(project, folder)
    }
 
    // Package Finders
 
    def getPackageFinder() {
-
       return (IOdiPackageFinder) odi.getTransactionalEntityManager().getFinder(OdiPackage.class)
    }
 
    def findPackage(String project, String folder) {
-
       return getPackageFinder().findByProject(project, folder)
    }
 
    // Procedure Finders
 
    def getProcedureFinder() {
-
       return (IOdiUserProcedureFinder) odi.getTransactionalEntityManager().getFinder(OdiUserProcedure.class)
    }
 
    def findProcedure(String project, String folder) {
-
       return getProcedureFinder().findByProject(project, folder)
    }
 
    // Reusable-Mapping Finders
 
    def getReusableMappingFinder() {
-
       return (IReusableMappingFinder) odi.getTransactionalEntityManager().getFinder(ReusableMapping.class)
    }
 
    def findReusableMapping(String project, String folder) {
-
       return getReusableMappingFinder().findByProject(project, folder)
+   }
+
+   def findAllGlobalReusableMappings() {
+      return getReusableMappingFinder().findAllGlobals()
    }
 
    // Model Finders
