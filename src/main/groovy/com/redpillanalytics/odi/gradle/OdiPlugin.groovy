@@ -182,6 +182,14 @@ class OdiPlugin implements Plugin<Project> {
                   category 'scenario'
                }
 
+               project.task(bg.getTaskName('importGlobalDir'), type: ImportDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI global objects from source into the ODI repository."
+                  instance odiInstance
+                  category 'global'
+               }
+
                // Task that executes the smart export of a project
                project.task(bg.getTaskName('exportProjectFile'), type: ExportProjectFileTask) {
 
@@ -304,6 +312,13 @@ class OdiPlugin implements Plugin<Project> {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
+                  }
+               }
+
+               if (project.extensions.odi.enableGlobals) {
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importGlobalDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportGlobalDir')}"
                   }
                }
             }
