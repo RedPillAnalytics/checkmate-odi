@@ -74,28 +74,10 @@ class ImportTest extends Specification {
       return result
    }
 
-   def "Execute :createProject task"() {
+   def "Execute :import task with defaults"() {
       given:
-      taskName = 'createProject'
-      result = executeSingleTask(taskName, ['clean', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
-
-   def "Execute :importProjectFile task with defaults"() {
-      given:
-      taskName = 'importProjectFile'
+      taskName = 'import'
       result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
-
-   def "Execute :importProjectFile task with --source-file option"() {
-      given:
-      taskName = 'importProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=PROJECT-TEST.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -146,10 +128,46 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :import task with defaults"() {
+   def "Execute :importGlobalDir task with defaults"() {
       given:
-      taskName = 'import'
+      taskName = 'importGlobalDir'
       result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :importTopologyDir task with defaults"() {
+      given:
+      taskName = 'importTopologyDir'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :createProject task"() {
+      given:
+      taskName = 'createProject'
+      result = executeSingleTask(taskName, ['clean', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :importProjectFile task with defaults"() {
+      given:
+      taskName = 'importProjectFile'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :importProjectFile task with --source-file option"() {
+      given:
+      taskName = 'importProjectFile'
+      result = executeSingleTask(taskName, ['--source-file=PROJECT-TEST.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
