@@ -21,7 +21,27 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         instance.connect()
         instance.beginTxn()
 
-        instance.findAllGlobalKnowledgeModule().each {
+        instance.findAllGlobalCKM().each {
+            exportObject(it, sourceBase.canonicalPath, true)
+            //smartExportObject(it, sourceBase.canonicalPath, it.name)
+        }
+
+        instance.findAllGlobalIKM().each {
+            exportObject(it, sourceBase.canonicalPath, true)
+            //smartExportObject(it, sourceBase.canonicalPath, it.name)
+        }
+
+        instance.findAllGlobalJKM().each {
+            exportObject(it, sourceBase.canonicalPath, true)
+            //smartExportObject(it, sourceBase.canonicalPath, it.name)
+        }
+
+        instance.findAllGlobalLKM().each {
+            exportObject(it, sourceBase.canonicalPath, true)
+            //smartExportObject(it, sourceBase.canonicalPath, it.name)
+        }
+
+        instance.findAllGlobalRKM().each {
             exportObject(it, sourceBase.canonicalPath, true)
             //smartExportObject(it, sourceBase.canonicalPath, it.name)
         }

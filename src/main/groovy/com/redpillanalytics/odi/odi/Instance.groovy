@@ -18,18 +18,28 @@ import oracle.odi.domain.model.OdiModel
 import oracle.odi.domain.model.OdiModelFolder
 import oracle.odi.domain.model.finder.IOdiModelFinder
 import oracle.odi.domain.model.finder.IOdiModelFolderFinder
+import oracle.odi.domain.project.OdiCKM
 import oracle.odi.domain.project.OdiFolder
+import oracle.odi.domain.project.OdiIKM
+import oracle.odi.domain.project.OdiJKM
 import oracle.odi.domain.project.OdiKM
+import oracle.odi.domain.project.OdiLKM
 import oracle.odi.domain.project.OdiPackage
 import oracle.odi.domain.project.OdiProject
+import oracle.odi.domain.project.OdiRKM
 import oracle.odi.domain.project.OdiSequence
 import oracle.odi.domain.project.OdiUserFunction
 import oracle.odi.domain.project.OdiUserProcedure
 import oracle.odi.domain.project.OdiVariable
+import oracle.odi.domain.project.finder.IOdiCKMFinder
 import oracle.odi.domain.project.finder.IOdiFolderFinder
+import oracle.odi.domain.project.finder.IOdiIKMFinder
+import oracle.odi.domain.project.finder.IOdiJKMFinder
 import oracle.odi.domain.project.finder.IOdiKMFinder
+import oracle.odi.domain.project.finder.IOdiLKMFinder
 import oracle.odi.domain.project.finder.IOdiPackageFinder
 import oracle.odi.domain.project.finder.IOdiProjectFinder
+import oracle.odi.domain.project.finder.IOdiRKMFinder
 import oracle.odi.domain.project.finder.IOdiSequenceFinder
 import oracle.odi.domain.project.finder.IOdiUserFunctionFinder
 import oracle.odi.domain.project.finder.IOdiUserProcedureFinder
@@ -316,10 +326,66 @@ class Instance {
    }
 
    // KnowledgeModule Finder
+   // IOdiCKMFinder, IOdiIKMFinder, IOdiJKMFinder, IOdiLKMFinder, IOdiRKMFinder
 
    def getKnowledgeModuleFinder() {
       def finder = (IOdiKMFinder) odi.getTransactionalEntityManager().getFinder(OdiKM.class)
       return finder
+   }
+
+   def getCKMFinder() {
+      def finder = (IOdiCKMFinder) odi.getTransactionalEntityManager().getFinder(OdiCKM.class)
+      return finder
+   }
+
+   def getIKMFinder() {
+      def finder = (IOdiIKMFinder) odi.getTransactionalEntityManager().getFinder(OdiIKM.class)
+      return finder
+   }
+
+   def getJKMFinder() {
+      def finder = (IOdiJKMFinder) odi.getTransactionalEntityManager().getFinder(OdiJKM.class)
+      return finder
+   }
+
+   def getLKMFinder() {
+      def finder = (IOdiLKMFinder) odi.getTransactionalEntityManager().getFinder(OdiLKM.class)
+      return finder
+   }
+
+   def getRKMFinder() {
+      def finder = (IOdiRKMFinder) odi.getTransactionalEntityManager().getFinder(OdiRKM.class)
+      return finder
+   }
+
+   def findAllGlobalCKM() {
+      def list = getCKMFinder().findAllGlobals()
+      log.info "Global CKM list: $list"
+      return list
+   }
+
+   def findAllGlobalIKM() {
+      def list = getIKMFinder().findAllGlobals()
+      log.info "Global IKM list: $list"
+      return list
+   }
+
+   def findAllGlobalJKM() {
+      def list = getJKMFinder().findAllGlobals()
+      log.info "Global JKM list: $list"
+      return list
+   }
+
+   def findAllGlobalLKM() {
+      def list = getLKMFinder().findAllGlobals()
+      log.info "Global LKM list: $list"
+      return list
+   }
+
+   def findAllGlobalRKM() {
+      def list = getRKMFinder().findAllGlobals()
+      log.info "Global RKM list: $list"
+      return list
    }
 
    def findAllGlobalKnowledgeModule() {
