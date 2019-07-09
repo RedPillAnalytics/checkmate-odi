@@ -37,4 +37,13 @@ class ImportTask extends InstanceTask {
               true
       )
    }
+
+   @Internal
+   smartImportObjectCipherData(File file, char [] exportKey) {
+      smartImportService.importObjectsFromXml(
+              file.canonicalPath,
+              exportKey,
+              false
+      )
+   }
 }
