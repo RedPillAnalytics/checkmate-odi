@@ -11,7 +11,7 @@ import org.gradle.api.tasks.options.Option
 class ExportTopologyDirectoryTask extends ExportDirectoryTask {
 
     @Internal
-    List objectMaster = ['technology', 'context', 'data-server', 'physical-schema', 'physical-agent', 'logical-agent', 'logical-schema']
+    List objectList = ['technology', 'context', 'data-server', 'physical-schema', 'physical-agent', 'logical-agent', 'logical-schema']
 
     @Internal
     String category = 'topology'
@@ -19,15 +19,15 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
     @TaskAction
     def exportObjects() {
 
-        objectMaster.each { object ->
-            assert "'object' must be one of '${objectMaster.toString()}'." && objectMaster.contains(object)
+        objectList.each { object ->
+            assert "'object' must be one of '${objectList.toString()}'." && objectList.contains(object)
         }
 
         instance.connect()
 
         Integer count = 0
 
-        objectMaster.each { objectType ->
+        objectList.each { objectType ->
 
             log.info "Exporting ${objectType}s..."
 
@@ -47,6 +47,6 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
             }
         }
         instance.endTxn()
-        if (count == 0) throw new Exception("No topology objects match provided filters; object types: ${objectMaster}")
+        if (count == 0) throw new Exception("No topology objects match provided filters; object types: ${objectList}")
     }
 }
