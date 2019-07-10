@@ -34,37 +34,7 @@ class ExportTask extends InstanceTask {
                  overwrite,
                  recursive,
                  encodingOptions,
-                 null,
-                 true,
-         )
-      } else {
-         result = exportService.exportToXml(
-                 object,
-                 path,
-                 overwrite,
-                 recursive,
-                 encodingOptions,
-                 null,
-                 true,
-         )
-      }
-      return result
-   }
-
-   @Internal
-   def exportObjectCipherData(IExportable object, String path, Boolean parents, char[] exportKey, Boolean overwrite = true, Boolean recursive = true) {
-
-      def encodingOptions = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
-      def result
-
-      if (parents) {
-         result = exportService.exportToXmlWithParents(
-                 object,
-                 path,
-                 overwrite,
-                 recursive,
-                 encodingOptions,
-                 exportKey,
+                 'checkmate-odi12c+' as char[],
                  false,
          )
       } else {
@@ -74,12 +44,42 @@ class ExportTask extends InstanceTask {
                  overwrite,
                  recursive,
                  encodingOptions,
-                 exportKey,
+                 'checkmate-odi12c+' as char[],
                  false,
          )
       }
       return result
    }
+
+//   @Internal
+//   def exportObjectCipherData(IExportable object, String path, Boolean parents, char[] exportKey, Boolean overwrite = true, Boolean recursive = true) {
+//
+//      def encodingOptions = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
+//      def result
+//
+//      if (parents) {
+//         result = exportService.exportToXmlWithParents(
+//                 object,
+//                 path,
+//                 overwrite,
+//                 recursive,
+//                 encodingOptions,
+//                 exportKey,
+//                 false,
+//         )
+//      } else {
+//         result = exportService.exportToXml(
+//                 object,
+//                 path,
+//                 overwrite,
+//                 recursive,
+//                 encodingOptions,
+//                 exportKey,
+//                 false,
+//         )
+//      }
+//      return result
+//   }
 
    @Internal
    def smartExportObject(ISmartExportable object, String path, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = true) {

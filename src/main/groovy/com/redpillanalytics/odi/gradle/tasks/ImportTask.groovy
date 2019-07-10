@@ -33,17 +33,17 @@ class ImportTask extends InstanceTask {
    smartImportObject(File file) {
       smartImportService.importObjectsFromXml(
               file.canonicalPath,
-              null,
-              true
+              'checkmate-odi12c+' as char[],
+              false,
       )
    }
 
-   @Internal
-   smartImportObjectCipherData(File file, char [] exportKey) {
-      smartImportService.importObjectsFromXml(
-              file.canonicalPath,
-              exportKey,
-              false
-      )
-   }
+//   @Internal
+//   smartImportObjectCipherData(File file, char [] exportKey) {
+//      smartImportService.importObjectsFromXml(
+//              file.canonicalPath,
+//              exportKey,
+//              false
+//      )
+//   }
 }
