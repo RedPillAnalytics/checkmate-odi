@@ -95,7 +95,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectDir task with --source-dir option"() {
       given:
       taskName = 'importProjectDir'
-      result = executeSingleTask(taskName, ['--source-dir=folder/OTHER_FOLDER', '-Si'])
+      result = executeSingleTask(taskName, ['--source-dir=OTHER_FOLDER', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
