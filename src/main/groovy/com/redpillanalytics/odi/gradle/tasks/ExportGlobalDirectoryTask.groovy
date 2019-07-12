@@ -51,7 +51,7 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
             //smartExportObject(it, "${sourceBase.canonicalPath}/skm", it.name)
         }
 
-        instance.findAllGlobalSKM().each {
+        instance.findAllGlobalXKM().each {
             exportObject(it, "${sourceBase.canonicalPath}/xkm", true)
             //smartExportObject(it, "${sourceBase.canonicalPath}/xkm", it.name)
         }
