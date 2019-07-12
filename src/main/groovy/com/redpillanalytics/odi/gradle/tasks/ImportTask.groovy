@@ -24,8 +24,8 @@ class ImportTask extends InstanceTask {
               ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
               file.canonicalPath,
               true,
-              null,
-              true
+              'checkmate-odi12c+' as char[],
+              false
       )
    }
 

@@ -52,7 +52,7 @@ class ExportTask extends InstanceTask {
    }
 
    @Internal
-   def smartExportObject(ISmartExportable object, String path, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = true) {
+   def smartExportObject(ISmartExportable object, String path, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
 
       def encodingOptions = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
@@ -68,7 +68,7 @@ class ExportTask extends InstanceTask {
               encodingOptions,
               materializeShortcut,
               null,
-              null,
+              'checkmate-odi12c+' as char[],
               exportWithoutCipherData)
 
       return result
