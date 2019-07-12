@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-9"?>
 <SunopsisExport>
 <Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="5A0NnXuHthFxWq7gAxpF3MUKtNWR6AR63QM2v2dBTVg=" keyVect="r7m72TRzEN91fSEdW3kowA==" exportKeySalt="763fb7a2-0e73-4822-b754-e002a253b9a1" containsCipherText="false"/>
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="AElkq5lf96I6CiFkOo5ddFZ+zIPCrq/yahJMA4RxLPo=" keyVect="b8EJnf4sDHQiZN9op4Ut6w==" exportKeySalt="6730e259-bcde-478e-a51f-296e1faae1ac" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTechno#12]]></Include>
 </SmartExportList>
@@ -6279,6 +6279,15 @@
 <Object class="com.sunopsis.dwg.dbobj.SnpConvDt">
 		<Field name="Expr1" type="java.lang.String">null</Field>
 	<Field name="Expr2" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[2d4debbb-4412-48e5-8109-6ab82778e20a]]></Field>
+	<Field name="ITargTechno" type="com.sunopsis.sql.DbInt"><![CDATA[12]]></Field>
+	<Field name="SrcDt" type="com.sunopsis.sql.DbInt"><![CDATA[775]]></Field>
+	<Field name="TargDt" type="com.sunopsis.sql.DbInt"><![CDATA[195]]></Field>
+	<Field name="TargDtCond" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpConvDt">
+		<Field name="Expr1" type="java.lang.String">null</Field>
+	<Field name="Expr2" type="java.lang.String">null</Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[a5242912-7cd7-4d51-9d4b-412b39247740]]></Field>
 	<Field name="ITargTechno" type="com.sunopsis.sql.DbInt"><![CDATA[12]]></Field>
 	<Field name="SrcDt" type="com.sunopsis.sql.DbInt"><![CDATA[805]]></Field>
@@ -6318,15 +6327,6 @@
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[34d67381-581f-455e-9fb1-0b8718f758e8]]></Field>
 	<Field name="ITargTechno" type="com.sunopsis.sql.DbInt"><![CDATA[12]]></Field>
 	<Field name="SrcDt" type="com.sunopsis.sql.DbInt"><![CDATA[804]]></Field>
-	<Field name="TargDt" type="com.sunopsis.sql.DbInt"><![CDATA[195]]></Field>
-	<Field name="TargDtCond" type="java.lang.String">null</Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpConvDt">
-		<Field name="Expr1" type="java.lang.String">null</Field>
-	<Field name="Expr2" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[2d4debbb-4412-48e5-8109-6ab82778e20a]]></Field>
-	<Field name="ITargTechno" type="com.sunopsis.sql.DbInt"><![CDATA[12]]></Field>
-	<Field name="SrcDt" type="com.sunopsis.sql.DbInt"><![CDATA[775]]></Field>
 	<Field name="TargDt" type="com.sunopsis.sql.DbInt"><![CDATA[195]]></Field>
 	<Field name="TargDtCond" type="java.lang.String">null</Field>
 </Object>
@@ -15709,6 +15709,13 @@
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9.6]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_DT.775]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3f0febeb-ae3c-4424-b9e8-1997900ebc23]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[Generic SQL.DOUBLE]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TECHNO.SNP_DT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[11.6]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_DT.805]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[75a5e093-2faa-3c37-808c-007dc02f0337]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[HBase.BOOLEAN]]></Field>
@@ -15742,13 +15749,6 @@
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[HBase.DOUBLE]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TECHNO.SNP_DT]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[5.6]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_DT.775]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3f0febeb-ae3c-4424-b9e8-1997900ebc23]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[Generic SQL.DOUBLE]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TECHNO.SNP_DT]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[11.6]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_DT.236]]></Field>

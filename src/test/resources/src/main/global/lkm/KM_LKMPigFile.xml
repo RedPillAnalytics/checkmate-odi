@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="ISO-8859-9"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="2EkpRW3ipBGAOcUw5ppXK/PNRyL/Ugqw+EdaRoYiYD4=" keyVect="CTwmtop5uBVVut8AC5rbRQ==" exportKeySalt="1e18ad22-b5ff-458e-ae9c-71d7bfb5e8d3" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#106]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpTrt">
+		<Field name="CleanupOnError" type="java.lang.String">null</Field>
+	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
+	<Field name="DelegateClass" type="java.lang.String"><![CDATA[LKMPigFile]]></Field>
+	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
+
+
+	public class LKMPigFile extends LKMPig {
+		static {
+            LKMPig.storageClasses.put(LKMPigBinStorage.STORAGE_FUNCTION,LKMPigBinStorage.class);
+            LKMPig.storageClasses.put(LKMPigJsonStorage.LOADER_FUNCTION,LKMPigJsonStorage.class);
+            LKMPig.storageClasses.put(LKMPigJsonStorage.STORAGE_FUNCTION,LKMPigJsonStorage.class);
+            LKMPig.storageClasses.put(LKMPigPigStorage.STORAGE_FUNCTION,LKMPigPigStorage.class);
+            LKMPig.storageClasses.put(LKMPigTextLoader.LOADER_FUNCTION,LKMPigTextLoader.class);
+            LKMPig.storageClasses.put(LKMPigAvroStorage.STORAGE_FUNCTION,LKMPigAvroStorage.class);
+            LKMPig.storageClasses.put(LKMPigTrevniStorage.TRV_STORAGE_FUNCTION,LKMPigTrevniStorage.class);
+            LKMPig.storageClasses.put(LKMPigCustomStorage.STORAGE_FUNCTION,LKMPigCustomStorage.class);
+        }
+
+
+        //class LKMPigBinStorage Start
+ 
+		static class LKMPigBinStorage extends LKMPig.LKMPigStorage {
+		
+		    static final String STORAGE_FUNCTION = "BinStorage";
+		    static List<LKMPig.FunctionParam> FUNCT_ARG = new ArrayList<LKMPig.FunctionParam>(1);
+		    
+		    
+		    static {
+		        FUNCT_ARG.add(new LKMPig.FunctionParam("Storage Convertor"));
+		    }
+		    
+		    @Override
+		    String getLoaderFunction() {
+		        return STORAGE_FUNCTION;
+		    }
+		    
+		    @Override
+		    String getStorerFunction() {
+		        return STORAGE_FUNCTION;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getLoaderFunctionParams() {
+		        return FUNCT_ARG;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getStorerFunctionParams() {
+		        return FUNCT_ARG;
+		    }
+		    
+		}
+ 		
+ 		//class LKMPigBinStorage End
+ 		
+ 		//class LKMPigJsonStorage Start
+
+		static class LKMPigJsonStorage extends LKMPig.LKMPigStorage {
+		
+		    static final String LOADER_FUNCTION = "JsonLoader";
+		    static final String STORAGE_FUNCTION = "JsonStorage";
+            
+            private String pigSchema;
+		
+		    static List<LKMPig.FunctionParam> FUNCT_ARG = new ArrayList<LKMPig.FunctionParam>(1);
+		
+		    static {
+		        FUNCT_ARG.add(new LKMPig.FunctionParam(LKMPig.LKMPigStorage.OPTION_PIG_SCHEMA));
+		    }
+		
+		    @Override
+		    String getLoaderFunction() {
+		        return LOADER_FUNCTION;
+		    }
+		
+		    @Override
+		    String getStorerFunction() {
+		        return STORAGE_FUNCTION;
+		    }
+		
+		    @Override
+		    List<LKMPig.FunctionParam> getLoaderFunctionParams() {
+		        return FUNCT_ARG;
+		    }
+            
+            @Override
+            void populateLoaderFunctionParams(PigLoadCmd loadCmd) throws AdapterException,
+                                                               GenerationException,
+                                                               oracle.odi.domain.mapping.exception.MappingException {
+                 pigSchema = loadCmd.getParentScript().getOutputSchema().getSchemaDefinition(false);                                                                
+		         super.populateLoaderFunctionParams(loadCmd);
+                 loadCmd.setGenerateInputSchemaDefinition(false);
+            }
+		    @Override
+		    String handleFunctionParam(LKMPig.FunctionParam param,
+		                             String value,
+		                             boolean isLoader) throws AdapterException,
+		                                          oracle.odi.domain.mapping.exception.MappingException {
+		
+		
+		        if (param.name.equals(LKMPig.LKMPigStorage.OPTION_PIG_SCHEMA)) {
+		            return pigSchema;
+		            //return getSchema();
+		        }
+		        return value;
+		    }
+		
+		    String getSchema() {
+
+			       String cValue = getOptionValue("Schema for Complex Fields"); 
+		            if (cValue == null || cValue.equals("")) {
+		                return super.getSchema();
+		            } else {
+                    
+                        Map<String, String> complexFields = null;  
+                        try {
+		                    complexFields = new LKMPig.ComplexSchemaParser().getComplexyFields(cValue);
+                        } catch (IllegalArgumentException e) {
+                            throw new IllegalArgumentException("Illegal Value for 'Schema for Complex Fields' : "+cValue);
+                        }
+                        String schema = super.getSchema(complexFields);
+                        if (!complexFields.isEmpty()) {
+                            throw new IllegalArgumentException("Unknown fields "+complexFields.keySet()+" specified for 'Schema for Complex Fields' : "+cValue);
+                        }
+                        return schema;
+		            }
+		    }
+		
+		    
+		} 		
+ 		
+ 		//class LKMPigJsonStorage End
+
+
+		//class LKMPigPigStorage Start
+ 
+		static class LKMPigPigStorage extends LKMPig.LKMPigStorage {
+		
+		    static final String STORAGE_FUNCTION = "PigStorage";
+		    static List<LKMPig.FunctionParam> FUNCT_ARG = new ArrayList<LKMPig.FunctionParam>(1);
+		    static List<LKMPig.FunctionOption> LOAD_FUNCT_OPTIONS = new ArrayList<LKMPig.FunctionOption>(1);
+		    static List<LKMPig.FunctionOption> STORE_FUNCT_OPTIONS = new ArrayList<LKMPig.FunctionOption>(1);
+		    
+		    
+		    static {
+		        FUNCT_ARG.add(new LKMPig.FunctionParam("Field Delimiter"));
+		        LOAD_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("No Schema", "noschema"));
+		        //LOAD_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Tag Path", "tagPath"));
+		        //LOAD_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Tag File", "tagFile"));
+		        
+		        STORE_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Store Schema", "schema"));
+		    }
+		    
+		    @Override
+		    String getLoaderFunction() {
+		        return STORAGE_FUNCTION;
+		    }
+		    
+		    @Override
+		    String getStorerFunction() {
+		        return STORAGE_FUNCTION;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getLoaderFunctionParams() {
+		        return FUNCT_ARG;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getStorerFunctionParams() {
+		        return FUNCT_ARG;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionOption> getLoaderFunctionOptions() {
+		        return LOAD_FUNCT_OPTIONS;
+		    }
+		
+		    @Override		
+		    List<LKMPig.FunctionOption> getStorerFunctionOptions() {
+		        return STORE_FUNCT_OPTIONS;
+		    }
+		    
+		    
+		    @Override
+		    String handleFunctionParam(LKMPig.FunctionParam param,
+		                               String value,
+		                               boolean isLoader) throws AdapterException,
+		                                          oracle.odi.domain.mapping.exception.MappingException {
+		
+		
+		        if (param.name.equals("Field Delimiter")) {
+			        oracle.odi.domain.model.OdiDataStore dataStore = (oracle.odi.domain.model.OdiDataStore)dataStoreNode.getLogicalComponent().getBoundObject();
+			                                
+				if (dataStore == null || dataStore.getFileDescriptor() == null) {
+                                        return ","
+                                }
+                                else {
+                                
+                                        String separator = dataStore.getFileDescriptor().getFieldSeparator();
+                                        if (separator.trim().equals("\\u0009"))
+                                             return "\\t";
+                                             
+                                        return separator;
+                                }
+
+		        }
+		        return value;
+		    }
+		}
+ 		
+ 		//class LKMPigPigStorage End
+ 		
+		//class LKMPigAvroStorage Start
+ 
+		static class LKMPigAvroStorage extends LKMPig.LKMPigStorage {
+		
+		    static final String STORAGE_FUNCTION = "AvroStorage";
+		    static List<LKMPig.FunctionParam> LOAD_FUNCT_ARG = new ArrayList<LKMPig.FunctionParam>(1);
+		    static List<LKMPig.FunctionParam> STORE_FUNCT_ARG = new ArrayList<LKMPig.FunctionParam>(1);
+		    static List<LKMPig.FunctionOption> LOAD_FUNCT_OPTIONS = new ArrayList<LKMPig.FunctionOption>(1);
+		    static List<LKMPig.FunctionOption> STORE_FUNCT_OPTIONS = new ArrayList<LKMPig.FunctionOption>(1);
+		    
+		    
+		    static {
+		        LOAD_FUNCT_ARG.add(new LKMPig.FunctionParam("Schema"));
+		        STORE_FUNCT_ARG.add(new LKMPig.FunctionParam("Record Name"));
+		        
+		        LOAD_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Schema File", "f"));
+		        LOAD_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Example File", "e"));
+		        LOAD_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Allow Recursive", "r"));
+		        
+		        STORE_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Namespace", "n"));
+		        STORE_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Schema File", "f"));
+		        STORE_FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Example File", "e"));
+		    }
+		    
+		    @Override
+		    String getLoaderFunction() {
+		        return STORAGE_FUNCTION;
+		    }
+		    
+		    @Override
+		    String getStorerFunction() {
+		        return STORAGE_FUNCTION;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getLoaderFunctionParams() {
+		        return LOAD_FUNCT_ARG;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getStorerFunctionParams() {
+		        return STORE_FUNCT_ARG;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionOption> getLoaderFunctionOptions() {
+		        return LOAD_FUNCT_OPTIONS;
+		    }
+		
+		    @Override		
+		    List<LKMPig.FunctionOption> getStorerFunctionOptions() {
+		        return STORE_FUNCT_OPTIONS;
+		    }
+		}
+ 		
+ 		//class LKMPigAvroStorage End 		
+ 		
+ 		//class LKMPigTrevniStorage Start
+ 		
+ 		static class LKMPigTrevniStorage extends LKMPigAvroStorage {
+		    static final String TRV_STORAGE_FUNCTION = "TrevniStorage";
+		    
+		    @Override
+		    String getLoaderFunction() {
+		        return TRV_STORAGE_FUNCTION;
+		    }
+		    
+		    @Override
+		    String getStorerFunction() {
+		        return TRV_STORAGE_FUNCTION;
+		    }
+		 }
+ 		
+ 		//class LKMPigTrevniStorage End
+ 		
+ 		
+  		//class LKMPigTextLoader Start
+ 
+		static class LKMPigTextLoader extends LKMPig.LKMPigStorage {
+		
+		    static final String LOADER_FUNCTION = "TextLoader";
+
+		    @Override
+		    String getLoaderFunction() {
+		        return LOADER_FUNCTION;
+		    }
+		    
+		}
+ 		
+ 		//class LKMPigTextLoader End
+ 		
+ 		
+		//class LKMPigCustomStorage Start
+ 
+		static class LKMPigCustomStorage extends LKMPig.LKMPigStorage {
+		
+		    static final String STORAGE_FUNCTION = "CustomStorage";
+		    static List<LKMPig.FunctionParam> FUNCT_ARG = new ArrayList<LKMPig.FunctionParam>(1);
+		    static List<LKMPig.FunctionOption> FUNCT_OPTIONS = new ArrayList<LKMPig.FunctionOption>(1);
+		    
+		    String functionClass;
+		    String jars;
+		    static {
+		        FUNCT_ARG.add(new LKMPig.FunctionParam("Function Class"));
+		        FUNCT_ARG.add(new LKMPig.FunctionMultiParam("Function Parameters"));
+		        FUNCT_ARG.add(new LKMPig.FunctionParam("Function Parameter Builder Class"));
+		        FUNCT_ARG.add(new LKMPig.FunctionParam("Jars"));
+		        FUNCT_OPTIONS.add(new LKMPig.FunctionOption("Options", null));
+		    }
+		    
+		    private String getFunctionClass() {
+		    	if (functionClass == null) {
+		       		throw new RuntimeException("Function Class can not be empty for a Custom Storage function");
+		        } 
+		    	
+		    	return functionClass;
+		    }
+		    
+		    @Override
+		    String getLoaderFunction() {
+		        return getFunctionClass();
+		    }
+		    
+		    @Override
+		    String getStorerFunction() {
+		        return getFunctionClass();
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getLoaderFunctionParams() {
+		        return FUNCT_ARG;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionParam> getStorerFunctionParams() {
+		        return FUNCT_ARG;
+		    }
+		    
+		    @Override
+		    List<LKMPig.FunctionOption> getLoaderFunctionOptions() {
+		        return FUNCT_OPTIONS;
+		    }
+		
+		    @Override		
+		    List<LKMPig.FunctionOption> getStorerFunctionOptions() {
+		        return FUNCT_OPTIONS;
+		    }
+		    
+		    @Override
+		    String handleFunctionParam(LKMPig.FunctionParam param,
+		                             String value,
+		                             boolean isLoader) throws AdapterException,
+		                                          oracle.odi.domain.mapping.exception.MappingException {
+		
+		
+		        if (param.name.equals("Function Class")) {
+		            functionClass = value;   
+		        }		        
+		        else if (param.name.equals("Jars")) {
+		            jars = value;   
+		        }
+		        else if (param.name.equals("Function Parameter Builder Class")) {
+		            if (value == null) return null; 
+		            
+		            try {
+			            Class<?> builderClass = Class.forName(value);
+			            java.lang.reflect.Method method = builderClass.getMethod("build",  [MapPhysicalNode.class] as Class[]);
+			            int modifier = method.getModifiers();
+			            Object instance = null;
+			            if (!java.lang.reflect.Modifier.isStatic(modifier)) {
+			                instance = c.newInstance();
+			            }
+			            
+			            return (String)method.invoke(instance, [physicalNode] as Object[]);
+			            
+			        } catch (Exception e) {
+			            
+			            throw new oracle.odi.domain.mapping.exception.MappingException("Unable to invoke the method 'build(MapPhysicalNode)' in class '"+value+"'", e);
+			        }   
+		        }
+		        
+		        return null;
+		    }    
+		    
+		    
+		    @Override 
+		    void addPigCommands(PigCommand pigCommand) {
+		    
+		    
+		       if (jars != null && !jars.equals("")) {
+		            
+		       		String[] rjars = jars.split(",");
+		       		for (String rjar : rjars) { 
+		       		    rjar = rjar.trim();
+		       		    if (!rjar.equals("")) {
+		       		    	pigCommand.addRegisterPath(rjar);
+		       			}
+		       		}
+		    	}
+		    	
+		    }
+		}
+ 		
+ 		//class LKMPigCustomStorage End 		
+ 	}
+
+        ]]></Field>
+	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:19.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[f6e34fcb-3506-44d7-b935-6eea2eab5d25]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
+	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IntgType" type="java.lang.String">null</Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="IsConcurrent" type="java.lang.String">null</Field>
+	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="IFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IProject" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScBaseTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScOrigTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[106]]></Field>
+	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[579]]></Field>
+	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmLang" type="java.lang.String"><![CDATA[SQL_FILE]]></Field>
+	<Field name="KmSrcLang" type="java.lang.String"><![CDATA[PIGLATIN]]></Field>
+	<Field name="KmSrcTechno" type="java.lang.String"><![CDATA[PIG]]></Field>
+	<Field name="KmTechno" type="java.lang.String"><![CDATA[FILE]]></Field>
+	<Field name="KmVersion" type="java.lang.String">null</Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-07-11 21:15:05.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LCode" type="java.lang.String">null</Field>
+	<Field name="OggJkm" type="java.lang.String">null</Field>
+	<Field name="OrdFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ProcType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="ProdAstType" type="java.lang.String">null</Field>
+	<Field name="RepGuid" type="java.lang.String">null</Field>
+	<Field name="RepVersion" type="java.lang.String">null</Field>
+	<Field name="ScriptPath" type="java.lang.String">null</Field>
+	<Field name="ScOrigTrtTag" type="java.lang.String">null</Field>
+	<Field name="Subtype" type="java.lang.String"><![CDATA[SELECT*]]></Field>
+	<Field name="TrtName" type="java.lang.String"><![CDATA[LKMPigFile]]></Field>
+	<Field name="TrtType" type="java.lang.String"><![CDATA[KL]]></Field>
+	<Field name="VariableDefs" type="java.lang.String"><![CDATA[
+
+
+
+        ]]></Field>
+	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpReferencedObject">
+		<Field name="IObject" type="com.sunopsis.sql.DbInt"><![CDATA[3600]]></Field>
+	<Field name="ObjectPKasString" type="java.lang.String"><![CDATA[105]]></Field>
+	<Field name="ObjectAKasString" type="java.lang.String"><![CDATA[]]></Field>
+	<Field name="Description" type="java.lang.String"><![CDATA[SNP_TRT : LKMPig]]></Field>
+ <Field name="GlobalId" type="java.lang.String"><![CDATA[bd83513d-cde7-4a1e-8eda-862396b7f21b]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[580]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[562f799d-76e6-43b2-8c05-7124d89f8ba6]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[106]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[581]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[189]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="ShortValue" type="java.lang.String">null</Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[Function Class]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Fully qualified name of the class to be used as storage function to load data.]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[130ced71-4020-406d-9348-03d183c60960]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[580]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return options.getValue("Storage Function").equals("CustomStorage")?"show=true":"show=false"]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Column description]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_COL_DESC]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_COL]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[a454b5a9-f9d5-4fbf-a7ec-d1a122b180db]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[581]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[Specify the fully qualified name of the class to be used as storage function to load data.]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[User Exit help]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_UE_HELP]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_USER_EXIT]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[582]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[b68206d5-3887-49fa-867c-802181a27bae]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[106]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[583]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[190]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
+	<Field name="ShortValue" type="java.lang.String">null</Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[Function Parameters]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[The parameters required for the custom function]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[947e765c-5d32-40f1-9b5d-83281fd58763]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[582]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return options.getValue("Storage Function").equals("CustomStorage")?"show=true":"show=false"]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[d3886e7c-7804-4419-bb2e-7d61db10c567]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[583]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[Specify the parameters that the loader function expects.              For example,the XMLLoader function may look like                 XMLLoader('MusicStore', 'movie', 'id:double, name:chararray, director:chararry', options)             Here the first three arguments are parameters, which can be specified as                                  -rootElement MovieStore -tableName movie -schema                              where MusicStore - the root element of the xml                   movie - The element that wraps the child elements such as id, name, etc.                   Third Argument is the representation of data in pig schema.             The names of the parameters are arbitrary and there can be any number of parameters.]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[584]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[f5a3b389-8ec4-4a4a-9e6c-04705f249f5f]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[106]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[585]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[191]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="ShortValue" type="java.lang.String">null</Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[Options]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Additional options required for the storage function]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[a1ad5223-85bc-47ae-ae2e-9a12b1800600]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[584]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return options.getValue("Storage Function").equals("CustomStorage")?"show=true":"show=false"]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[7eee0053-ae9a-4dbb-a8da-a30b066b1d3e]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[585]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[Specify additional options required for the storage function.             For example,the XMLLoader function may look like                 XMLLoader('MusicStore', 'movie', 'id:double, name:chararray, director:chararry', options)             The last argument options can be specified as                 -namespace com.imdb -encoding utf8              ]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[586]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[e653368e-0514-4af9-bd9e-70c101415506]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[106]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[587]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[192]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
+	<Field name="ShortValue" type="java.lang.String">null</Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[Jars]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[The jar containing the storage function class and dependant libraries separated by colon (:).]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[3e477bd3-87dd-45c9-ac3f-45d13ee35685]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[586]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return options.getValue("Storage Function").equals("CustomStorage")?"show=true":"show=false"]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[a9560138-b513-4cc2-93b2-5e95642caea8]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[587]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[Specify the jar containing the storage function class and dependant libraries separated by colon (:).]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[588]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[fd74ce4a-cb00-473c-a432-c36aba5dd850]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[106]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[589]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[193]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[5]]></Field>
+	<Field name="ShortValue" type="java.lang.String">null</Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[Storage Convertor]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[The converter that provides functions to cast from bytearray to each of Pig's internal types.]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[f2228257-bfca-4316-81fa-81e31fb8b67b]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[588]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return options.getValue("Storage Function").equals("BinStorage")?"show=true":"show=false"]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[b98e2896-53ca-4acd-a017-dd6078ab5e53]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[589]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[Specify the converter that provides functions to cast from bytearray to each of Pig's internal types.             The supported converter is Utf8StorageConverter.]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.105]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bd83513d-cde7-4a1e-8eda-862396b7f21b]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKMPig]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[6]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.106]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[f6e34fcb-3506-44d7-b935-6eea2eab5d25]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKMPigFile]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[10]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.581]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[a454b5a9-f9d5-4fbf-a7ec-d1a122b180db]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.580]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[130ced71-4020-406d-9348-03d183c60960]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.583]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d3886e7c-7804-4419-bb2e-7d61db10c567]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.582]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[947e765c-5d32-40f1-9b5d-83281fd58763]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_ORIGTXT.105]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String">null</Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_ORIGTXT.111]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String">null</Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.585]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[7eee0053-ae9a-4dbb-a8da-a30b066b1d3e]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.584]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[a1ad5223-85bc-47ae-ae2e-9a12b1800600]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.587]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[a9560138-b513-4cc2-93b2-5e95642caea8]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.586]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3e477bd3-87dd-45c9-ac3f-45d13ee35685]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.589]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[b98e2896-53ca-4acd-a017-dd6078ab5e53]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.588]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[f2228257-bfca-4316-81fa-81e31fb8b67b]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[10]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[6]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[10]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+</Object>
+</SunopsisExport>

@@ -1,0 +1,1263 @@
+<?xml version="1.0" encoding="ISO-8859-9"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="7vu2191iNUR+LAIttiKNvv+eYjNu1GR/uDM3lBEfVjU=" keyVect="US5yrXfuvRaSJA6kUgsqpg==" exportKeySalt="c9a8f6c6-0802-46b9-96ab-b249034f298f" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#105]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpTrt">
+		<Field name="CleanupOnError" type="java.lang.String">null</Field>
+	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
+	<Field name="DelegateClass" type="java.lang.String"><![CDATA[LKMPig]]></Field>
+	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
+
+
+	public class LKMPig extends PigKM {
+    
+        public GeneratorContext generatorContext;
+        
+        
+        public void setBinding(Binding binding) {
+            super.setBinding(binding);
+            Map variables = binding.getVariables();
+            if (variables.containsKey("generatorContext")) {
+              generatorContext =  (GeneratorContext)binding.getVariable("generatorContext");
+            }
+        } 
+		
+		static Map<String, Class<? extends LKMPigStorage>> storageClasses = new HashMap<String, Class<? extends LKMPigStorage>>(6);
+
+        static LKMPigStorage getLKMPig(String storageFn) throws oracle.odi.domain.mapping.exception.MappingException {
+	       Class<?> lkmClass = storageClasses.get(storageFn);
+	       if (lkmClass == null) {
+	           throw new oracle.odi.domain.mapping.exception.MappingException("Unknown storage function : "+storageFn);
+	       }
+	       try {
+	            return (LKMPigStorage)lkmClass.newInstance();
+	       } catch (Exception e) {
+	         throw new oracle.odi.domain.mapping.exception.MappingException(e.getMessage(),e);
+	       }
+	    }
+
+
+         static class FunctionParam {
+             String name;
+     
+             public FunctionParam(String name) {
+                 this.name = name;
+             }
+     
+             void decorate(String value,
+                           StringBuilder strBuilder) {
+               	strBuilder.append("'").append(value).append("'");
+             }
+         }
+         
+         static class FunctionMultiParam extends FunctionParam {
+             
+             public FunctionMultiParam(String name) {
+                 super(name);
+             }
+         }
+     
+         static class FunctionOption {
+             String name;
+             String internalName;
+             
+             public FunctionOption(String name,
+                                   String internalName) {
+                 this.name = name;
+                 this.internalName = internalName;
+             }
+         }
+         
+
+		static class Option {
+			private String name;
+			private String value;
+			public Option(String name, String value) {
+				this.name = name;
+				this.value = value;
+			}
+			
+			public String toString() {
+				return name+"="+value;
+			}
+		}
+	
+		static class OptionParser {
+	
+			public OptionParser() {
+			}
+	
+			public List<Option> parse(String options) {
+	
+				char[] chars = options.trim().toCharArray();
+	
+				StringBuilder strBuilder = new StringBuilder(10);
+				
+				boolean parsingOption = false; 
+				
+				String option = null;
+				
+				List<Option> optionValues = new ArrayList<Option>();
+				
+				
+				for (char ch : chars) {
+					switch (ch) {
+						case '-':
+							if (strBuilder.length() == 0 || strBuilder.charAt(strBuilder.length()-1) == ' ') {
+								if (option != null) {
+									String value = strBuilder.toString().trim();
+									
+									optionValues.add(new Option(option, value.length() == 0 ? null : value));
+									
+									strBuilder.delete(0, strBuilder.length());
+									option = null;
+								}
+								parsingOption = true;	
+							}
+							else {
+								strBuilder.append(ch);
+							}
+							break;
+						case ' ':
+							if (parsingOption) {
+								option = strBuilder.toString();
+								strBuilder.delete(0, strBuilder.length());
+								parsingOption = false;
+							}
+							strBuilder.append(ch);
+							break;
+						case '"':	
+							break;
+						default : 
+							strBuilder.append(ch);
+							break;
+					}
+	
+				}
+	
+				if (option != null) {
+					String value = strBuilder.toString().trim();
+					optionValues.add(new Option(option, value.length() == 0 ? null : value));
+				}
+				else if	(!strBuilder.toString().isEmpty()) {
+					optionValues.add(new Option(strBuilder.toString().trim(), null));
+				}
+				
+				return optionValues; 
+			}
+	
+		}
+			
+        public class PigSchemaParser {
+
+            Stack<PigField> stack = new Stack<PigField>();
+            PigField pigField = new PigField();
+            List<PigField> pigFields = new ArrayList<PigField>();
+            
+            public List<oracle.odi.mapping.generation.PigField> parse(String schema, PigSchema pigSchema) {
+        
+                char[] schemaChars = schema.trim().toCharArray();
+                
+                stack.push(pigField);
+                for (char ch : schemaChars) {
+                    switch (ch) {
+                        case ',':
+                            completeFieldParsing();
+                            startFieldParsing();
+                            break;
+                        case '(':
+                            pigField = new PigTuple(pigField);
+                            stack.pop();
+                            stack.push(pigField);
+                            startFieldParsing();
+                            break;
+                        case ')':
+                            completeFieldParsing();
+                            break;
+                        case '{':
+                            pigField = new PigBag(pigField);
+                            stack.pop();
+                            stack.push(pigField);
+                            startFieldParsing();
+                            break;
+                        case '}':
+                            completeFieldParsing();
+                            break;    
+                        case ':':
+                            pigField.typeStarts();
+                            break;
+                        default:
+                            pigField.readChar(ch);
+        
+                    }
+                }
+        
+                completeFieldParsing();
+                List<oracle.odi.mapping.generation.PigField> odiPigFields = new ArrayList<oracle.odi.mapping.generation.PigField>(pigFields.size());
+                for (PigField field : pigFields) {
+                    oracle.odi.mapping.generation.PigField odiPigField = field.toOdiPigField(pigSchema);
+                    odiPigFields.add(odiPigField);
+                    
+                }
+        
+                return odiPigFields;
+            }
+            
+            private void startFieldParsing() {
+                pigField = new PigField();
+                stack.push(pigField);
+            }
+            
+            private void completeFieldParsing() {
+                PigField pField = stack.pop();
+                
+                if (stack.isEmpty()) {
+                    pigFields.add(pField);
+                }
+                else {
+                    PigField parentField = stack.peek();
+                    parentField.addPigField(pField);
+                }
+                
+            }
+            static class PigField {
+                protected StringBuilder nameBuilder = new StringBuilder();
+                private StringBuilder typeBuilder = new StringBuilder();
+                private StringBuilder currBuilder = nameBuilder;
+                
+                void readChar(char ch) {
+                    currBuilder.append(ch);
+                }
+                
+                void typeStarts() {
+                    currBuilder = typeBuilder;
+                }
+                
+                public String getName() {
+                    String name = nameBuilder.toString().trim();
+                    if (name.length() == 0) {
+                        return null;
+                    }
+                    
+                    return name;
+                }
+                
+                public String getType() {
+                    String type = typeBuilder.toString().trim();
+                    if (type.length() == 0) {
+                        return null;
+                    }
+                    
+                    return type;
+                }
+                
+                public void addPigField(PigField pigField) {
+                    throw new UnsupportedOperationException();
+                }
+                
+                public oracle.odi.mapping.generation.PigField toOdiPigField(PigSchema pigSchema) {
+                    oracle.odi.mapping.generation.PigField pigField = new oracle.odi.mapping.generation.PigField(pigSchema, oracle.odi.mapping.generation.PigField.PigFieldKind.SCALAR);
+                    pigField.setName(getName());
+                    pigField.setType(getType());
+                    return pigField;
+                }
+                
+                public String toString() {
+                    String str = "";
+                    if (getName() != null) {
+                        str = getName() +":";
+                    }
+                    if (getType() != null) {
+                        str += getType();
+                    }
+                    return str;
+                }
+            }
+            
+            static class PigTuple extends PigField {
+                List<PigField> fields = new ArrayList<PigField>(1);
+                
+                public PigTuple(PigField pigField) {
+                    nameBuilder = pigField.nameBuilder;
+                }
+                
+                public void addPigField(PigField pigField) {
+                    fields.add(pigField);
+                }
+                
+                protected oracle.odi.mapping.generation.PigField.PigFieldKind getKind() {
+                    return oracle.odi.mapping.generation.PigField.PigFieldKind.TUPLE;
+                }
+                
+                public oracle.odi.mapping.generation.PigField toOdiPigField(PigSchema pigSchema) {
+                
+                    oracle.odi.mapping.generation.PigField pigField = new oracle.odi.mapping.generation.PigField(pigSchema, getKind());
+                    String name = getName();
+                    if (name != null) {
+                        pigField.setName(name);
+                    }
+                    
+                    for (PigField field : fields) {
+                        if (field.getName() == null) { 
+                           if (field instanceof PigTuple) {
+                              PigTuple pigTuple = (PigTuple) field;
+                              for (PigField cField : pigTuple.fields) {
+                                pigField.addChildField(cField.toOdiPigField(pigSchema));
+                              }
+                           }
+                        } 
+                        else {
+                            pigField.addChildField(field.toOdiPigField(pigSchema));
+                        }
+                    }
+                    
+                    return pigField;
+                }
+                
+                protected char getStartChar() {
+                    return '(';
+                }
+                
+                protected char getEndChar() {
+                    return ')';
+                }
+                
+                public String toString() {
+                    StringBuilder schemaBuilder = new StringBuilder(super.toString());
+                    schemaBuilder.append(getStartChar());
+                    int count = 0;
+                    
+                    for (PigField pigField : fields) {
+                        if (count++ > 0) {
+                            schemaBuilder.append(", ");
+                        }
+                        schemaBuilder.append(pigField.toString());
+                    }
+                    schemaBuilder.append(getEndChar());
+                    return schemaBuilder.toString();
+                }
+            } 
+            
+            
+            static class PigBag extends PigTuple {
+                
+                public PigBag(PigField pigField) {
+                    super(pigField);
+                }
+                
+                protected oracle.odi.mapping.generation.PigField.PigFieldKind getKind() {
+                    return oracle.odi.mapping.generation.PigField.PigFieldKind.BAG;
+                }
+                
+                protected char getStartChar() {
+                    return '{';
+                }
+                
+                protected char getEndChar() {
+                    return '}';
+                }
+            } 
+            
+        }            
+            
+        public static class ComplexSchemaParser {
+
+            private String complexFieldsSchema;
+            private Map<String, String> complexFields = new HashMap<String,String>(1);
+            private StringBuilder complexFieldBuilder = new StringBuilder();
+            private StringBuilder cfValueBuilder = new StringBuilder();
+            
+            
+            public Map<String,String> getComplexyFields(String complexFieldsSchema) {
+                this.complexFieldsSchema = complexFieldsSchema;
+                char[] cfsChars = complexFieldsSchema.trim().toCharArray();
+                boolean readField = true;
+                Stack<Character> stack = new Stack<Character>();
+                for (char ch : cfsChars) {
+                    switch (ch) {
+                        case ':':
+                            if (stack.isEmpty()) {
+                                readField = false;
+                            }
+                            else {
+                                cfValueBuilder.append(ch); 
+                            }
+                            break;
+                        case ',':
+                            if (stack.isEmpty()) {
+                                readComplexField();
+                                readField = true;
+                            }
+                            else {
+                                cfValueBuilder.append(ch); 
+                            }
+                            break;
+                        case '{':
+                            stack.push(ch);
+                            cfValueBuilder.append(ch);
+                            break;
+                        case '}':
+                            stack.pop();
+                            cfValueBuilder.append(ch);
+                            break;
+                        case '(':
+                            stack.push(ch);
+                            cfValueBuilder.append(ch);
+                            break;
+                        case ')':
+                            stack.pop();
+                            cfValueBuilder.append(ch);
+                            break;
+                        case '[':
+                            stack.push(ch);
+                            cfValueBuilder.append(ch);
+                            break;
+                        case ']':
+                            stack.pop();
+                            cfValueBuilder.append(ch);
+                            break;
+                        default:
+                            if (readField) {
+                                complexFieldBuilder.append(ch);
+                            }
+                            else {
+                              cfValueBuilder.append(ch);
+                            }
+                    }
+                }
+        
+                
+                if (complexFieldBuilder.length() != 0) {
+                    
+                    readComplexField();
+                }
+                
+                return complexFields;
+        
+            }
+        
+            private void readComplexField() {
+                String cf = complexFieldBuilder.toString().trim();
+                String cfValue = cfValueBuilder.toString().trim();
+                if (cf.length() == 0 || cfValue.length() == 0) {
+                    throw new IllegalArgumentException();
+                }
+                
+                complexFields.put(cf, cfValue);
+                complexFieldBuilder.delete(0,
+                                           complexFieldBuilder.length());
+                cfValueBuilder.delete(0,
+                                      cfValueBuilder.length());
+            }
+        }        
+       
+        //class LKMPigStorage Start
+
+		static class LKMPigStorage {
+		
+		
+		    public static final String OPTION_PIG_SCHEMA = "Pig Schema";
+		    
+		    public static final String PARAM_PIG_SCHEMA = "schema";
+		    public static final String PARAM_TABLE_NAME = "tableName";
+		    
+		    MapPhysicalNode physicalNode;
+		    MapPhysicalNode dataStoreNode;
+		    
+		    void setPhysicalNodes(MapPhysicalNode physicalNode, MapPhysicalNode dataStoreNode) {
+		        this.physicalNode = physicalNode;
+		        this.dataStoreNode = dataStoreNode;
+		    }
+		
+            String getBaseUrl() {
+                return "<?=odiRef.getDataServerInfo(\"HADOOP_NAME_NODE_URI\",\""+dataStoreNode.getLogicalSchemaName()+"\")?>";
+            }
+		
+		    String getLoaderFunction() {
+		        return null;
+		    }
+		
+		    String getStorerFunction() {
+		        return null;
+		    }
+		
+		    List<FunctionParam> getLoaderFunctionParams() {
+		        return null;
+		    }
+		
+		    List<FunctionOption> getLoaderFunctionOptions() {
+		        return null;
+		    }
+		
+		    List<FunctionParam> getStorerFunctionParams() {
+		        return null;
+		    }
+		
+		    List<FunctionOption> getStorerFunctionOptions() {
+		        return null;
+		    }
+		
+		    String handleFunctionParam(FunctionParam param,
+		                             String value,
+		                             boolean isLoader) throws AdapterException,
+		                                          oracle.odi.domain.mapping.exception.MappingException {
+		        return value;
+		    }
+		    
+		    String handleFunctionOption(FunctionOption option,
+		                                String value,
+		                                boolean isLoader) throws AdapterException,
+		                                          oracle.odi.domain.mapping.exception.MappingException {
+		        return value;
+		    }
+		    
+		    void addPigCommands(PigCommand pigCommand) {
+		    
+		    }
+		
+		    final void addFunctionParamValue(FunctionParam funcParam, String optionValue, StringBuilder strBuilder) {
+		    
+		    	if (optionValue != null && optionValue.size() > 0) {
+		                
+		                
+	                if (strBuilder.length() != 0) {
+	                    strBuilder.append(", ");
+	                }
+	                if (optionValue.startsWith("'")) {
+	                	strBuilder.append(optionValue);
+	                }    
+	                else {
+	                	funcParam.decorate(optionValue,
+	                    	               strBuilder);
+	                }
+                }
+		    }
+		
+		    String getStorageFunctionParamString(List<FunctionParam> funcParams,
+		                                         List<FunctionOption> funcOptions,
+		                                         final boolean isLoader) throws AdapterException,
+		                                                                        GenerationException,
+		                                                                        oracle.odi.domain.mapping.exception.MappingException {
+		
+		        StringBuilder strBuilder = new StringBuilder();
+		        if (funcParams != null) {
+		            for (final FunctionParam funcParam : funcParams) {
+		            
+		                String optionValue = getOptionValue(funcParam.name);
+	                    if (funcParam instanceof FunctionMultiParam && optionValue != null) {
+	                    	OptionParser parser = new OptionParser();
+	                    	java.util.List<Option> options = parser.parse(optionValue);
+	                    
+	                    	for (Option option : options) {
+	                    	        String name = option.name;
+	                    	        String value = option.value;
+									
+									FunctionParam multiFuncParam = new FunctionParam(name);
+		                            
+		                            if (value == null) {
+		                            
+		                            
+		                                if (name.equals(PARAM_PIG_SCHEMA)) {
+		                                    if (isLoader) {
+		                                    	value = getSchema();
+		                                    }
+		                                    else {
+		                                    	value = getSchema(true);
+		                                    	
+		                                    }
+		                                }
+		                                else if (name.equals(PARAM_TABLE_NAME)) {
+		                                    value = dataStoreNode.getLogicalComponent().getBoundObject().getName();
+		                                    
+		                                }
+		                                else {
+		                                	value = handleFunctionParam(multiFuncParam,
+		                        	        			                value,
+		                              	                			    isLoader);
+		                              	}
+		                            }
+		                            
+		                            
+		                            addFunctionParamValue(multiFuncParam, value, strBuilder);
+							 }
+	                    }
+	                    else {
+	                    	optionValue = handleFunctionParam(funcParam,
+	                        	                              optionValue,
+	                              	                          isLoader);
+							addFunctionParamValue(funcParam, optionValue, strBuilder);		                              	                          
+	                    }
+		                
+		            }
+		        }
+		
+		        if (funcOptions != null) {
+		            boolean isFirst = true;
+		            
+		            for (FunctionOption funcOption : funcOptions) {
+		                String optionValue = getOptionValue(funcOption.name);
+		                optionValue = handleFunctionOption(funcOption,optionValue,isLoader);
+		                if (optionValue != null && !optionValue.equals("false")) {
+			                if (!isFirst) {
+			                    strBuilder.append(" ");
+			                } else {
+			                    if (strBuilder.length() != 0) {
+			                    	strBuilder.append(", ");
+			                    }
+			                    strBuilder.append("'");
+			                    isFirst = false;
+			                }
+			                
+			                if (funcOption.internalName == null) {
+			                   	strBuilder.append(optionValue);
+			                }
+			                else if (optionValue.equals("true")) {
+			                	strBuilder.append("-")
+			                    	      .append(funcOption.internalName)
+			                }
+			                else {
+			                	strBuilder.append("-")
+			                    	      .append(funcOption.internalName)
+			                        	  .append(" ")
+			                          	.append(optionValue);
+			                }
+		            	}
+		            }
+		            if (!isFirst)
+		            	strBuilder.append("'");
+		        }
+		        return strBuilder.toString();
+		    }
+		
+		    void populateLoaderFunctionParams(PigLoadCmd loadCmd) throws AdapterException,
+		                                                       GenerationException,
+		                                                       oracle.odi.domain.mapping.exception.MappingException {
+		        String paramValue = getStorageFunctionParamString(getLoaderFunctionParams(),
+		                                                      getLoaderFunctionOptions(),
+		                                                      true);
+		        if (!paramValue.equals("")) {
+		            loadCmd.setLoadFuncArgs(paramValue);
+		        }
+
+		        loadCmd.setLoadFunction(getLoaderFunction());
+		    }
+		
+		    void populateStorerFunctionParams(PigStoreCmd storeCmd) throws AdapterException,
+		                                                         GenerationException,
+		                                                         oracle.odi.domain.mapping.exception.MappingException {
+		        
+		        String paramValue = getStorageFunctionParamString(getStorerFunctionParams(),
+		                                                      getStorerFunctionOptions(),
+		                                                      false);
+		        if (!paramValue.equals("")) {
+		            storeCmd.setStoreFuncArgs(paramValue);
+		        }
+		        
+		        storeCmd.setStoreFunction(getStorerFunction());
+		        
+		    }
+		
+			static String getDataServerFlexFieldValue(MapPhysicalNode physicalNode, String flexFieldName) throws AdapterException, oracle.odi.domain.mapping.exception.MappingException {
+		        oracle.odi.domain.model.OdiDataStore dataStore = (oracle.odi.domain.model.OdiDataStore)physicalNode.getLogicalComponent().getBoundObject();
+		        for (oracle.odi.domain.adapter.flexfields.IFlexFieldValue flexFieldValue : dataStore.getModel().getLogicalSchema().getPhysicalSchema(physicalNode.getContext()).getDataServer().getFlexFieldsValues()) {
+		            if (flexFieldValue.getName().equals(flexFieldName)){
+		            	Object value = flexFieldValue.getValue();
+		                if (value != null && !value.length() == 0) {
+		                	return value.toString();
+		                }
+		                
+		                return null;
+		            }
+		        }
+		        
+		        throw new RuntimeException("Unknown FlexField : "+flexFieldName);
+		    }
+		    		
+		    String getOptionValue(String optionName) throws AdapterException,
+		                                            GenerationException,
+		                                            oracle.odi.domain.mapping.exception.MappingException {
+				return getOptionValue(physicalNode, optionName);
+			}
+		
+		    static String getOptionValue(MapPhysicalNode physicalNode, String optionName) throws AdapterException,
+		                                            GenerationException,
+		                                            oracle.odi.domain.mapping.exception.MappingException {
+		        IOptionValue optionValue = physicalNode.getOptionValue(IKnowledgeModule.ProcessingType.SOURCE,
+		                                                               optionName);
+		
+		        if (optionValue != null) {
+		
+		            String value = optionValue.getOptionValueString();
+		            if (value != null && !value.equals("")) {
+		                return value;
+		            }
+		        }
+		        return null;
+		    }
+		
+		    MapPhysicalNode getNonAPParentNode(MapPhysicalNode physicalNode) {
+		
+		        if (physicalNode.getNodeType() == MapPhysicalNode.PhysicalNodeType.AP) {
+		            return physicalNode.getUpstreamConnectedNodes().get(0);
+		        }
+		
+		        return physicalNode;
+		    }
+		
+		    String toPigIdentifier(String identifier) {
+		        return identifier.replaceAll(":",
+		                                     "_");
+		    }
+		    
+		    List<oracle.odi.domain.mapping.expression.MapExpression> getMapExpressions(MapPhysicalNode physicalNode) throws AdapterException,
+		                                                                  oracle.odi.domain.mapping.exception.MappingException {
+				List<MapPhysicalExpression> physicalExpressions = physicalNode.getTargetPhysicalExpressions();
+		
+		        List<oracle.odi.domain.mapping.expression.MapExpression> mapExpressions = new ArrayList<oracle.odi.domain.mapping.expression.MapExpression>(3);
+		
+		        for (MapPhysicalExpression physicalExpression : physicalExpressions) {
+		
+		            if (physicalExpression.getRefLogicalExpression() != null) {
+		                mapExpressions.add(physicalExpression.getRefLogicalExpression());
+		            }
+		        }		                                                                 
+		        
+		        return mapExpressions; 
+			}
+			
+			List<String> getMapExpressionAliases(MapPhysicalNode physicalNode) throws AdapterException,
+		                                                                  oracle.odi.domain.mapping.exception.MappingException {
+				List<MapPhysicalExpression> physicalExpressions = physicalNode.getTargetPhysicalExpressions();
+		
+		        List<String> aliases = new ArrayList<String>(3);
+		
+		        for (MapPhysicalExpression physicalExpression : physicalExpressions) {
+		
+		            if (physicalExpression.getRefLogicalExpression() != null) {
+		                aliases.add(toPigIdentifier(physicalExpression.getAlias()));
+		            }
+		        }		                                                                 
+		        
+		        return aliases; 
+			}		                                                                  
+		
+		    String getSchema() throws AdapterException,
+		                      oracle.odi.domain.mapping.exception.MappingException {
+		        return getSchema(false);
+		
+		    }
+		    
+		    
+		    String getSchema(boolean isTarget) throws AdapterException,
+		                      oracle.odi.domain.mapping.exception.MappingException {
+		        return getSchema(isTarget, null);
+		
+		    }
+		    
+		    String getSchema(Map<String, String> schemaFields) throws AdapterException,
+		                                                       oracle.odi.domain.mapping.exception.MappingException {
+				return getSchema(false, schemaFields);
+			}
+		
+			String getSchema(boolean isTarget, Map<String, String> schemaFields) throws AdapterException,
+									         								      oracle.odi.domain.mapping.exception.MappingException {
+		     	
+		     	StringBuilder schemaBuilder = new StringBuilder();
+		     	
+		     	if (isTarget) {
+		     	   List<MapPhysicalNode> physicalNodes = this.physicalNode.getDownstreamConnectedNodes();
+		     	
+		     		if (physicalNodes == null || physicalNodes.isEmpty()) {
+		     			throw new RuntimeException("Taret is not available");
+		     		}
+		     		List<MapAttribute> mapAttrs = physicalNodes.get(0).getLogicalComponent().getOutputAttributes();
+		     		
+		     		for (MapAttribute mapAttribute : mapAttrs) {
+		     			buildSchema(mapAttribute, mapAttribute.getDataType().getName(), schemaBuilder, schemaFields);
+		     		}
+		     	}                                   
+		     	else {
+		     		
+		     		List<MapPhysicalColumn> columns = physicalNode.getPhysicalColumns();
+		     		for (MapPhysicalColumn column : columns) {
+			            buildSchema(column.getReferencedAttribute(), column.getDdlDataType(), schemaBuilder, schemaFields);
+			        }
+		     	}      								
+		     	
+		     	return schemaBuilder.toString(); 
+			}		                                              								 
+		
+		    String getSchema(MapPhysicalNode physicalNode, Map<String, String> schemaFields) throws AdapterException,
+		                                              								          oracle.odi.domain.mapping.exception.MappingException {
+		                                               
+		        List<MapPhysicalColumn> columns = physicalNode.getPhysicalColumns();
+		        
+		        
+		        
+		        StringBuilder schemaBuilder = new StringBuilder();
+		        for (MapPhysicalColumn column : columns) {
+		
+		            MapAttribute mapAttribute = column.getReferencedAttribute();
+		            buildSchema(mapAttribute, column.getDdlDataType(), schemaBuilder, schemaFields);
+		        }
+		
+		        return schemaBuilder.toString();
+		    }
+		    
+		    void buildSchema(MapAttribute mapAttribute, String  dataType, StringBuilder schemaBuilder, Map<String, String> schemaFields) {
+		    
+		    	String columnName = toPigIdentifier(mapAttribute.getName());
+                
+	            if (schemaFields != null && schemaFields.containsKey(columnName)) {
+                
+                    dataType = schemaFields.get(columnName);
+                    schemaFields.remove(columnName);
+                }
+	
+                if (schemaBuilder.length() != 0) {
+                    schemaBuilder.append(", ");
+                }
+                schemaBuilder.append(columnName)
+                             .append(":")
+                             .append(dataType);
+	       	
+		    }
+		
+		}
+  
+		//class LKMPigStorage End      
+		
+        boolean containsPigField(PigField parent, PigField pigField) {
+           
+           List<PigField> childFields = parent.getChildFields();
+           
+           if (childFields != null) {
+               int index = 0;
+               for (PigField childField : childFields) {
+                  List<PigField> grandChildren = childField.getChildFields();
+                  if (grandChildren == null || grandChildren.isEmpty()) {
+                     if (pigField.getName().equals(childField.getRawName())) {
+                        childFields.set(index, pigField);
+                        
+                        return true;
+                     } 
+                  } else {
+                     return containsPigField(childField, pigField);
+                  }   
+                  index++;
+              }
+           }
+           return false;
+        }
+		
+        void checkLoadPigSchema(PigScript pigScript, String cfSchema) {
+        
+            if (cfSchema != null && cfSchema.trim().length() != 0) {
+                PigSchemaParser parser = new PigSchemaParser();
+                PigSchema pigSchema = pigScript.getOutputSchema();
+                
+                List<PigField> cfFields = parser.parse(cfSchema,pigScript.getOutputSchema());
+                List<PigField> pigFields = pigSchema.getFields();
+                
+                List<PigField> newFields = new ArrayList<PigField>();
+                int index = 0;
+                
+                List<String> addedCFs = new ArrayList<String>(1);
+                for (PigField pigField : pigFields) {
+                    PigField complexField = null;
+                    
+                    for (PigField cfField : cfFields) {
+                    
+                       if (cfField.getName().equals(pigField.getRawName())) {
+                         complexField = cfField;
+                         complexField.setSourceAttrSpec(pigField.getSourceAttrSpec());
+                         //pigField.setType(null);
+                         //pigField.setFieldKind(cfField.getFieldKind());
+                         //pigField.setChildFields(cfField.getChildFields());
+                         break;
+                       }
+                       else if (containsPigField(cfField, pigField)) {
+                          complexField = cfField;
+                          break;
+                       }
+                       
+                    }
+                    
+                    if (complexField != null) {
+                        if (addedCFs.isEmpty() || !addedCFs.contains(complexField.getName())) {
+                           newFields.add(complexField);
+                           addedCFs.add(complexField.getName());
+                        }
+                    }
+                    else {
+                       newFields.add(pigField);
+                    }
+                       
+                    index++;
+                
+                }
+                
+                
+                if (addedCFs.isEmpty()) 
+                    throw new IllegalArgumentException("None of the fields specified in 'Schema for Complex fields' option match wth the actual complex fields in the data store");
+                
+                
+                pigSchema.setFields(newFields);
+                 
+                PigCommand cmd =  pigScript.getLastCommand();
+                if (cmd != null && cmd instanceof PigLoadCmd) {
+                    ((PigLoadCmd) pigScript.getLastCommand()).adjustOutputSchema();
+                }
+             }
+             
+             
+        }
+        
+        List<PigField> verifyDateField(PigScript pigScript, PigLoadCmd loadCmd) {
+            
+            PigSchema pigSchema = pigScript.getOutputSchema();
+            List<PigField> pigFields = pigSchema.getFields();
+            MapPhysicalNode physicalNode = pigScript.getPhysicalNode();
+                
+            boolean found = false;
+                
+            for (PigField pigField : pigFields) {
+                
+                if ("datetime".equals(pigField.getRawType()) && physicalNode.getLogicalComponent().getBoundObject().getColumn(pigField.getRawName()).getFileDescriptor() != null) {
+                    String format = physicalNode.getLogicalComponent().getBoundObject().getColumn(pigField.getRawName()).getFileDescriptor().getLogicalFormat();
+                    if (format != null && format.trim().length() != 0) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            
+            List<PigField> changedFields = null;
+            
+            if (found) {
+                
+                List<String> fieldExprs = new ArrayList<String>(pigFields.size());
+                changedFields = new ArrayList<PigField>(1);
+                for (PigField pigField : pigFields) {
+                    String fieldName = pigField.getRawName();
+                    if ("datetime".equals(pigField.getRawType())) {
+                       String format = physicalNode.getLogicalComponent().getBoundObject().getColumn(pigField.getRawName()).getFileDescriptor().getLogicalFormat();
+                       
+                       if (format != null && format.trim().length() != 0) {
+                         fieldExprs.add("ToDate("+fieldName+",'"+format+"')");
+                         pigField.setType("chararray");
+                         changedFields.add(pigField);
+                       }
+                       else {
+                         fieldExprs.add(fieldName);
+                       }
+                    }
+                    else {
+                       fieldExprs.add(fieldName);
+                    }
+                }
+                loadCmd.setConvertFieldExprs(fieldExprs);
+                
+                loadCmd.setInputSchemaDefinition(loadCmd.getInputSchemaDefinition());
+                
+            }
+            
+            return changedFields;
+            
+        }
+        
+        void changeDateFields(List<PigField> pigFields) {
+            
+            for (PigField pigField : pigFields) {
+                pigField.setType("datetime");
+            }
+        }
+        
+        TemplateUtils getTemplateUtils() throws AdapterException, oracle.odi.domain.mapping.exception.MappingException {
+ 			return new TemplateUtils(physicalNode.getAdapter(), physicalNode.getAdapter().getLanguage("PIGLATIN"), physicalNode.getExecutionTechnology());
+ 		}
+ 		
+
+    	AbstractSyntaxTree EXTRACT_TAP(SqlQuery sqlQuery) throws AdapterException,
+        	                                             oracle.odi.domain.mapping.exception.MappingException,
+            	                                         GenerationException {
+
+        	List<MapPhysicalNode> parentNodes = physicalNode.getUpstreamConnectedNodes();
+
+        	if (parentNodes.size() != 1) {
+            	throw new RuntimeException();
+        	}
+
+        	MapPhysicalNode parentNode = parentNodes.get(0);
+
+        	String storageFn = LKMPigStorage.getOptionValue(physicalNode, "Storage Function");
+            
+        	if (storageFn.equals("")) {
+            	throw new oracle.odi.domain.mapping.exception.MappingException("The option 'Storage Function' requires a value");
+        	}
+
+
+            LKMPigStorage lkmPig = getLKMPig(storageFn);  
+            lkmPig.setPhysicalNodes(physicalNode, parentNode);
+        	String dataSource = OdiRef.getOdiGeneratedAccessName("SOURCE_NAME",
+            	                                                 parentNode);
+            
+
+			TemplateUtils templateUtils = getTemplateUtils();
+            PigScript pigScript = new PigScript(templateUtils, null);
+    		PigLoadCmd loadCmd = new PigLoadCmd(templateUtils, parentNode);
+            pigScript.addChild(loadCmd);
+            
+            checkLoadPigSchema(pigScript, getOptionValue("Schema for Complex Fields"));
+            List<PigField> changedFields = verifyDateField(pigScript, loadCmd);
+            
+    		if (lkmPig.getBaseUrl() != null) {
+    		   	dataSource = lkmPig.getBaseUrl()+dataSource;
+    		}
+    		
+    		lkmPig.populateLoaderFunctionParams(loadCmd);
+    		loadCmd.setFileLoc(dataSource);
+            
+        	lkmPig.addPigCommands(loadCmd);
+            
+            if (changedFields != null) {
+              changeDateFields(changedFields);
+            }
+                        
+        	return pigScript;
+        
+    	}
+
+
+		AbstractSyntaxTree LOAD_TAP(PigScript pigScript) throws AdapterException,
+                                                        oracle.odi.domain.mapping.exception.MappingException,
+                                                        GenerationException {
+
+        	List<MapPhysicalNode> parentNodes = physicalNode.getUpstreamConnectedNodes();
+
+        	if (parentNodes.size() != 1) {
+            	throw new RuntimeException();
+        	}
+        	
+			String storageFn = LKMPigStorage.getOptionValue(physicalNode, "Storage Function");
+
+        	if (storageFn.equals("")) {
+            	throw new oracle.odi.domain.mapping.exception.MappingException("The option 'Storage Function' requires a value");
+        	}
+        	
+        	
+        	List<MapPhysicalNode> childNodes = physicalNode.getDownstreamConnectedNodes();
+
+        	MapPhysicalNode childNode = childNodes.get(0);
+
+
+            LKMPigStorage lkmPig = getLKMPig(storageFn); 
+            lkmPig.setPhysicalNodes(physicalNode, childNode);
+
+        	MapPhysicalNode parentNode = lkmPig.getNonAPParentNode(parentNodes.get(0));
+
+        	String outputLocation = OdiRef.getOdiGeneratedAccessName("TARG_NAME",
+            	                                                     childNode,
+                	                                                 "D");
+        
+            binding.setVariable("outputLocation",outputLocation);
+            if (lkmPig.getBaseUrl() != null) {
+    		   	outputLocation = lkmPig.getBaseUrl()+outputLocation;
+    		}
+    		
+    	
+            PigStoreCmd storeCmd = new PigStoreCmd(pigScript.getTemplateUtils(), childNode);
+            storeCmd.setDirectory(outputLocation);
+            
+        	lkmPig.populateStorerFunctionParams(storeCmd);
+        
+        	storeCmd.setTgtAttrExprs(lkmPig.getMapExpressions(childNode));
+        	storeCmd.setTgtAttrNames(lkmPig.getMapExpressionAliases(childNode));
+        
+            lkmPig.addPigCommands(storeCmd); 
+        	
+        	
+        	List<PigScript> pigScripts = new ArrayList<PigScript>(1);
+        	pigScripts.add(pigScript);
+        	PigScript storeScript = new PigScript(pigScript.getTemplateUtils(), pigScripts);
+        	
+        	storeScript.addChild(storeCmd);
+            storeScript.setIsPushFromSource(true);
+
+            Map<MapPhysicalNode, PigScript> apStoreScripts = (Map<MapPhysicalNode, PigScript>)generatorContext.getObject("mapping.store.scripts");
+            
+            if (apStoreScripts == null) {
+            
+                 apStoreScripts = new HashMap<MapPhysicalNode,PigScript>();
+            
+                 MapPhysicalDesign physicalDesign = physicalNode.getPhysicalDesign();
+                 List<ExecutionUnit> targetExeUnits = physicalDesign.getTargetExUnitList(); 
+            
+                 for (ExecutionUnit exUnit : targetExeUnits) {
+                      
+                      List<MapPhysicalNode> apNodes = exUnit.getAPNodes();
+                      for (MapPhysicalNode apNode : apNodes) 
+                            apStoreScripts.put(apNode, null);  
+                            
+                }
+                            
+                if (apStoreScripts.size() > 1) {
+                
+                   generatorContext.putObject("mapping.store.scripts", apStoreScripts);
+                }
+                else return storeScript;
+                            
+            }
+            
+            
+            apStoreScripts.put(physicalNode, storeScript);
+            
+            boolean execCompleted = true;
+            for (PigScript pScript : apStoreScripts.values()) {
+                if (pScript == null) {
+                    execCompleted = false;
+                    break;
+                 }
+            
+            }
+            
+            if (execCompleted) {
+            
+                 PigScript wrapperScript = new PigScript(pigScript.getTemplateUtils(), null);
+                 for (PigScript pScript : apStoreScripts.values()) { 
+                     wrapperScript.addChild(pScript);
+                 }
+                 wrapperScript.setIsPushFromSource(true);     
+                 return wrapperScript;
+            }
+            else return new NullTarget(); 
+    	}
+    	
+    	AbstractSyntaxTree PRE_EXTRACT_TAP(SqlQuery input) {
+       		NullTarget result = new NullTarget();
+        	result.setUpstreamAST(input);
+        	return result;
+    	}
+	}
+
+		]]></Field>
+	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:18.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[bd83513d-cde7-4a1e-8eda-862396b7f21b]]></Field>
+	<Field name="IndChange" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
+	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IntgType" type="java.lang.String">null</Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="IsConcurrent" type="java.lang.String">null</Field>
+	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[104]]></Field>
+	<Field name="IFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IProject" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScBaseTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScOrigTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[577]]></Field>
+	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmLang" type="java.lang.String"><![CDATA[PIGLATIN]]></Field>
+	<Field name="KmSrcLang" type="java.lang.String">null</Field>
+	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
+	<Field name="KmTechno" type="java.lang.String"><![CDATA[PIG]]></Field>
+	<Field name="KmVersion" type="java.lang.String">null</Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:18.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LCode" type="java.lang.String">null</Field>
+	<Field name="OggJkm" type="java.lang.String">null</Field>
+	<Field name="OrdFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ProcType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="ProdAstType" type="java.lang.String">null</Field>
+	<Field name="RepGuid" type="java.lang.String">null</Field>
+	<Field name="RepVersion" type="java.lang.String">null</Field>
+	<Field name="ScriptPath" type="java.lang.String">null</Field>
+	<Field name="ScOrigTrtTag" type="java.lang.String">null</Field>
+	<Field name="Subtype" type="java.lang.String"><![CDATA[*]]></Field>
+	<Field name="TrtName" type="java.lang.String"><![CDATA[LKMPig]]></Field>
+	<Field name="TrtType" type="java.lang.String"><![CDATA[CK]]></Field>
+	<Field name="VariableDefs" type="java.lang.String">null</Field>
+	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpReferencedObject">
+		<Field name="IObject" type="com.sunopsis.sql.DbInt"><![CDATA[3600]]></Field>
+	<Field name="ObjectPKasString" type="java.lang.String"><![CDATA[104]]></Field>
+	<Field name="ObjectAKasString" type="java.lang.String"><![CDATA[]]></Field>
+	<Field name="Description" type="java.lang.String"><![CDATA[SNP_TRT : PigKM]]></Field>
+ <Field name="GlobalId" type="java.lang.String"><![CDATA[5cd8e7b4-da1a-45d1-af98-088369a44c37]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[98043cb1-3ce3-466b-8082-72ecd003c29a]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[577]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Edit Command]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_TRT_TXT]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.577]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[98043cb1-3ce3-466b-8082-72ecd003c29a]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.104]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[5cd8e7b4-da1a-45d1-af98-088369a44c37]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PigKM]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[5]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+</Object>
+</SunopsisExport>
