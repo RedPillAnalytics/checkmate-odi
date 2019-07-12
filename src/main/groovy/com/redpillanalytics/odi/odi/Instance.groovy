@@ -32,6 +32,7 @@ import oracle.odi.domain.project.OdiSequence
 import oracle.odi.domain.project.OdiUserFunction
 import oracle.odi.domain.project.OdiUserProcedure
 import oracle.odi.domain.project.OdiVariable
+import oracle.odi.domain.project.OdiXKM
 import oracle.odi.domain.project.finder.IOdiCKMFinder
 import oracle.odi.domain.project.finder.IOdiFolderFinder
 import oracle.odi.domain.project.finder.IOdiIKMFinder
@@ -46,6 +47,7 @@ import oracle.odi.domain.project.finder.IOdiSequenceFinder
 import oracle.odi.domain.project.finder.IOdiUserFunctionFinder
 import oracle.odi.domain.project.finder.IOdiUserProcedureFinder
 import oracle.odi.domain.project.finder.IOdiVariableFinder
+import oracle.odi.domain.project.finder.IOdiXKMFinder
 import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import oracle.odi.domain.runtime.loadplan.finder.IOdiLoadPlanFinder
 import oracle.odi.domain.runtime.scenario.OdiScenario
@@ -365,6 +367,11 @@ class Instance {
       return finder
    }
 
+   def getXKMFinder() {
+      def finder = (IOdiXKMFinder) odi.getTransactionalEntityManager().getFinder(OdiXKM.class)
+      return finder
+   }
+
    def findAllGlobalCKM() {
       def list = getCKMFinder().findAllGlobals()
       log.info "Global CKM list: $list"
@@ -397,6 +404,12 @@ class Instance {
 
    def findAllGlobalSKM() {
       def list = getSKMFinder().findAllGlobals()
+      log.info "Global SKM list: $list"
+      return list
+   }
+
+   def findAllGlobalXKM() {
+      def list = getXKMFinder().findAllGlobals()
       log.info "Global SKM list: $list"
       return list
    }
