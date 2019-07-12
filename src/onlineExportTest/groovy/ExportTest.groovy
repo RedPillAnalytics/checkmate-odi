@@ -32,8 +32,8 @@ class ExportTest extends Specification {
 
       resourcesDir = new File('src/test/resources')
 
-      ant.delete(dir: projectDir)
-      ant.mkdir(dir: projectDir)
+//      ant.delete(dir: projectDir)
+//      ant.mkdir(dir: projectDir)
 
       settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'project-test'""")
 
@@ -191,20 +191,20 @@ class ExportTest extends Specification {
    def "Execute :exportProjectFile task with --source-file option"() {
       given:
       taskName = 'exportProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=NEW-FILE.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-file=NEW_FILE.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :deleteProject task"() {
-      given:
-      taskName = 'deleteProject'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
+//   def "Execute :deleteProject task"() {
+//      given:
+//      taskName = 'deleteProject'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
 
 //   def "Execute :deleteModels task with --model-code option."() {
 //      given:

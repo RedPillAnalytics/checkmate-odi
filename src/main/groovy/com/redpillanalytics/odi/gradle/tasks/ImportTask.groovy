@@ -31,19 +31,11 @@ class ImportTask extends InstanceTask {
 
    @Internal
    smartImportObject(File file) {
+      smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_NAME,smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
       smartImportService.importObjectsFromXml(
               file.canonicalPath,
               'checkmate-odi12c+' as char[],
               false,
       )
    }
-
-//   @Internal
-//   smartImportObjectCipherData(File file, char [] exportKey) {
-//      smartImportService.importObjectsFromXml(
-//              file.canonicalPath,
-//              exportKey,
-//              false
-//      )
-//   }
 }
