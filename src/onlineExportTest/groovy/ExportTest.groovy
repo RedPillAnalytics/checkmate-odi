@@ -71,19 +71,10 @@ class ExportTest extends Specification {
       return result
    }
 
-   def "Execute :exportProjectFile task with defaults"() {
+   def "Execute :export task with defaults"() {
       given:
-      taskName = 'exportProjectFile'
+      taskName = 'export'
       result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
-
-   def "Execute :exportProjectFile task with --source-file option"() {
-      given:
-      taskName = 'exportProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=NEW-FILE.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -170,23 +161,50 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :export task with defaults"() {
+   def "Execute :exportGlobalDir task with defaults"() {
       given:
-      taskName = 'export'
+      taskName = 'exportGlobalDir'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :deleteProject task"() {
+   def "Execute :exportTopologyDir task with defaults"() {
       given:
-      taskName = 'deleteProject'
+      taskName = 'exportTopologyDir'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
+
+   def "Execute :exportProjectFile task with defaults"() {
+      given:
+      taskName = 'exportProjectFile'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportProjectFile task with --source-file option"() {
+      given:
+      taskName = 'exportProjectFile'
+      result = executeSingleTask(taskName, ['--source-file=NEW_FILE.xml', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+//   def "Execute :deleteProject task"() {
+//      given:
+//      taskName = 'deleteProject'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
 
 //   def "Execute :deleteModels task with --model-code option."() {
 //      given:

@@ -30,8 +30,8 @@ class ImportDirectoryTask extends ImportTask {
       log.debug "sourceBase: $sourceBase"
 
       if (sourceDir) {
-         File dir = new File(sourceBase, sourceDir)
-         return dir.exists() ? dir : project.file(sourceDir)
+         File dir = new File("${sourceBase}/${category}/${sourceDir}")
+         return dir.exists() ? dir : project.file(sourceDir).exists() ? project.file(sourceDir) : project.file(sourceBase)
       } else {
          return sourceBase
       }

@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction
 @Slf4j
 class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
 
-   // specify the model subdirectory
+   // specify the load-plan subdirectory
    String category = 'load-plan'
 
    @Internal
@@ -22,8 +22,8 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
 
       instance.findAllLoadPlans().each {
-         //exportObject(it, sourceBase.canonicalPath, true)
-         smartExportObject(it, sourceBase.canonicalPath, it.name)
+         exportObject(it, sourceBase.canonicalPath, true)
+         //smartExportObject(it, sourceBase.canonicalPath, it.name)
       }
       instance.endTxn()
    }

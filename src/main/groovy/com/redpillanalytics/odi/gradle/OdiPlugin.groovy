@@ -1,6 +1,9 @@
 package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
+import com.redpillanalytics.odi.gradle.tasks.ExportGlobalDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ExportTopologyDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportTopologyDirectoryTask
 import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
@@ -157,6 +160,15 @@ class OdiPlugin implements Plugin<Project> {
                   category 'project'
                }
 
+
+               project.task(bg.getTaskName('importTopologyDir'), type: ImportTopologyDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI topology objects from source into the ODI repository."
+                  instance odiInstance
+                  category 'topology'
+               }
+
                project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
 
                   group taskGroup
@@ -179,6 +191,14 @@ class OdiPlugin implements Plugin<Project> {
                   description "Import ODI load plans from source into the ODI repository."
                   instance odiInstance
                   category 'scenario'
+               }
+
+               project.task(bg.getTaskName('importGlobalDir'), type: ImportDirectoryTask) {
+
+                  group taskGroup
+                  description "Import ODI global objects from source into the ODI repository."
+                  instance odiInstance
+                  category 'global'
                }
 
                // Task that executes the smart export of a project
@@ -223,6 +243,22 @@ class OdiPlugin implements Plugin<Project> {
 
                   group taskGroup
                   description "Export one or more scenarios from the ODI repository into source control."
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
+               project.task(bg.getTaskName('exportGlobalDir'), type: ExportGlobalDirectoryTask) {
+
+                  group taskGroup
+                  description "Export global objects from the ODI repository into source control."
+                  instance odiInstance
+                  outputs.upToDateWhen { false }
+               }
+
+               project.task(bg.getTaskName('exportTopologyDir'), type: ExportTopologyDirectoryTask) {
+
+                  group taskGroup
+                  description "Export topology objects from the ODI repository into source control."
                   instance odiInstance
                   outputs.upToDateWhen { false }
                }
@@ -285,15 +321,31 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                if (project.extensions.odi.enableLoadPlans) {
-                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
-                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
-
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
+                  }
                }
 
                if (project.extensions.odi.enableScenarios) {
-                  project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
-                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
+                  }
+               }
 
+               if (project.extensions.odi.enableGlobals) {
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importGlobalDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportGlobalDir')}"
+                  }
+               }
+
+               if (project.extensions.odi.enableTopologies) {
+                  if (contentPolicy == 'dir') {
+                     project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importTopologyDir')}"
+                     project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportTopologyDir')}"
+                  }
                }
             }
          }

@@ -37,6 +37,16 @@ class OdiPluginExtension {
    String projectCode
 
    /**
+    * When enabled, support ODI Global Objects in this Gradle project directory. Default is 'true'.
+    */
+   Boolean enableGlobals = true
+
+   /**
+    * When enabled, support ODI Topology Objects in this Gradle project directory. Default is 'true'.
+    */
+   Boolean enableTopologies = true
+
+   /**
     * When enabled, support ODI Design Models in this Gradle project directory. Default is 'true'.
     */
    Boolean enableModels = true
