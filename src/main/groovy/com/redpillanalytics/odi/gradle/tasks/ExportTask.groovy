@@ -28,26 +28,32 @@ class ExportTask extends InstanceTask {
       def result
 
       if (parents) {
-         result = exportService.exportToXmlWithParents(
-                 object,
-                 path,
-                 overwrite,
-                 recursive,
-                 encodingOptions,
-                 'checkmate-odi12c+' as char[],
-                 false,
-         )
+         try{
+            result = exportService.exportToXmlWithParents(
+                    object,
+                    path,
+                    overwrite,
+                    recursive,
+                    encodingOptions,
+                    'checkmate-odi12c+' as char[],
+                    false
+            )
+         } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
+
       } else {
-         result = exportService.exportToXml(
-                 object,
-                 path,
-                 overwrite,
-                 recursive,
-                 encodingOptions,
-                 'checkmate-odi12c+' as char[],
-                 false,
-         )
+         try{
+            result = exportService.exportToXml(
+                    object,
+                    path,
+                    overwrite,
+                    recursive,
+                    encodingOptions,
+                    'checkmate-odi12c+' as char[],
+                    false
+            )
+         } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
       }
+
       return result
    }
 
@@ -59,17 +65,19 @@ class ExportTask extends InstanceTask {
       smartExportList.add(object)
       def result
 
-      result = smartExportService.exportToXml(
-              smartExportList,
-              path,
-              objectName.replaceAll("[^a-zA-Z0-9]+","_").toUpperCase(),
-              overwrite,
-              isZip,
-              encodingOptions,
-              materializeShortcut,
-              null,
-              'checkmate-odi12c+' as char[],
-              exportWithoutCipherData)
+      try{
+         result = smartExportService.exportToXml(
+                 smartExportList,
+                 path,
+                 objectName.replaceAll("[^a-zA-Z0-9]+","_").toUpperCase(),
+                 overwrite,
+                 isZip,
+                 encodingOptions,
+                 materializeShortcut,
+                 null,
+                 'checkmate-odi12c+' as char[],
+                 exportWithoutCipherData)
+      } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
 
       return result
    }

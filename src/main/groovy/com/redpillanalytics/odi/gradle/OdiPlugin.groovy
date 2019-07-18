@@ -306,6 +306,7 @@ class OdiPlugin implements Plugin<Project> {
                if (project.extensions.odi.enableProjects) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"
+                     project."${bg.getTaskName('importProjectDir')}".mustRunAfter project."${bg.getTaskName('importModelDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectDir')}"
                   } else if (contentPolicy == 'file') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectFile')}"
@@ -316,6 +317,7 @@ class OdiPlugin implements Plugin<Project> {
                if (project.extensions.odi.enableModels) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importModelDir')}"
+                     project."${bg.getTaskName('importModelDir')}".mustRunAfter project."${bg.getTaskName('importGlobalDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportModelDir')}"
                   }
                }
@@ -323,6 +325,7 @@ class OdiPlugin implements Plugin<Project> {
                if (project.extensions.odi.enableLoadPlans) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
+                     project."${bg.getTaskName('importLoadPlanDir')}".mustRunAfter project."${bg.getTaskName('importScenarioDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
                   }
                }
@@ -330,6 +333,7 @@ class OdiPlugin implements Plugin<Project> {
                if (project.extensions.odi.enableScenarios) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
+                     project."${bg.getTaskName('importScenarioDir')}".mustRunAfter project."${bg.getTaskName('importProjectDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
                   }
                }
@@ -337,6 +341,7 @@ class OdiPlugin implements Plugin<Project> {
                if (project.extensions.odi.enableGlobals) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importGlobalDir')}"
+                     project."${bg.getTaskName('importGlobalDir')}".mustRunAfter project."${bg.getTaskName('importTopologyDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportGlobalDir')}"
                   }
                }

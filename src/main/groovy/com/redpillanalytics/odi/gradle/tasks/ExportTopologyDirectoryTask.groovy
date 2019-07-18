@@ -11,7 +11,8 @@ import org.gradle.api.tasks.options.Option
 class ExportTopologyDirectoryTask extends ExportDirectoryTask {
 
     @Internal
-    List objectList = ['technology', 'context', 'data-server', 'physical-schema', 'physical-agent', 'logical-agent', 'logical-schema']
+    List objectList = ['context', 'data-server', 'physical-schema', 'physical-agent', 'logical-agent', 'logical-schema']
+    //List objectList = ['technology', 'context', 'data-server', 'physical-schema', 'physical-agent', 'logical-agent', 'logical-schema']
 
     @Internal
     String category = 'topology'
@@ -43,7 +44,8 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
             instance."$finder"().each { object ->
                 count++
                 logger.debug "object name: ${object.name}"
-                exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                //exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
             }
         }
         instance.endTxn()
