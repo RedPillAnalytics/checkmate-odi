@@ -24,7 +24,7 @@ class ExportTask extends InstanceTask {
    @Internal
    def exportObject(IExportable object, String path, Boolean parents, Boolean overwrite = true, Boolean recursive = true) {
 
-      def encodingOptions = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
+      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
 
       if (parents) {
@@ -60,7 +60,7 @@ class ExportTask extends InstanceTask {
    @Internal
    def smartExportObject(ISmartExportable object, String path, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
 
-      def encodingOptions = new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9")
+      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
       smartExportList.add(object)
       def result
