@@ -82,14 +82,15 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
          // begin the transaction
          instance.beginTxn()
+
          // export the project objects
          if (finder.contains('Variable') || finder.contains('Sequence') || finder.contains('KnowledgeModule') || finder.contains('UserFunction')) {
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
                   count++
                   logger.debug "object name: ${object.name}"
-                  //exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
-                  smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
+                  exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                  //smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
                }
             }
          }
@@ -100,13 +101,14 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   if (!nameList || nameList.contains(object.name)) {
                      count++
                      logger.debug "object name: ${object.name}"
-                     //exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
-                     smartExportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", object.name)
+                     exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
+                     //smartExportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", object.name)
                   }
                }
             }
          }
       }
+
       instance.endTxn()
       if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
    }
