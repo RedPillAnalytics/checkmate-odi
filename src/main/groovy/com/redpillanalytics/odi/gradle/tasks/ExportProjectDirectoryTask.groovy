@@ -84,7 +84,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          instance.beginTxn()
 
          // export the project objects
-         if (finder.contains('Variable') || finder.contains('Sequence') || finder.contains('KnowledgeModule') || finder.contains('UserFunction')) {
+         if (['variable', 'sequence', 'knowledge-module', 'user-function'].contains(objectType)) {
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
                   count++
