@@ -43,7 +43,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
       // export the model folders
       modelfolders.each {
-         exportObject(it, "${sourceBase.canonicalPath}/model-folder", true)
+         exportObject(it, "${sourceBase.canonicalPath}/model-folder", true, false)
          //smartExportObject(it, sourceBase.canonicalPath, it.name)
       }
 
