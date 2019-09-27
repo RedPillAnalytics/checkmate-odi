@@ -51,6 +51,7 @@ import oracle.odi.domain.project.finder.IOdiXKMFinder
 import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import oracle.odi.domain.runtime.loadplan.finder.IOdiLoadPlanFinder
 import oracle.odi.domain.runtime.scenario.OdiScenario
+import oracle.odi.domain.runtime.scenario.OdiScenarioFolder
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder
 import oracle.odi.domain.topology.OdiContext
 import oracle.odi.domain.topology.OdiDataServer
@@ -295,6 +296,16 @@ class Instance {
 
    def findScenarioBySourceUserProcedure(Number userProcedureInternalID, boolean useTimestamp) {
       return getScenarioFinder().findLatestBySourceUserProcedure(userProcedureInternalID, useTimestamp)
+   }
+
+   // Scenario Folder Finders
+
+   def getScenarioFolderFinder() {
+      return (IOdiScenarioFinder) odi.getTransactionalEntityManager().getFinder(OdiScenarioFolder.class)
+   }
+
+   def findAllScenarioFolders() {
+      return getScenarioFolderFinder().findAll()
    }
 
    // Load Plans Finder
