@@ -44,8 +44,8 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
             instance."$finder"().each { object ->
                 count++
                 logger.debug "object name: ${object.name}"
-                //exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
-                smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
+                exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                //smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
             }
         }
         instance.endTxn()
