@@ -95,7 +95,8 @@ dependencies {
 
    // Plugin so classes can be used
    //implementation "gradle.plugin.com.redpillanalytics:odi-api:0.1.14"
-   implementation fileTree(dir: project.odiApi.libsDir, include: '*.jar')
+   //implementation fileTree(dir: project.odiApi.libsDir, include: '*.jar')
+   implementation fileTree(dir: 'libs', include: '*.jar')
 }
 
 // Default artifact naming.
