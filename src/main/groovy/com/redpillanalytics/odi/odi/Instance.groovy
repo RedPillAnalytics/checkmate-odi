@@ -53,6 +53,7 @@ import oracle.odi.domain.runtime.loadplan.finder.IOdiLoadPlanFinder
 import oracle.odi.domain.runtime.scenario.OdiScenario
 import oracle.odi.domain.runtime.scenario.OdiScenarioFolder
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder
+import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFolderFinder
 import oracle.odi.domain.topology.OdiContext
 import oracle.odi.domain.topology.OdiDataServer
 import oracle.odi.domain.topology.OdiLogicalAgent
@@ -301,7 +302,7 @@ class Instance {
    // Scenario Folder Finders
 
    def getScenarioFolderFinder() {
-      return (IOdiScenarioFinder) odi.getTransactionalEntityManager().getFinder(OdiScenarioFolder.class)
+      return (IOdiScenarioFolderFinder) odi.getTransactionalEntityManager().getFinder(OdiScenarioFolder.class)
    }
 
    def findAllScenarioFolders() {
