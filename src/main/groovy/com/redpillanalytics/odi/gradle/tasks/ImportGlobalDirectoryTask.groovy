@@ -4,7 +4,7 @@ import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Internal
 
 @Slf4j
-class ImportTopologyDirectoryTask extends ImportDirectoryTask {
+class ImportGlobalDirectoryTask extends ImportDirectoryTask {
 
     /**
      * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
@@ -14,7 +14,7 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
     @Internal
     List getImportFiles() {
 
-        def filePrefix = ['CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
+        def filePrefix = ['KM', 'REUMAP', 'SEQ', 'UFN', 'VAR']
 
         def result = new LinkedList()
 
