@@ -4,6 +4,7 @@ import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.tasks.ExportGlobalDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportTopologyDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportGlobalDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportScenarioDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportTopologyDirectoryTask
 import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
@@ -186,7 +187,7 @@ class OdiPlugin implements Plugin<Project> {
                   category 'load-plan'
                }
 
-               project.task(bg.getTaskName('importScenarioDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importScenarioDir'), type: ImportScenarioDirectoryTask) {
 
                   group taskGroup
                   description "Import ODI load plans from source into the ODI repository."
