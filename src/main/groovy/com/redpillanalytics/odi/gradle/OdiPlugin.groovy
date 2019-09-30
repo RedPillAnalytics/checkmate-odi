@@ -303,6 +303,7 @@ class OdiPlugin implements Plugin<Project> {
                   description = "Executes all configured 'import' tasks."
                }
 
+               // Add Export/Import task Dependency Level
                if (project.extensions.odi.enableProjects) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"
