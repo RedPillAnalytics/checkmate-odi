@@ -14,12 +14,14 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
     @Internal
     List getImportFiles() {
 
-        def tree = project.fileTree(
-                dir: importDir,
-                include: ['**/CONN_*.xml', '**/PSC_*.xml', '**/AGENT_*.xml', '**/LAGENT_*.xml', '**/CONT_*.xml', '**/LSC_*.xml' ])
+        def filePrefix = ['CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
 
-        log.info("List of Objects to Import: ${tree.toList()} ")
+        def result = new LinkedList()
 
-        return tree.toList()
+        filePrefix.each {
+            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
+        }
+
+        return result
     }
 }
