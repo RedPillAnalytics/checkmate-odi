@@ -5,6 +5,7 @@ import com.redpillanalytics.odi.gradle.tasks.ExportGlobalDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportTopologyDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportGlobalDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportLoadPlanDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportScenarioDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportTopologyDirectoryTask
 import com.redpillanalytics.odi.odi.Instance
@@ -172,7 +173,7 @@ class OdiPlugin implements Plugin<Project> {
                   category 'topology'
                }
 
-               project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importModelDir'), type: ImportModelDirectoryTask) {
 
                   group taskGroup
                   description "Import ODI models from source into the ODI repository."
