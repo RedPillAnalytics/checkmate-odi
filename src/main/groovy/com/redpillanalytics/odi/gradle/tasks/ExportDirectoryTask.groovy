@@ -21,6 +21,6 @@ class ExportDirectoryTask extends ExportTask {
 
    @OutputDirectory
    File getExportDir() {
-      return sourceDir ? project.file(sourceDir) : sourceBase
+      return sourceDir ? project.file(sourceDir) : buildDir
    }
 }

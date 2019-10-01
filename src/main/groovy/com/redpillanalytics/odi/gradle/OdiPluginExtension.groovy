@@ -17,6 +17,11 @@ class OdiPluginExtension {
    String sourceBase = 'src/main'
 
    /**
+    * The build directory for all source objects.
+    */
+   String buildDir = 'build'
+
+   /**
     * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
     */
    Boolean enableProjects = true
