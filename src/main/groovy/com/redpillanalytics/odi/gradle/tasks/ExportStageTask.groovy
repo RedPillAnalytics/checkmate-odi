@@ -1,11 +1,13 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.xmlunit.builder.DiffBuilder
 import org.xmlunit.builder.Input
 import org.xmlunit.diff.Diff
 
+@Slf4j
 class ExportStageTask extends ExportDirectoryTask {
 
     @Internal
