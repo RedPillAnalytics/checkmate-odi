@@ -271,8 +271,7 @@ class OdiPlugin implements Plugin<Project> {
                project.task(bg.getTaskName('exportStageTask'), type: ExportStageTask) {
 
                   group taskGroup
-                  description "Export topology objects from the ODI repository into source control."
-                  instance odiInstance
+                  description "Synchronize the export to the source base objects"
                   outputs.upToDateWhen { false }
                }
 
@@ -318,7 +317,7 @@ class OdiPlugin implements Plugin<Project> {
 
                // Add Export/Import task Dependency Level
                if (contentPolicy == 'dir'){
-                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('ExportStageTask')}"
+                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportStageTask')}"
                   project."${bg.getTaskName('exportStageTask')}".mustRunAfter project."${bg.getTaskName('exportLoadPlanDir')}"
                }
 
