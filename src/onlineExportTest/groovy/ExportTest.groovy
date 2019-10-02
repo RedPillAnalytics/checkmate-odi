@@ -32,8 +32,8 @@ class ExportTest extends Specification {
 
       resourcesDir = new File('src/test/resources')
 
-      ant.delete(dir: projectDir)
-      ant.mkdir(dir: projectDir)
+      //ant.delete(dir: projectDir)
+      //ant.mkdir(dir: projectDir)
 
       settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'JUMP'""")
 
@@ -74,6 +74,15 @@ class ExportTest extends Specification {
    def "Execute :export task with defaults"() {
       given:
       taskName = 'export'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportStageTask task with defaults"() {
+      given:
+      taskName = 'exportStageTask'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:

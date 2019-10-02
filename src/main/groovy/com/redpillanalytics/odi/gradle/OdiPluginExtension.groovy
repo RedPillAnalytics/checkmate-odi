@@ -19,7 +19,7 @@ class OdiPluginExtension {
    /**
     * The build directory for all source objects.
     */
-   String buildDir = 'build'
+   String buildDir = 'build/tmp'
 
    /**
     * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
