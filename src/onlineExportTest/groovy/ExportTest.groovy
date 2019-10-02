@@ -32,8 +32,8 @@ class ExportTest extends Specification {
 
       resourcesDir = new File('src/test/resources')
 
-      //ant.delete(dir: projectDir)
-      //ant.mkdir(dir: projectDir)
+      ant.delete(dir: projectDir)
+      ant.mkdir(dir: projectDir)
 
       settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'JUMP'""")
 

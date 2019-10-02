@@ -61,6 +61,9 @@ class ExportStageTask extends ExportDirectoryTask {
                     tofile: "${sourceBase}/${buildFile.canonicalPath.minus(buildDir.canonicalPath)}",
                     overwrite: true)
         }
+
+        // Delete buildDir when all the files are processed
+        ant.delete(dir: buildDir)
     }
 
     @TaskAction
