@@ -47,9 +47,13 @@ class ExportStageTask extends ExportDirectoryTask {
             // Compare the XML files and if the file change copy from Build to Source Base
             sourceList.each { sourceFile ->
                 if(buildFile.name == sourceFile.name) {
-                    ant.copy(file: buildFile.canonicalPath,
-                            tofile: sourceFile.canonicalPath,
-                            overwrite: true)
+                    if(xmlDiff(buildFile, sourceFile)) {
+                        ant.copy(file: buildFile.canonicalPath,
+                                tofile: sourceFile.canonicalPath,
+                                overwrite: true)
+                        println("Copying file: ${buildFile.name} ...")
+                    }
+
                 }
             }
             // If the XML file does not exist in Source Base copy from Build to Source Base
