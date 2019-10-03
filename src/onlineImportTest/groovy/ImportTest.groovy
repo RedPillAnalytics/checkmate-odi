@@ -83,14 +83,14 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-      def "Execute :deleteModels task with defaults."() {
-      given:
-      taskName = 'deleteModels'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
+//      def "Execute :deleteModels task with defaults."() {
+//      given:
+//      taskName = 'deleteModels'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
 
    def "Execute :import task with defaults"() {
       given:
@@ -176,7 +176,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectFile task with --source-file option"() {
       given:
       taskName = 'importProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=JUMP.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-file=src/main/file/JUMP.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

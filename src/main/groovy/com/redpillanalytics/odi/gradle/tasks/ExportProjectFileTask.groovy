@@ -22,15 +22,15 @@ class ExportProjectFileTask extends ExportTask {
    String projectCode
 
    @Internal
-   String category = 'project'
+   String category = 'file'
 
    /**
-    * The file to export content to. Default: 'src/main/project/<PROJECTCODE>.xml'.
+    * The file to export content to. Default: 'src/main/file/<PROJECTCODE>.xml'.
     */
    @Input
    @Optional
    @Option(option = "source-file",
-           description = "The file to export content to. Default: 'src/main/project/<PROJECTCODE>.xml'."
+           description = "The file to export content to. Default: 'src/main/file/<PROJECTCODE>.xml'."
    )
    String sourceFile
 
