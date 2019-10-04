@@ -80,15 +80,6 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportStageTask task with defaults"() {
-      given:
-      taskName = 'exportStageTask'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
-
    def "Execute :exportProjectDir task with defaults"() {
       given:
       taskName = 'exportProjectDir'
@@ -125,7 +116,7 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportProjectDir task for objects Load ACCOUNT_ACTIVITY_F and TEST_MAPPING"() {
+   def "Execute :exportProjectDir task for objects Load ACCOUNT_ACTIVITY_F and Load COMPANY_D"() {
       given:
       taskName = 'exportProjectDir'
       result = executeSingleTask(taskName, ['--object-name=Load ACCOUNT_ACTIVITY_F', '--object-name=Load COMPANY_D', '-Si'])
