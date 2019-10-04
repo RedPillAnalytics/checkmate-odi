@@ -52,11 +52,8 @@ class ImportProjectFileTask extends ImportTask {
       instance.connect()
       instance.beginTxn()
 
-      smartImportService.importObjectsFromXml(
-              importFile.canonicalPath,
-              null,
-              true,
-      )
+      smartImportObject(importFile)
+
       instance.endTxn()
    }
 }

@@ -52,18 +52,9 @@ class ExportProjectFileTask extends ExportTask {
 
       instance.beginTxn()
 
-      smartExportService.exportToXml(
-              projectList,
-              exportFile.parent,
-              exportFile.name,
-              true,
-              false,
-              new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
-              false,
-              null,
-              null,
-              true
-      )
+      projectList.each {
+         smartExportObject(it,exportFile.parent,exportFile.name)
+      }
 
       instance.endTxn()
    }
