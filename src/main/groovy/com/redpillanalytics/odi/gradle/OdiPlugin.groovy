@@ -2,7 +2,6 @@ package com.redpillanalytics.odi.gradle
 
 import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.tasks.ExportGlobalDirectoryTask
-import com.redpillanalytics.odi.gradle.tasks.ExportStageTask
 import com.redpillanalytics.odi.gradle.tasks.ExportTopologyDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportGlobalDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportLoadPlanDirectoryTask
@@ -141,7 +140,7 @@ class OdiPlugin implements Plugin<Project> {
                   instance odiInstance
                }
 
-               // Task that deletes a project
+               // Task that deletes a model
 //               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
 //
 //                  group taskGroup
@@ -268,13 +267,6 @@ class OdiPlugin implements Plugin<Project> {
                   outputs.upToDateWhen { false }
                }
 
-               project.task(bg.getTaskName('exportStageTask'), type: ExportStageTask) {
-
-                  group taskGroup
-                  description "Synchronize the export to the source base objects"
-                  outputs.upToDateWhen { false }
-               }
-
 //               // Task that exports the Model Folders by Name in the Repository
 //               project.task(bg.getTaskName('exportWorkRepo'), type: ExportWorkRepoTask) {
 //
@@ -316,11 +308,6 @@ class OdiPlugin implements Plugin<Project> {
                }
 
                // Add Export/Import task Dependency Level
-               if (contentPolicy == 'dir'){
-                  project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportStageTask')}"
-                  project."${bg.getTaskName('exportStageTask')}".mustRunAfter project."${bg.getTaskName('exportLoadPlanDir')}"
-               }
-
                if (project.extensions.odi.enableProjects) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"

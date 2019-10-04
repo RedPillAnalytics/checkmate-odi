@@ -77,5 +77,9 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         }
 
         instance.endTxn()
+
+        // execute the export stage process
+        exportStageDir()
+
     }
 }

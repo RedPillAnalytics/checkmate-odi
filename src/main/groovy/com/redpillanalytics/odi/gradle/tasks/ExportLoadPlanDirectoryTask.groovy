@@ -26,5 +26,9 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
          //smartExportObject(it, exportDir.canonicalPath, it.name)
       }
       instance.endTxn()
+
+      // execute the export stage process
+      exportStageDir()
+
    }
 }

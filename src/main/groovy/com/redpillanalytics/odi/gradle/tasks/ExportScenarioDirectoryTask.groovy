@@ -35,5 +35,9 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
         }
 
         instance.endTxn()
+
+        // execute the export stage process
+        exportStageDir()
+
     }
 }

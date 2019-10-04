@@ -116,6 +116,11 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       }
 
       instance.endTxn()
+
       if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
+
+      // execute the export stage process
+      exportStageDir()
+
    }
 }

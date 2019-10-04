@@ -50,5 +50,9 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
         }
         instance.endTxn()
         if (count == 0) throw new Exception("No topology objects match provided filters; object types: ${objectList}")
+
+        // execute the export stage process
+        exportStageDir()
+
     }
 }
