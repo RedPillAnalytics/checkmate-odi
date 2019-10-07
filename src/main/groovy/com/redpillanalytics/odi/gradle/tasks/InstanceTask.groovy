@@ -28,4 +28,11 @@ class InstanceTask extends DefaultTask {
       log.debug "category: ${category}"
       return project.file("${project.extensions.odi.sourceBase}/${category}")
    }
+
+   @Internal
+   def getBuildDir() {
+      log.debug "category: ${category}"
+      return project.file("${project.extensions.odi.buildDir}/${category}")
+   }
+
 }

@@ -44,11 +44,15 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
             instance."$finder"().each { object ->
                 count++
                 logger.debug "object name: ${object.name}"
-                //exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
-                smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
+                exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                //smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
             }
         }
         instance.endTxn()
         if (count == 0) throw new Exception("No topology objects match provided filters; object types: ${objectList}")
+
+        // execute the export stage process
+        exportStageDir()
+
     }
 }

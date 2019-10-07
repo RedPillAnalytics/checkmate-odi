@@ -30,7 +30,7 @@ class ImportTask extends InstanceTask {
                  'checkmate-odi12c+' as char[],
                  false
          )
-      } catch(OdiImportException e) {log.debug(e.toString())}
+      } catch(IllegalArgumentException e) {log.debug(e.toString())}
 
    }
 

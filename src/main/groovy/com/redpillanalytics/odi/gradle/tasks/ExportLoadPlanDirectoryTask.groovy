@@ -22,9 +22,13 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
 
       instance.findAllLoadPlans().each {
-         exportObject(it, sourceBase.canonicalPath, true)
-         //smartExportObject(it, sourceBase.canonicalPath, it.name)
+         exportObject(it, exportDir.canonicalPath, true)
+         //smartExportObject(it, exportDir.canonicalPath, it.name)
       }
       instance.endTxn()
+
+      // execute the export stage process
+      exportStageDir()
+
    }
 }

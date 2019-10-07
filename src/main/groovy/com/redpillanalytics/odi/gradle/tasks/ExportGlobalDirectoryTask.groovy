@@ -22,60 +22,64 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         instance.beginTxn()
 
         instance.findAllGlobalCKM().each {
-            exportObject(it,"${sourceBase.canonicalPath}/ckm", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/ckm", it.name)
+            exportObject(it,"${exportDir.canonicalPath}/ckm", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/ckm", it.name)
         }
 
         instance.findAllGlobalIKM().each {
-            exportObject(it, "${sourceBase.canonicalPath}/ikm", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/ikm", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/ikm", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/ikm", it.name)
         }
 
         instance.findAllGlobalJKM().each {
-            exportObject(it, "${sourceBase.canonicalPath}/jkm", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/jkm", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/jkm", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/jkm", it.name)
         }
 
         instance.findAllGlobalLKM().each {
-            exportObject(it, "${sourceBase.canonicalPath}/lkm", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/lkm", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/lkm", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/lkm", it.name)
         }
 
         instance.findAllGlobalRKM().each {
-            exportObject(it, "${sourceBase.canonicalPath}/rkm", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/rkm", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/rkm", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/rkm", it.name)
         }
 
         instance.findAllGlobalSKM().each {
-            exportObject(it, "${sourceBase.canonicalPath}/skm", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/skm", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/skm", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/skm", it.name)
         }
 
         instance.findAllGlobalXKM().each {
-            exportObject(it, "${sourceBase.canonicalPath}/xkm", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/xkm", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/xkm", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/xkm", it.name)
         }
 
         instance.findAllGlobalReusableMappings().each {
-            exportObject(it, "${sourceBase.canonicalPath}/reusable-mapping", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/reusable-mapping", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/reusable-mapping", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/reusable-mapping", it.name)
         }
 
         instance.findAllGlobalUserFunctions().each {
-            exportObject(it, "${sourceBase.canonicalPath}/user-function", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/user-function", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/user-function", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/user-function", it.name)
         }
 
         instance.findAllGlobalSequences().each {
-            exportObject(it, "${sourceBase.canonicalPath}/sequence", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/sequence", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/sequence", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/sequence", it.name)
         }
 
         instance.findAllGlobalVariables().each {
-            exportObject(it, "${sourceBase.canonicalPath}/variable", true)
-            //smartExportObject(it, "${sourceBase.canonicalPath}/variable", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/variable", true)
+            //smartExportObject(it, "${exportDir.canonicalPath}/variable", it.name)
         }
 
         instance.endTxn()
+
+        // execute the export stage process
+        exportStageDir()
+
     }
 }

@@ -12,7 +12,7 @@ import org.gradle.api.tasks.options.Option
 class ImportProjectFileTask extends ImportTask {
 
    @Internal
-   String category = 'project'
+   String category = 'file'
 
    /**
     * The ODI project code to import. Default: value of 'obi.projectName', or the name of the project subdirectory.
@@ -23,12 +23,12 @@ class ImportProjectFileTask extends ImportTask {
    String projectCode
 
    /**
-    * The file to import content from. Default: 'src/main/project/<PROJECTCODE>.xml'.
+    * The file to import content from. Default: 'src/main/file/<PROJECTCODE>.xml'.
     */
    @Input
    @Optional
    @Option(option = "source-file",
-           description = "The file to import content from. Default: 'src/main/project/<PROJECTCODE>.xml'."
+           description = "The file to import content from. Default: 'src/main/file/<PROJECTCODE>.xml'."
    )
    String sourceFile
 
@@ -52,11 +52,8 @@ class ImportProjectFileTask extends ImportTask {
       instance.connect()
       instance.beginTxn()
 
-      smartImportService.importObjectsFromXml(
-              importFile.canonicalPath,
-              null,
-              true,
-      )
+      smartImportObject(importFile)
+
       instance.endTxn()
    }
 }

@@ -24,7 +24,7 @@ class ImportTest extends Specification {
 
    def setup() {
 
-      projectDir = new File("${System.getProperty("projectDir")}/project-test")
+      projectDir = new File("${System.getProperty("projectDir")}/JUMP")
       buildDir = new File(projectDir, 'build')
       odiPassword = System.getProperty("odiPassword")
       masterPassword = System.getProperty("masterPassword")
@@ -38,7 +38,7 @@ class ImportTest extends Specification {
          fileset(dir: resourcesDir)
       }
 
-      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'project-test'""")
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'JUMP'""")
 
       buildFile = new File(projectDir, 'build.gradle').write("""
             |plugins {
@@ -49,7 +49,7 @@ class ImportTest extends Specification {
             |   masterUrl = '$masterUrl'
             |   masterPassword = '$masterPassword'
             |   odiPassword = '$odiPassword'
-            |   projectName = 'project-test'
+            |   projectName = 'JUMP'
             |}
         |""".stripMargin())
    }
@@ -95,7 +95,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectDir task with --source-dir option"() {
       given:
       taskName = 'importProjectDir'
-      result = executeSingleTask(taskName, ['--source-dir=OTHER_FOLDER', '-Si'])
+      result = executeSingleTask(taskName, ['--source-dir=EDW Loads', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -146,15 +146,6 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :createProject task"() {
-      given:
-      taskName = 'createProject'
-      result = executeSingleTask(taskName, ['clean', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
-
    def "Execute :importProjectFile task with defaults"() {
       given:
       taskName = 'importProjectFile'
@@ -167,9 +158,36 @@ class ImportTest extends Specification {
    def "Execute :importProjectFile task with --source-file option"() {
       given:
       taskName = 'importProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=PROJECT-TEST.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-file=src/main/file/JUMP.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
+
+   //      def "Execute :deleteProject task"() {
+//      given:
+//      taskName = 'deleteProject'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
+
+//      def "Execute :deleteModels task with defaults."() {
+//      given:
+//      taskName = 'deleteModels'
+//      result = executeSingleTask(taskName, ['-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
+
+//   def "Execute :createProject task"() {
+//      given:
+//      taskName = 'createProject'
+//      result = executeSingleTask(taskName, ['clean', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
 }

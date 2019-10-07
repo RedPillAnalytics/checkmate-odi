@@ -24,7 +24,7 @@ class ExportTest extends Specification {
 
    def setup() {
 
-      projectDir = new File("${System.getProperty("projectDir")}/project-test")
+      projectDir = new File("${System.getProperty("projectDir")}/JUMP")
       buildDir = new File(projectDir, 'build')
       odiPassword = System.getProperty("odiPassword")
       masterPassword = System.getProperty("masterPassword")
@@ -35,7 +35,7 @@ class ExportTest extends Specification {
       ant.delete(dir: projectDir)
       ant.mkdir(dir: projectDir)
 
-      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'project-test'""")
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'JUMP'""")
 
       buildFile = new File(projectDir, 'build.gradle').write("""
             |plugins {
@@ -46,7 +46,7 @@ class ExportTest extends Specification {
             |   masterUrl = '$masterUrl'
             |   masterPassword = '$masterPassword'
             |   odiPassword = '$odiPassword'
-            |   projectName = 'project-test'
+            |   projectName = 'JUMP'
             |}
         |""".stripMargin())
    }
@@ -89,10 +89,10 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportProjectDir task for OTHER_FOLDER folder"() {
+   def "Execute :exportProjectDir task for EDW Loads folder"() {
       given:
       taskName = 'exportProjectDir'
-      result = executeSingleTask(taskName, ['--folder-name=OTHER_FOLDER', '-Si'])
+      result = executeSingleTask(taskName, ['--folder-name=EDW Loads', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -107,19 +107,19 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportProjectDir task for TEST_FOLDER folder and only procedures and packages"() {
+   def "Execute :exportProjectDir task for EDW Loads folder and only procedures and packages"() {
       given:
       taskName = 'exportProjectDir'
-      result = executeSingleTask(taskName, ['--folder-name=TEST_FOLDER', '--object-type=package', '--object-type=procedure', '-Si'])
+      result = executeSingleTask(taskName, ['--folder-name=EDW Loads', '--object-type=package', '--object-type=procedure', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :exportProjectDir task for objects TEST_PACKAGE and TEST_MAPPING"() {
+   def "Execute :exportProjectDir task for objects Load ACCOUNT_ACTIVITY_F and Load COMPANY_D"() {
       given:
       taskName = 'exportProjectDir'
-      result = executeSingleTask(taskName, ['--object-name=TEST_PACKAGE', '--object-name=TEST_MAPPING', '-Si'])
+      result = executeSingleTask(taskName, ['--object-name=Load ACCOUNT_ACTIVITY_F', '--object-name=Load COMPANY_D', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -191,7 +191,7 @@ class ExportTest extends Specification {
    def "Execute :exportProjectFile task with --source-file option"() {
       given:
       taskName = 'exportProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=NEW_FILE.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-file=JUMP.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="UKzur6TcELoWaG/3YFNbSWsX2y87kQqqZcT5GQyO5U8=" keyVect="Yz0gzajYh2SPQUyzCuKCfA==" exportKeySalt="e01d1dbd-297d-4454-92f9-a01f4edaa0f3" containsCipherText="false"/>
+<Object class="com.sunopsis.dwg.dbobj.SnpVar">
+		<Field name="DefDate" type="java.sql.Timestamp">null</Field>
+	<Field name="DefN" type="com.sunopsis.sql.DbInt">null</Field>
+	<Field name="DefV" type="java.lang.String">null</Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-07-22 17:21:32.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[ddbd968e-3692-4579-9d78-6c9c39489d73]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndStore" type="java.lang.String"><![CDATA[S]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
+	<Field name="IProject" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITxtVar" type="com.sunopsis.sql.DbInt"><![CDATA[3646]]></Field>
+	<Field name="ITxtVarIn" type="com.sunopsis.sql.DbInt"><![CDATA[3647]]></Field>
+	<Field name="ITxtVarValTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IVar" type="com.sunopsis.sql.DbInt"><![CDATA[34]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-07-22 20:29:04.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LschemaName" type="java.lang.String"><![CDATA[OBIEE]]></Field>
+	<Field name="VarDatatype" type="java.lang.String"><![CDATA[T]]></Field>
+	<Field name="VarName" type="java.lang.String"><![CDATA[GV_E$_WC_CONTACT_D_MDM_output]]></Field>
+	<Field name="VarType" type="java.lang.String"><![CDATA[G]]></Field>
+	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[620195ff-3ae8-4a02-8f84-34136184b7b2]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[3646]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[108]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[01/17/2017 - Erik Wilkins
+* Created]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[108]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Variable description]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_VAR]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_VAR]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[a765cb52-4de5-4c73-a83d-9dc97e41df25]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[3647]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[128]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[2]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[select 
+REPLACE(MAX(SYS_CONNECT_BY_PATH(chr(13) || integration_id || ' has ' || output_text, ','))
+  KEEP (DENSE_RANK LAST ORDER BY curr), ',') AS SINGLE_ROW_OUTPUT
+from
+(
+  WITH CONTACT_ERR as 
+  (select * from SIEBEL.E$_WC_CONTACT_D 
+    where datasource_num_id IN (#GLOBAL.GV_DS_MDM)
+    and integration_id in (#GLOBAL.GV_E$_WC_CONTACT_D_MDM_list))
+  
+  select 
+  unique_rows.integration_id,
+  case 
+    when contact_info.cnt = 1 and mailing_info.cnt = 1 and altern_info.cnt = 1
+    then 'Exact duplicate rows'
+    else
+      replace(
+        rtrim(
+          CASE WHEN contact_info.cnt > 1 then contact_info.cnt || ' Contact records  ' end
+          || CASE WHEN mailing_info.cnt > 1 then mailing_info.cnt || ' Mailing addresses  ' end
+          || CASE WHEN altern_info.cnt > 1 then altern_info.cnt || ' Alternate addresses  ' end)
+        , '  ', ' & ')
+    end output_text,
+  ROW_NUMBER() OVER (ORDER BY to_number(unique_rows.integration_id), unique_rows.datasource_num_id) AS curr,
+  ROW_NUMBER() OVER (ORDER BY to_number(unique_rows.integration_id), unique_rows.datasource_num_id) - 1 AS prev
+  from
+  
+  (select distinct integration_id, datasource_num_id from CONTACT_ERR) unique_rows
+  
+  join
+  (select integration_id, datasource_num_id, count(1) cnt from
+    (select distinct
+      INTEGRATION_ID ,
+      DATASOURCE_NUM_ID ,
+      FIRSTNAME ,
+      LASTNAME ,
+      EMAIL ,
+      FAX ,
+      HOME_PHONE ,
+      MOBILE_PHONE ,
+      OTHER_PHONE ,
+      BUSINESS_PHONE ,
+      SALUTATION ,
+      TITLE ,
+      ACTIVE_FLG,
+      MERGED_WITH ,
+      IS_MERGED
+      from SIEBEL.E$_WC_CONTACT_D
+      ) 
+    group by integration_id, datasource_num_id
+    ) contact_info
+  on unique_rows.integration_id = contact_info.integration_id
+  and unique_rows.datasource_num_id = contact_info.datasource_num_id
+  
+  join
+  (select integration_id, datasource_num_id, count(1) cnt from
+    (select distinct
+      INTEGRATION_ID ,
+      DATASOURCE_NUM_ID ,
+      MAILING_ADDRESS1 ,
+      MAILING_ADDRESS2 ,
+      MAILING_CITY ,
+      MAILING_STATENAME ,
+      MAILING_STATENUM ,
+      MAILING_COUNTYNUM ,
+      MAILING_POSTAL_CODE ,
+      MAILING_COUNTRY ,
+      MAILING_COUNTRY_NUM ,
+      MAILING_COUNTY_NAME ,
+      MAILING_COMPOSITE_GEO_NUM ,
+      MAILING_GEO_CODE ,
+      MAILING_MSA_NUM ,
+      MAILING_MSA_NAME ,
+      MAILING_SUB_COUNTY_NUM ,
+      MAILING_SUB_COUNTY_NAME ,
+      MAILING_IS_VALID ,
+      MAILING_LONGITUDE ,
+      MAILING_LATITUDE ,
+      MAILING_IS_DELIVERABLE ,
+      MAILING_REASON_FOR_INVALID ,
+      MAILING_ORIG_ADDRESS_FLG
+      from CONTACT_ERR
+      ) 
+    group by integration_id, datasource_num_id
+    ) mailing_info
+  on unique_rows.integration_id = mailing_info.integration_id
+  and unique_rows.datasource_num_id = mailing_info.datasource_num_id
+  
+  join
+  (select integration_id, datasource_num_id, count(1) cnt from
+    (select distinct
+      INTEGRATION_ID ,
+      DATASOURCE_NUM_ID ,
+      ALTERN_ADDRESS1 ,
+      ALTERN_ADDRESS2 ,
+      ALTERN_CITY ,
+      ALTERN_STATENAME ,
+      ALTERN_STATENUM ,
+      ALTERN_COUNTYNUM ,
+      ALTERN_POSTAL_CODE ,
+      ALTERN_COUNTRY ,
+      ALTERN_COUNTRY_NUM ,
+      ALTERN_COUNTY_NAME ,
+      ALTERN_COMPOSITE_GEO_NUM ,
+      ALTERN_GEO_CODE ,
+      ALTERN_MSA_NUM ,
+      ALTERN_MSA_NAME ,
+      ALTERN_SUB_COUNTY_NUM ,
+      ALTERN_SUB_COUNTY_NAME ,
+      ALTERN_IS_VALID ,
+      ALTERN_LONGITUDE ,
+      ALTERN_LATITUDE ,
+      ALTERN_IS_DELIVERABLE ,
+      ALTERN_REASON_FOR_INVALID ,
+      ALTERN_ORIG_ADDRESS_FLG
+      from CONTACT_ERR
+      ) 
+    group by integration_id, datasource_num_id
+    ) altern_info
+  on unique_rows.integration_id = altern_info.integration_id
+  and unique_rows.datasource_num_id = altern_info.datasource_num_id
+  )
+CONNECT BY prev = PRIOR curr
+START WITH curr = 1]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[128]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Variable Query]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_VAR_IN]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_VAR]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.3647]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[a765cb52-4de5-4c73-a83d-9dc97e41df25]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.3646]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[620195ff-3ae8-4a02-8f84-34136184b7b2]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+</Object>
+</SunopsisExport>

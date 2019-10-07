@@ -83,8 +83,11 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          // begin the transaction
          instance.beginTxn()
 
+         // export the project
+         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
+
          // export the project objects
-         if (finder.contains('Variable') || finder.contains('Sequence') || finder.contains('KnowledgeModule') || finder.contains('UserFunction')) {
+         if (['variable', 'sequence', 'knowledge-module', 'user-function'].contains(objectType)) {
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
                   count++
@@ -97,12 +100,15 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          else {
             // export the folder objects
             folders.each { OdiFolder folder ->
+               // export the folder
+               exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
+               // export the folder objects
                instance."$finder"(projectCode, folder.name).each { object ->
                   if (!nameList || nameList.contains(object.name)) {
                      count++
                      logger.debug "object name: ${object.name}"
-                     exportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", true)
-                     //smartExportObject(object, "${exportDir.canonicalPath}/${folder.name}/${objectType}", object.name)
+                     exportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", true)
+                     //smartExportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", object.name)
                   }
                }
             }
@@ -110,6 +116,11 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       }
 
       instance.endTxn()
+
       if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
+
+      // execute the export stage process
+      exportStageDir()
+
    }
 }

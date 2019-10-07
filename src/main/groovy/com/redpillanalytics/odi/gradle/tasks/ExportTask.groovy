@@ -22,37 +22,22 @@ class ExportTask extends InstanceTask {
    }
 
    @Internal
-   def exportObject(IExportable object, String path, Boolean parents, Boolean overwrite = true, Boolean recursive = true) {
+   def exportObject(IExportable object, String path, Boolean overwrite = true, Boolean recursive = true) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
 
-      if (parents) {
-         try{
-            result = exportService.exportToXmlWithParents(
-                    object,
-                    path,
-                    overwrite,
-                    recursive,
-                    encodingOptions,
-                    'checkmate-odi12c+' as char[],
-                    false
-            )
-         } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
-
-      } else {
-         try{
-            result = exportService.exportToXml(
-                    object,
-                    path,
-                    overwrite,
-                    recursive,
-                    encodingOptions,
-                    'checkmate-odi12c+' as char[],
-                    false
-            )
-         } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
-      }
+      try{
+         result = exportService.exportToXml(
+                 object,
+                 path,
+                 overwrite,
+                 recursive,
+                 encodingOptions,
+                 'checkmate-odi12c+' as char[],
+                 false
+         )
+      } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
 
       return result
    }

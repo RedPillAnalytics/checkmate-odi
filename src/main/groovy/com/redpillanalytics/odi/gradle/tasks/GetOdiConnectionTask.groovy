@@ -17,10 +17,11 @@ class GetOdiConnectionTask extends DefaultTask {
 
         try{
             instance.connect()
-            log.warn 'SUCCESSFULLY CONNECTED TO ODI REPOSITORY!'
+            log.warn 'Successfully Connected to ODI Repository!'
+            instance.endTxn()
         }
         catch (NullPointerException e) {
-            throw new Exception("FAILED TO CONNECT TO ODI REPOSITORY!")
+            throw new Exception("Failed to Connect to ODI Repository!")
         }
     }
 }

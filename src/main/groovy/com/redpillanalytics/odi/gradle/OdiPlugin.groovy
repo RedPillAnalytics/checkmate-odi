@@ -3,6 +3,10 @@ package com.redpillanalytics.odi.gradle
 import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.tasks.ExportGlobalDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportTopologyDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportGlobalDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportLoadPlanDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportModelDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.ImportScenarioDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportTopologyDirectoryTask
 import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
@@ -136,7 +140,7 @@ class OdiPlugin implements Plugin<Project> {
                   instance odiInstance
                }
 
-               // Task that deletes a project
+               // Task that deletes a model
 //               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
 //
 //                  group taskGroup
@@ -169,7 +173,7 @@ class OdiPlugin implements Plugin<Project> {
                   category 'topology'
                }
 
-               project.task(bg.getTaskName('importModelDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importModelDir'), type: ImportModelDirectoryTask) {
 
                   group taskGroup
                   description "Import ODI models from source into the ODI repository."
@@ -177,7 +181,7 @@ class OdiPlugin implements Plugin<Project> {
                   category 'model'
                }
 
-               project.task(bg.getTaskName('importLoadPlanDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importLoadPlanDir'), type: ImportLoadPlanDirectoryTask) {
 
                   group taskGroup
                   description "Import ODI load plans from source into the ODI repository."
@@ -185,7 +189,7 @@ class OdiPlugin implements Plugin<Project> {
                   category 'load-plan'
                }
 
-               project.task(bg.getTaskName('importScenarioDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importScenarioDir'), type: ImportScenarioDirectoryTask) {
 
                   group taskGroup
                   description "Import ODI load plans from source into the ODI repository."
@@ -193,7 +197,7 @@ class OdiPlugin implements Plugin<Project> {
                   category 'scenario'
                }
 
-               project.task(bg.getTaskName('importGlobalDir'), type: ImportDirectoryTask) {
+               project.task(bg.getTaskName('importGlobalDir'), type: ImportGlobalDirectoryTask) {
 
                   group taskGroup
                   description "Import ODI global objects from source into the ODI repository."
@@ -303,11 +307,13 @@ class OdiPlugin implements Plugin<Project> {
                   description = "Executes all configured 'import' tasks."
                }
 
+               // Add Export/Import task Dependency Level
                if (project.extensions.odi.enableProjects) {
                   if (contentPolicy == 'dir') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectDir')}"
                      project."${bg.getTaskName('importProjectDir')}".mustRunAfter project."${bg.getTaskName('importModelDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectDir')}"
+                     project."${bg.getTaskName('exportProjectDir')}".mustRunAfter project."${bg.getTaskName('exportModelDir')}"
                   } else if (contentPolicy == 'file') {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importProjectFile')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportProjectFile')}"
@@ -319,6 +325,7 @@ class OdiPlugin implements Plugin<Project> {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importModelDir')}"
                      project."${bg.getTaskName('importModelDir')}".mustRunAfter project."${bg.getTaskName('importGlobalDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportModelDir')}"
+                     project."${bg.getTaskName('exportModelDir')}".mustRunAfter project."${bg.getTaskName('exportGlobalDir')}"
                   }
                }
 
@@ -327,6 +334,7 @@ class OdiPlugin implements Plugin<Project> {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importLoadPlanDir')}"
                      project."${bg.getTaskName('importLoadPlanDir')}".mustRunAfter project."${bg.getTaskName('importScenarioDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportLoadPlanDir')}"
+                     project."${bg.getTaskName('exportLoadPlanDir')}".mustRunAfter project."${bg.getTaskName('exportScenarioDir')}"
                   }
                }
 
@@ -335,6 +343,7 @@ class OdiPlugin implements Plugin<Project> {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importScenarioDir')}"
                      project."${bg.getTaskName('importScenarioDir')}".mustRunAfter project."${bg.getTaskName('importProjectDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportScenarioDir')}"
+                     project."${bg.getTaskName('exportScenarioDir')}".mustRunAfter project."${bg.getTaskName('exportProjectDir')}"
                   }
                }
 
@@ -343,6 +352,7 @@ class OdiPlugin implements Plugin<Project> {
                      project."${bg.getTaskName('import')}".dependsOn project."${bg.getTaskName('importGlobalDir')}"
                      project."${bg.getTaskName('importGlobalDir')}".mustRunAfter project."${bg.getTaskName('importTopologyDir')}"
                      project."${bg.getTaskName('export')}".dependsOn project."${bg.getTaskName('exportGlobalDir')}"
+                     project."${bg.getTaskName('exportGlobalDir')}".mustRunAfter project."${bg.getTaskName('exportTopologyDir')}"
                   }
                }
 
