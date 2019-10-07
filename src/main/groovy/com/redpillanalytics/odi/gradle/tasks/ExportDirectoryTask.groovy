@@ -45,6 +45,7 @@ class ExportDirectoryTask extends ExportTask {
       // Find and remove the deleted objects in the source base comparing with the build objects
       project.fileTree(dir: sourceBase, include: "**/*.xml").toList().each { File srcFile ->
          if (!project.fileTree(dir: buildDir, include: "**/*.xml").collect {it.name}.contains(srcFile.name)) {
+            log.info("File ${srcFile.name} deleted, removing from source base ...")
             ant.delete(file: srcFile)
          }
       }
@@ -54,24 +55,31 @@ class ExportDirectoryTask extends ExportTask {
       log.debug("Build Dir List: ${buildList}")
       def sourceList = project.fileTree(dir: sourceBase, include: "**/*.xml").toList()
       log.debug("Source base List: ${sourceList}")
+      Boolean flag
 
       buildList.each { buildFile ->
+         flag = false
          // Compare the XML files and if the file change copy from Build to Source Base
-         sourceList.each { sourceFile ->
-            if(buildFile.name == sourceFile.name) {
-               if(xmlDiff(buildFile, sourceFile)) {
-                  ant.copy(file: buildFile.canonicalPath,
-                          tofile: sourceFile.canonicalPath,
-                          overwrite: true)
-                  println("Copying file: ${buildFile.name} ...")
-               }
 
+         def sourceFile = sourceList.find({File sourceFile -> sourceFile.name == buildFile.name})
+         if(sourceFile) {
+            flag = true
+            log.info("File ${buildFile.name} not changed ...")
+            if (xmlDiff(buildFile, sourceFile)) {
+               log.info("File ${buildFile.name} changed, copying to source base ...")
+               ant.copy(file: buildFile.canonicalPath,
+                       tofile: sourceFile.canonicalPath,
+                       overwrite: true)
             }
          }
-         // If the XML file does not exist in Source Base copy from Build to Source Base
-         ant.copy(file: buildFile.canonicalPath,
-                 tofile: "${sourceBase}/${buildFile.canonicalPath.minus(buildDir.canonicalPath)}",
-                 overwrite: true)
+
+         if(!flag) {
+            // If the XML file does not exist in Source Base copy from Build to Source Base
+            log.info("Object ${buildFile.name} created, copying to source base ...")
+            ant.copy(file: buildFile.canonicalPath,
+                    tofile: "${sourceBase}/${buildFile.canonicalPath.minus(buildDir.canonicalPath)}",
+                    overwrite: true)
+         }
       }
 
       // Delete buildDir when all the files are processed
