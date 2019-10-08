@@ -8,12 +8,12 @@ import org.gradle.api.tasks.Internal
 @Slf4j
 class InstanceTask extends DefaultTask {
 
-   InstanceTask() {
-      // if the ODI API plugin is installed, then ensure the API is there
-      if (project.plugins.findPlugin('com.redpillanalytics.checkmate.odi.api') && project.odi.extractOdiApi) {
-         dependsOn project.tasks.extractApi
-      }
-   }
+//   InstanceTask() {
+//      // if the ODI API plugin is installed, then ensure the API is there
+//      if (project.plugins.findPlugin('com.redpillanalytics.checkmate.odi.api') && project.odi.extractOdiApi) {
+//         dependsOn project.tasks.extractApi
+//      }
+//   }
 
    @Internal
    Instance instance

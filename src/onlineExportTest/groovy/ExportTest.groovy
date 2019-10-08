@@ -197,6 +197,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :getOdiConnection task with --source-file option"() {
+      given:
+      taskName = 'getOdiConnection'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
 //   def "Execute :deleteProject task"() {
 //      given:
 //      taskName = 'deleteProject'

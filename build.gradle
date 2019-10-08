@@ -11,8 +11,8 @@ plugins {
    id "com.github.ben-manes.versions" version "0.21.0"
    id 'com.adarshr.test-logger' version '1.6.0'
    id "com.redpillanalytics.gradle-analytics" version "1.2.3"
-   id "com.redpillanalytics.gradle-aws" version "0.1.4"
-   id "com.redpillanalytics.checkmate.odi.api" version "0.1.16"
+   id "com.redpillanalytics.gradle-aws" version "0.1.5"
+//   id "com.redpillanalytics.checkmate.odi.api" version "0.1.16"
 }
 
 // send analytics
@@ -161,6 +161,9 @@ task publishLatestDocs(type: S3UploadSyncTask) {
    dependsOn groovydoc
 }
 
+publishPlugins.dependsOn publishVersionDocs
+publishVersionDocs.dependsOn publishLatestDocs
+
 task copyBuildResources(type: S3DownloadSyncTask) {
    description 'Copy build resource files from S3.'
    group 'build'
@@ -178,5 +181,5 @@ task runAllTests {
    dependsOn onlineExportTest, onlineImportTest
 }
 
-tasks.build.dependsOn tasks.extractApi
-tasks.compileGroovy.mustRunAfter tasks.extractApi
+//tasks.build.dependsOn tasks.extractApi
+//tasks.compileGroovy.mustRunAfter tasks.extractApi

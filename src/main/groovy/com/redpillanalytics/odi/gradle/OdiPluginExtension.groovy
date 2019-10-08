@@ -89,7 +89,7 @@ class OdiPluginExtension {
    /**
     * When enabled, all Instance Tasks ensure that the ODI API zip file is downloaded and extracted. Only applicable with the 'com.redpillanalytics.checkmate.odi.api' plugin is enabled.
     */
-   Boolean extractOdiApi = false
+//   Boolean extractOdiApi = false
 
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"
@@ -116,7 +116,6 @@ class OdiPluginExtension {
     * @return a Boolean specifying whether this is a development work repository.
     */
    def isDevelopment() {
-
       return (workType.toLowerCase() == 'development')
    }
 }

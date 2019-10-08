@@ -17,6 +17,7 @@ class GetOdiConnectionTask extends DefaultTask {
 
         try{
             instance.connect()
+            instance.beginTxn()
             log.warn 'Successfully Connected to ODI Repository!'
             instance.endTxn()
         }
