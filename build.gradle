@@ -12,7 +12,7 @@ plugins {
    id 'com.adarshr.test-logger' version '1.6.0'
    id "com.redpillanalytics.gradle-analytics" version "1.2.3"
    id "com.redpillanalytics.gradle-aws" version "0.1.5"
-   id "com.github.johnrengelman.shadow" version "5.1.0"
+   id "com.github.johnrengelman.shadow" version "4.0.4"
 //   id "com.redpillanalytics.checkmate.odi.api" version "0.1.16"
 }
 
@@ -105,7 +105,10 @@ dependencies {
 group = 'com.redpillanalytics'
 
 jar.enabled = false
-shadowJar { classifier = '' }
+shadowJar {
+   classifier = ''
+   zip64 true
+}
 tasks.build.dependsOn tasks.shadowJar
 
 repositories {
