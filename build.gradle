@@ -12,6 +12,7 @@ plugins {
    id 'com.adarshr.test-logger' version '1.6.0'
    id "com.redpillanalytics.gradle-analytics" version "1.2.3"
    id "com.redpillanalytics.gradle-aws" version "0.1.5"
+   id "com.github.johnrengelman.shadow" version "4.0.4"
 //   id "com.redpillanalytics.checkmate.odi.api" version "0.1.16"
 }
 
@@ -96,12 +97,19 @@ dependencies {
    // Plugin so classes can be used
    //implementation "gradle.plugin.com.redpillanalytics:odi-api:0.1.14"
    //implementation fileTree(dir: project.odiApi.libsDir, include: '*.jar')
-   implementation fileTree(dir: 'libs', include: '*.jar')
-   implementation 'org.xmlunit:xmlunit-core:2.6.3'
+   compile fileTree(dir: 'libs', include: '*.jar')
+   compile 'org.xmlunit:xmlunit-core:2.6.3'
 }
 
 // Default artifact naming.
 group = 'com.redpillanalytics'
+
+jar.enabled = false
+shadowJar {
+   classifier = ''
+   zip64 true
+}
+tasks.build.dependsOn tasks.shadowJar
 
 repositories {
    jcenter()
