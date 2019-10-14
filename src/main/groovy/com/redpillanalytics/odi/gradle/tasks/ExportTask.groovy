@@ -27,7 +27,8 @@ class ExportTask extends InstanceTask {
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
 
-      try{
+      try {
+
          result = exportService.exportToXml(
                  object,
                  path,
@@ -37,7 +38,8 @@ class ExportTask extends InstanceTask {
                  'checkmate-odi12c+' as char[],
                  false
          )
-      } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
+
+      } catch(Exception e) {log.info("Error exporting object: ${object.name} error message: ${e.toString()}")}
 
       return result
    }
@@ -50,7 +52,8 @@ class ExportTask extends InstanceTask {
       smartExportList.add(object)
       def result
 
-      try{
+      try {
+
          result = smartExportService.exportToXml(
                  smartExportList,
                  path,
@@ -62,7 +65,8 @@ class ExportTask extends InstanceTask {
                  null,
                  'checkmate-odi12c+' as char[],
                  exportWithoutCipherData)
-      } catch(StringIndexOutOfBoundsException e) {log.debug(e.toString())}
+
+      } catch(Exception e) {log.info("Error exporting object: ${object.name} error message: ${e.toString()}")}
 
       return result
    }
