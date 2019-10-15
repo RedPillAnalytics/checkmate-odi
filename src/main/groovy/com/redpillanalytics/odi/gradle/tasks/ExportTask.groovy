@@ -46,7 +46,7 @@ class ExportTask extends InstanceTask {
 
    @Internal
    def smartExportObject(List<ISmartExportable> smartExportList, String path, String objectNamePrefix, String objectName,
-                         Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
+                         Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
@@ -63,10 +63,29 @@ class ExportTask extends InstanceTask {
                  materializeShortcut,
                  null,
                  'checkmate-odi12c+' as char[],
-                 exportWithoutCipherData)
+                 false)
 
       } catch(Exception e) {log.info("Error exporting object: ${objectName} error message: ${e.toString()}")}
 
       return result
+   }
+
+   @Internal
+   def exportTopology(String path) {
+
+      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
+      def result
+
+      try {
+
+         result = exportService.exportTopologyInFolder(path,
+                 encodingOptions,
+                 'checkmate-odi12c+' as char[],
+                 false)
+
+      } catch(Exception e) {log.info("Error exporting: 'Topology Folder' error message: ${e.toString()}")}
+
+      return result
+
    }
 }
