@@ -71,6 +71,9 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       Integer count = 0
 
+      // export the project
+      exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
+
       objectList.each { objectType ->
 
          log.info "Exporting ${objectType}s..."
@@ -84,19 +87,16 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          // begin the transaction
          instance.beginTxn()
 
-         // export the project
-         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
-
          // smart export the project objects
          if (['knowledge-module'].contains(objectType)) {
+
             def kmList = instance."$finder"(projectCode)
             count++
             logger.debug "object list: ${kmList}"
             smartExportObject(kmList , "${exportDir.canonicalPath}/${objectType}", 'KM', 'Project')
-         }
 
-         // export the project objects
-         if (['variable', 'sequence', 'user-function'].contains(objectType)) {
+         } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
+
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
                   count++
@@ -104,8 +104,10 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
                }
             }
+
          }
          else {
+
             // export the folder objects
             folders.each { OdiFolder folder ->
                // export the folder
@@ -120,6 +122,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                }
             }
          }
+
       }
 
       instance.endTxn()
