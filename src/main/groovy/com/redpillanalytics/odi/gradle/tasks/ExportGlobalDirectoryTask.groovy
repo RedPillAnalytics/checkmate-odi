@@ -24,7 +24,14 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
 
         // find the global km
         List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
-        smartExportList.add(instance.findAllGlobalKnowledgeModule())
+
+        smartExportList.add(instance.findAllGlobalCKM())
+        smartExportList.add(instance.findAllGlobalIKM())
+        smartExportList.add(instance.findAllGlobalJKM())
+        smartExportList.add(instance.findAllGlobalLKM())
+        smartExportList.add(instance.findAllGlobalRKM())
+        smartExportList.add(instance.findAllGlobalSKM())
+        smartExportList.add(instance.findAllGlobalXKM())
 
         // export the global km
         smartExportObject(smartExportList, "${exportDir.canonicalPath}/knowledge-module", 'KM','Global')
@@ -48,6 +55,41 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
             exportObject(it, "${exportDir.canonicalPath}/variable", true)
             //smartExportObject(it, "${exportDir.canonicalPath}/variable", it.name)
         }
+
+//        instance.findAllGlobalCKM().each {
+//            exportObject(it,"${exportDir.canonicalPath}/ckm", true)
+//            //smartExportObject(it, "${exportDir.canonicalPath}/ckm", it.name)
+//        }
+//
+//        instance.findAllGlobalIKM().each {
+//            exportObject(it, "${exportDir.canonicalPath}/ikm", true)
+//            //smartExportObject(it, "${exportDir.canonicalPath}/ikm", it.name)
+//        }
+//
+//        instance.findAllGlobalJKM().each {
+//            exportObject(it, "${exportDir.canonicalPath}/jkm", true)
+//            //smartExportObject(it, "${exportDir.canonicalPath}/jkm", it.name)
+//        }
+//
+//        instance.findAllGlobalLKM().each {
+//            exportObject(it, "${exportDir.canonicalPath}/lkm", true)
+//            //smartExportObject(it, "${exportDir.canonicalPath}/lkm", it.name)
+//        }
+//
+//        instance.findAllGlobalRKM().each {
+//            exportObject(it, "${exportDir.canonicalPath}/rkm", true)
+//            //smartExportObject(it, "${exportDir.canonicalPath}/rkm", it.name)
+//        }
+//
+//        instance.findAllGlobalSKM().each {
+//            exportObject(it, "${exportDir.canonicalPath}/skm", true)
+//            //smartExportObject(it, "${exportDir.canonicalPath}/skm", it.name)
+//        }
+//
+//        instance.findAllGlobalXKM().each {
+//            exportObject(it, "${exportDir.canonicalPath}/xkm", true)
+//            //smartExportObject(it, "${exportDir.canonicalPath}/xkm", it.name)
+//        }
 
         instance.endTxn()
 

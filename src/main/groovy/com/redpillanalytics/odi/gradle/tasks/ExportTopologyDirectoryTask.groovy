@@ -12,7 +12,6 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
 
     @Internal
     List objectList = ['context', 'data-server', 'physical-schema', 'physical-agent', 'logical-agent', 'logical-schema']
-    //List objectList = ['technology', 'context', 'data-server', 'physical-schema', 'physical-agent', 'logical-agent', 'logical-schema']
 
     @Internal
     String category = 'topology'
@@ -45,7 +44,6 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
                 count++
                 logger.debug "object name: ${object.name}"
                 exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
-                //smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
             }
         }
         instance.endTxn()
