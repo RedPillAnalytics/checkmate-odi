@@ -19,7 +19,7 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
    @Internal
    List getImportFiles() {
 
-      def filePrefix = ['PROJ', 'VAR', 'UFN', 'SEQ', 'KM','FOLD','TRT','REUMAP','MAP','PACK']
+      def filePrefix = ['PROJ', 'VAR', 'UFN', 'SEQ','FOLD','TRT','REUMAP','MAP','PACK']
 
       def result = new LinkedList()
 
