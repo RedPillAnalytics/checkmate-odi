@@ -23,6 +23,7 @@ class ImportTask extends InstanceTask {
    @Internal
    importObject(File file) {
       try{
+
          importService.importObjectFromXml(
                  ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
                  file.canonicalPath,
@@ -30,23 +31,43 @@ class ImportTask extends InstanceTask {
                  'checkmate-odi12c+' as char[],
                  false
          )
-      } catch(IllegalArgumentException e) {log.debug(e.toString())}
+
+      } catch(OdiImportException e) {log.debug(e.toString())}
 
    }
 
    @Internal
    smartImportObject(File file) {
-      smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
-      try {
-                  smartImportService.importFromXml(
-                 file.canonicalPath,
-                          null,
-                 'checkmate-odi12c+' as char[],
-                 false,
-         )
 
+      smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
+
+      try {
+            smartImportService.importFromXml(
+                    file.canonicalPath,
+                    null,
+                    'checkmate-odi12c+' as char[],
+                    false,
+         )
 
       } catch(OdiSmartImportException e) {log.debug(e.toString())}
 
    }
+
+   @Internal
+   importTopology(String path) {
+
+      try {
+
+         importService.importTopologyFromFolder(
+                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+                 path,
+                 true,
+                 'checkmate-odi12c+' as char[],
+                 false
+         )
+
+      } catch(OdiImportException e) {log.debug(e.toString())}
+
+   }
+
 }
