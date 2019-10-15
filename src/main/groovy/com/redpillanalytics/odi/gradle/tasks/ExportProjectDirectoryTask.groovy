@@ -71,6 +71,9 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       Integer count = 0
 
+      // begin the transaction
+      instance.beginTxn()
+
       // export the project
       exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
 
@@ -83,9 +86,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          def finder = objectType.replaceAll(~/([^-]+)(?:-)?(\w)?(.+)/) { String all, String first, String capital, String rest ->
             "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
          }
-
-         // begin the transaction
-         instance.beginTxn()
 
          // smart export the project objects
          if (['knowledge-module'].contains(objectType)) {
