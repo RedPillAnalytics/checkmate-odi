@@ -56,41 +56,6 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
             //smartExportObject(it, "${exportDir.canonicalPath}/variable", it.name)
         }
 
-//        instance.findAllGlobalCKM().each {
-//            exportObject(it,"${exportDir.canonicalPath}/ckm", true)
-//            //smartExportObject(it, "${exportDir.canonicalPath}/ckm", it.name)
-//        }
-//
-//        instance.findAllGlobalIKM().each {
-//            exportObject(it, "${exportDir.canonicalPath}/ikm", true)
-//            //smartExportObject(it, "${exportDir.canonicalPath}/ikm", it.name)
-//        }
-//
-//        instance.findAllGlobalJKM().each {
-//            exportObject(it, "${exportDir.canonicalPath}/jkm", true)
-//            //smartExportObject(it, "${exportDir.canonicalPath}/jkm", it.name)
-//        }
-//
-//        instance.findAllGlobalLKM().each {
-//            exportObject(it, "${exportDir.canonicalPath}/lkm", true)
-//            //smartExportObject(it, "${exportDir.canonicalPath}/lkm", it.name)
-//        }
-//
-//        instance.findAllGlobalRKM().each {
-//            exportObject(it, "${exportDir.canonicalPath}/rkm", true)
-//            //smartExportObject(it, "${exportDir.canonicalPath}/rkm", it.name)
-//        }
-//
-//        instance.findAllGlobalSKM().each {
-//            exportObject(it, "${exportDir.canonicalPath}/skm", true)
-//            //smartExportObject(it, "${exportDir.canonicalPath}/skm", it.name)
-//        }
-//
-//        instance.findAllGlobalXKM().each {
-//            exportObject(it, "${exportDir.canonicalPath}/xkm", true)
-//            //smartExportObject(it, "${exportDir.canonicalPath}/xkm", it.name)
-//        }
-
         instance.endTxn()
 
         // execute the export stage process
