@@ -2,6 +2,7 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
+import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
@@ -21,40 +22,12 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         instance.connect()
         instance.beginTxn()
 
-        instance.findAllGlobalCKM().each {
-            exportObject(it,"${exportDir.canonicalPath}/ckm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/ckm", it.name)
-        }
+        // find the global km
+        List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
+        smartExportList.add(instance.findAllGlobalKnowledgeModule())
 
-        instance.findAllGlobalIKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/ikm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/ikm", it.name)
-        }
-
-        instance.findAllGlobalJKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/jkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/jkm", it.name)
-        }
-
-        instance.findAllGlobalLKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/lkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/lkm", it.name)
-        }
-
-        instance.findAllGlobalRKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/rkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/rkm", it.name)
-        }
-
-        instance.findAllGlobalSKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/skm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/skm", it.name)
-        }
-
-        instance.findAllGlobalXKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/xkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/xkm", it.name)
-        }
+        // export the global km
+        smartExportObject(smartExportList, "${exportDir.canonicalPath}/knowledge-module", 'KM','Global')
 
         instance.findAllGlobalReusableMappings().each {
             exportObject(it, "${exportDir.canonicalPath}/reusable-mapping", true)

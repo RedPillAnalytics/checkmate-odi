@@ -38,27 +38,16 @@ class ImportDirectoryTask extends ImportTask {
    }
 
    /**
-    * Gets the hierarchical collection of XML files, sorted using folder structure and alphanumeric logic.
-    *
-    * @return The List of export files.
+    * Smart Import the File List of Objects.
     */
    @Internal
-   List getImportFiles() {
-      def tree = project.fileTree(dir: importDir, include: '**/*.xml')
-      return tree.sort()
-   }
-
-   /**
-    * Smart Imports all objects returned by the {@link #getImportFiles} FileTree object.
-    */
-   @Internal
-   def smartImportXmlFiles() {
+   def smartImportXmlFiles(List<File> smartImportFiles) {
 
       //Make the Connection
       instance.connect()
       instance.beginTxn()
 
-      importFiles.each { file ->
+      smartImportFiles.each { file ->
          log.info "Importing file '$file.canonicalPath'..."
          smartImportObject(file)
       }
@@ -66,10 +55,10 @@ class ImportDirectoryTask extends ImportTask {
    }
 
    /**
-    * Imports all objects returned by the {@link #getImportFiles} FileTree object.
+    * Import the File List of Objects.
     */
    @Internal
-   def importXmlFiles() {
+   def importXmlFiles(List<File> importFiles) {
 
       //Make the Connection
       instance.connect()
@@ -80,11 +69,5 @@ class ImportDirectoryTask extends ImportTask {
          importObject(file)
       }
       instance.endTxn()
-   }
-
-   @TaskAction
-   def taskAction() {
-      //smartImportXmlFiles()
-      importXmlFiles()
    }
 }

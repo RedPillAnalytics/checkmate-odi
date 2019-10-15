@@ -2,6 +2,7 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiFolder
+import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -12,7 +13,7 @@ import org.gradle.api.tasks.options.Option
 class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
    @Internal
-   List objectMaster = ['variable', 'sequence', 'knowledge-module', 'user-function', 'reusable-mapping', 'mapping', 'procedure', 'package']
+   List objectMaster = ['knowledge-module', 'variable', 'sequence', 'user-function', 'reusable-mapping', 'mapping', 'procedure', 'package']
 
    /**
     * The ODI project code to export. Default: value of 'odi.projectName', or the name of the project subdirectory.
@@ -86,14 +87,21 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          // export the project
          exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
 
+         // smart export the project objects
+         if (['knowledge-module'].contains(objectType)) {
+            def kmList = instance."$finder"(projectCode)
+            count++
+            logger.debug "object list: ${kmList}"
+            smartExportObject(kmList , "${exportDir.canonicalPath}/${objectType}", 'KM', 'Project')
+         }
+
          // export the project objects
-         if (['variable', 'sequence', 'knowledge-module', 'user-function'].contains(objectType)) {
+         if (['variable', 'sequence', 'user-function'].contains(objectType)) {
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
                   count++
                   logger.debug "object name: ${object.name}"
                   exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
-                  //smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
                }
             }
          }
@@ -108,7 +116,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                      count++
                      logger.debug "object name: ${object.name}"
                      exportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", true)
-                     //smartExportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", object.name)
                   }
                }
             }

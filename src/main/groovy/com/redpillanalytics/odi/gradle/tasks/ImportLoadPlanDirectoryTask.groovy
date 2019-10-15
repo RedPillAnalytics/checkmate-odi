@@ -2,6 +2,7 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.TaskAction
 
 @Slf4j
 class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
@@ -23,5 +24,10 @@ class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
         }
 
         return result
+    }
+
+    @TaskAction
+    def taskAction() {
+        importXmlFiles(importFiles)
     }
 }
