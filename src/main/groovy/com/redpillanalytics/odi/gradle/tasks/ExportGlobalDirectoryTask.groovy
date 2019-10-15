@@ -23,18 +23,18 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         instance.beginTxn()
 
         // find the global km
-        List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
+        List globalKmList = new LinkedList<ISmartExportable>()
 
-        smartExportList.add(instance.findAllGlobalCKM())
-        smartExportList.add(instance.findAllGlobalIKM())
-        smartExportList.add(instance.findAllGlobalJKM())
-        smartExportList.add(instance.findAllGlobalLKM())
-        smartExportList.add(instance.findAllGlobalRKM())
-        smartExportList.add(instance.findAllGlobalSKM())
-        smartExportList.add(instance.findAllGlobalXKM())
+        globalKmList.addAll(instance.findAllGlobalCKM())
+        globalKmList.addAll(instance.findAllGlobalIKM())
+        globalKmList.addAll(instance.findAllGlobalJKM())
+        globalKmList.addAll(instance.findAllGlobalLKM())
+        globalKmList.addAll(instance.findAllGlobalRKM())
+        globalKmList.addAll(instance.findAllGlobalSKM())
+        globalKmList.addAll(instance.findAllGlobalXKM())
 
         // export the global km
-        smartExportObject(smartExportList, "${exportDir.canonicalPath}/knowledge-module", 'KM','Global')
+        smartExportObject(globalKmList, "${exportDir.canonicalPath}/knowledge-module", 'KM','Global')
 
         instance.findAllGlobalReusableMappings().each {
             exportObject(it, "${exportDir.canonicalPath}/reusable-mapping", true)

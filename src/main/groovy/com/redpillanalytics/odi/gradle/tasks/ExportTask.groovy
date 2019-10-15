@@ -56,7 +56,7 @@ class ExportTask extends InstanceTask {
          result = smartExportService.exportToXml(
                  smartExportList,
                  path,
-                 "${objectNamePrefix}_${objectName.replaceAll("[^a-zA-Z0-9]+","_").toUpperCase()}",
+                 "${objectNamePrefix}_${objectName.replaceAll("[^a-zA-Z0-9]+","_")}",
                  overwrite,
                  isZip,
                  encodingOptions,
@@ -65,7 +65,7 @@ class ExportTask extends InstanceTask {
                  'checkmate-odi12c+' as char[],
                  exportWithoutCipherData)
 
-      } catch(Exception e) {log.info("Error exporting object: ${smartExportList} error message: ${e.toString()}")}
+      } catch(Exception e) {log.info("Error exporting object: ${objectName} error message: ${e.toString()}")}
 
       return result
    }
