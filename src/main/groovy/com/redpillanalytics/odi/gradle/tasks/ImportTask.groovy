@@ -42,6 +42,7 @@ class ImportTask extends InstanceTask {
       smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
 
       try {
+
             smartImportService.importFromXml(
                     file.canonicalPath,
                     null,

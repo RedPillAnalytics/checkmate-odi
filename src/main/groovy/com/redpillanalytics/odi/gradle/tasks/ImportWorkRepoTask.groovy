@@ -11,6 +11,9 @@ import org.gradle.api.tasks.options.Option
 @Slf4j
 class ImportWorkRepoTask extends ImportDirectoryTask {
 
+   @Input
+   String category = 'odi'
+
    /**
     * Overrides {@link #taskAction} in {@code ImportDirectoryTask}.
     */

@@ -11,9 +11,6 @@ import org.gradle.api.tasks.options.Option
 @Slf4j
 class ImportDirectoryTask extends ImportTask {
 
-   @Input
-   String category = 'odi'
-
    /**
     * The base directory to import content from. Default: 'src/main/project' for ODI projects, and 'src/main/model' for ODI models.
     */
@@ -29,11 +26,11 @@ class ImportDirectoryTask extends ImportTask {
 
       log.debug "sourceBase: $sourceBase"
 
-      if (sourceDir) {
-         File dir = new File("${sourceBase}/${category}/${sourceDir}")
-         return dir.exists() ? dir : project.file(sourceDir).exists() ? project.file(sourceDir) : project.file(sourceBase)
-      } else {
+      if (!sourceDir) {
          return sourceBase
+      } else {
+         File dir = new File(sourceDir)
+         return dir.exists() ? project.file(sourceDir) : project.file(sourceBase)
       }
    }
 

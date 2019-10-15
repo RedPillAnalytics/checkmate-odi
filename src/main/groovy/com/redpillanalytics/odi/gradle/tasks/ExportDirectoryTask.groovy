@@ -42,6 +42,9 @@ class ExportDirectoryTask extends ExportTask {
    @Internal
    def exportStageDir() {
 
+      // Delete buildDir just in case
+      ant.delete(dir: buildDir)
+
       // Find and remove the deleted objects in the source base comparing with the build objects
       project.fileTree(dir: sourceBase, include: "**/*.xml").toList().each { File srcFile ->
          if (!project.fileTree(dir: buildDir, include: "**/*.xml").collect {it.name}.contains(srcFile.name)) {
