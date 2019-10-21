@@ -22,6 +22,7 @@ class ImportTask extends InstanceTask {
 
    @Internal
    importObject(File file) {
+
       try{
 
          importService.importObjectFromXml(
@@ -62,6 +63,22 @@ class ImportTask extends InstanceTask {
          importService.importTopologyFromFolder(
                  ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
                  path,
+                 true,
+                 'checkmate-odi12c+' as char[],
+                 false
+         )
+
+      } catch(OdiImportException e) {log.debug(e.toString())}
+
+   }
+
+   @Internal
+   importKM(File file) {
+
+      try{
+
+         importService.importReplaceKMFromXml(
+                 file.canonicalPath,
                  true,
                  'checkmate-odi12c+' as char[],
                  false

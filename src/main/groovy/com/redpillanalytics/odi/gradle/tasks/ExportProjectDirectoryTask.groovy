@@ -87,15 +87,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
             "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
          }
 
-         // smart export the project objects
-         if (['knowledge-module'].contains(objectType)) {
-
-            def kmList = instance."$finder"(projectCode)
-            count++
-            logger.debug "object list: ${kmList}"
-            smartExportObject(kmList , "${exportDir.canonicalPath}/${objectType}", 'KM', 'Project')
-
-         } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
+         if(['knowledge-module','variable', 'sequence', 'user-function'].contains(objectType)) {
 
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
@@ -105,8 +97,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                }
             }
 
-         }
-         else {
+         } else {
 
             // export the folder objects
             folders.each { OdiFolder folder ->

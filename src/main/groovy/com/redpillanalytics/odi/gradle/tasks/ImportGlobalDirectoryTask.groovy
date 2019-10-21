@@ -36,7 +36,7 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
      * @return The List of export files.
      */
     @Internal
-    List getSmartImportFiles() {
+    List getImportKMFiles() {
 
         def filePrefix = ['KM']
 
@@ -51,7 +51,7 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
-        smartImportXmlFiles(smartImportFiles)
+        importKMFiles(importKMFiles)
         importXmlFiles(importFiles)
     }
 
