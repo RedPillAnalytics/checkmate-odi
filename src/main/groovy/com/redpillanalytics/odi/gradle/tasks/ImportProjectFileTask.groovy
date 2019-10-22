@@ -28,7 +28,7 @@ class ImportProjectFileTask extends ImportTask {
    @Input
    @Optional
    @Option(option = "source-file",
-           description = "The file to import content from. Default: 'src/main/file/<PROJECTCODE>.xml'."
+           description = "The file to import content from. Default: 'src/main/file/FILE_<PROJECTCODE>.xml'."
    )
    String sourceFile
 
@@ -41,7 +41,7 @@ class ImportProjectFileTask extends ImportTask {
          File file = new File(sourceBase, sourceFile)
          return file.exists() ? file : project.file(sourceFile)
       } else {
-         return new File(sourceBase, "${projectCode}.xml")
+         return new File(sourceBase, "FILE_${projectCode}.xml")
       }
    }
 
