@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="gLZFo5tok+VLxoDuvFReyo9KkAwJie+OasuACZud4pw=" keyVect="GaB3h4vlPg9yG2ZReOTN+w==" exportKeySalt="f6351bc6-42fa-43f2-9b78-d2f9763e0f6e" containsCipherText="false"/>
+<Object class="com.sunopsis.dwg.dbobj.SnpTrt">
+		<Field name="CleanupOnError" type="java.lang.String">null</Field>
+	<Field name="CompType" type="java.lang.String"><![CDATA[SPLITTER]]></Field>
+	<Field name="DelegateClass" type="java.lang.String"><![CDATA[XKM_Spark_Split]]></Field>
+	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
+
+	import oracle.odi.domain.adapter.project.IKnowledgeModule.ProcessingType
+	import oracle.odi.mapping.generation.AbstractSyntaxTree.ASTProducerMethod;
+	import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.GeneratorDelegateClass;
+	import org.apache.commons.lang.StringUtils;
+  
+  
+	@GeneratorDelegateClass(componentType=AggregateComponent.COMPONENT_TYPE_NAME, descriptionKey="GeneratorDelegateClass.SparkSplitCompKM")
+  	public class XKM_Spark_Split extends SparkKM {
+	private MapConnectorPoint connector;
+	  private MapRootContainer mapping;		
+    
+		public void setBinding(Binding binding) {
+		 	super.setBinding(binding);
+            Map variables = binding.getVariables();
+            if (variables.containsKey("connector")) {
+              connector =  binding.getVariable("connector");
+            }
+            
+            mapping = component.getComponentOwner();
+		 	
+	}
+		 
+	@ASTProducerMethod(processingType=ProcessingType.SOURCE,producedASTType=SparkScript.class, styleKey="ProcessingStyleKey.SparkSplit.SELECT")
+	SparkScript SELECT(SparkScript inputScript) {
+
+          supportDataFrames('XKM Spark Split', true);
+
+	  String tGeneratorContext = "mapping.splitter.scripts." + inputScript.getPhysicalNode().getLogicalComponent().getName();
+	  Map<MapPhysicalNode, SparkScript> splitScripts = (Map<MapPhysicalNode, SparkScript>)generatorContext.getObject(tGeneratorContext);
+       
+	  if (splitScripts == null) {         
+	    splitScripts = getSplitScript(inputScript);
+	    generatorContext.putObject(tGeneratorContext, splitScripts);
+	  }
+       
+	  return splitScripts.get(physicalNode);
+	}
+		
+	 	Map<MapPhysicalNode, SparkScript> getSplitScript(SparkScript inputScript) {     
+            
+            MapPhysicalDesign physicalDesign = physicalNode.getPhysicalDesign();
+            List<MapPhysicalNode> orderedTargetNodes = new ArrayList<MapPhysicalNode>();
+            
+            
+            for (ContextualComponent targetContextualComp: MappingUtils.getDefaultLoadOrder(mapping)) {
+                IMapComponent targetComp = targetContextualComp.getComponent();
+                orderedTargetNodes.add(physicalDesign.findNode(targetComp));
+                
+            }
+            
+            Map<MapPhysicalNode, Set<String>> targetNamesMap = new HashMap<MapPhysicalNode, Set<String>>();
+            Map<Integer, Set<MapPhysicalNode>> loadOrderToNodesMap = new HashMap<Integer, Set<MapPhysicalNode>>();
+            Stack<IMapSignatureOwnerHolder> rmc = null;
+            if(mapping instanceof ReusableMapping) {
+              rmc = physicalNode.getContextualComponent().getSignatureOwnerHolderStack();
+            }
+            for (MapConnectorPoint outputCP: component.getOutputConnectorPoints()) {
+                MapPhysicalNode splitNode = rmc != null ? physicalDesign.findNode(outputCP,rmc) : physicalDesign.findNode(outputCP);
+                
+                int maxOrder = 0;
+                Set<String> targetNames = new HashSet<String>();
+                
+                for (MapPhysicalNode targetNode: splitNode.getAllDownstreamNodes()) {
+                     if (!targetNode.isTargetNode() || targetNode.isAPNode()) {
+                          continue;
+                     }
+                     
+                     int targetNodeOrder = orderedTargetNodes.indexOf(targetNode);
+                     if (targetNodeOrder > maxOrder) {
+                          maxOrder = targetNodeOrder;
+                     }
+                     targetNames.add(targetNode.getLogicalComponentName());
+                }
+                
+                targetNamesMap.put(splitNode, targetNames);
+                
+                Set<MapPhysicalNode> nodesOfThisOrder = null;
+                if (loadOrderToNodesMap.containsKey(maxOrder)) {
+                     nodesOfThisOrder = loadOrderToNodesMap.get(maxOrder);
+                } 
+                else {
+                     nodesOfThisOrder = new LinkedHashSet<MapPhysicalNode>();
+                     loadOrderToNodesMap.put(maxOrder, nodesOfThisOrder);
+                }
+                nodesOfThisOrder.add(splitNode);
+            }
+            
+            
+            Map<MapPhysicalNode, SparkScript> splitScripts = new LinkedHashMap<MapPhysicalNode, SparkScript>();
+            SparkSplitCmd splitCmd = null;
+            List<SparkSplitCmd> splitCmds = new ArrayList<SparkSplitCmd>();
+            List<oracle.odi.domain.mapping.expression.MapExpression> splitConditions    = new ArrayList<oracle.odi.domain.mapping.expression.MapExpression>();
+            List<oracle.odi.domain.mapping.expression.MapExpression> splitConditions_DF = new ArrayList<oracle.odi.domain.mapping.expression.MapExpression>();
+            List<String>  ifTargetAliases = new ArrayList<String>();
+            List<String>  ifCache = new ArrayList<String>();
+            List<String>  ifCacheLevel = new ArrayList<String>();
+            List<String>  ifRepartitionValue  = new ArrayList<String>();
+            List<Integer> ifLevelParallelism  = new ArrayList<Integer>();
+            List<String>  ifPartitionKeyFunc  = new ArrayList<String>();
+            List<String>  ifIsMultiColumnKey  = new ArrayList<String>();
+            List<String>  ifSortPartitions    = new ArrayList<String>();
+            List<String>  ifRepartitionFunc   = new ArrayList<String>();
+            List<String>  ifPartitionSortType = new ArrayList<String>();
+            List<Boolean> ifUseSQLExpressions = new ArrayList<Boolean>();
+            
+	    List<String>  owTargetAlias       = new ArrayList<String>();
+            List<String>  owCache             = new ArrayList<String>();
+            List<String>  owCacheLevel        = new ArrayList<String>();
+            List<String>  owRepartitionValue  = new ArrayList<String>();
+            List<Integer> owLevelParallelism  = new ArrayList<Integer>();
+            List<String>  owPartitionKeyFunc  = new ArrayList<String>();
+            List<String>  owIsMultiColumnKey  = new ArrayList<String>();
+            List<String>  owSortPartitions    = new ArrayList<String>();
+            List<String>  owRepartitionFunc   = new ArrayList<String>();
+            List<String>  owPartitionSortType = new ArrayList<String>();
+            List<Boolean> owUseSQLExpressions = new ArrayList<Boolean>();
+            
+            SparkScript firstScript = null;
+            
+            int nodeCount = loadOrderToNodesMap.keySet().size();
+            
+            for (int i=0; i < nodeCount; i++) {
+            
+                 if (!loadOrderToNodesMap.containsKey(i)) {
+                      continue;
+                 }
+                 for (MapPhysicalNode splitNode: loadOrderToNodesMap.get(i)) {
+                      splitCmd = new SparkSplitCmd(physicalNode.getTemplateUtils(), splitNode);
+                      
+                      SparkScript splitScript = new SparkScript(physicalNode.getTemplateUtils(), null);
+                      splitScript.addChild(splitCmd);
+                      splitScript.setSharedInputScript(inputScript);
+                 
+                      splitScript.setDestinationTargets(targetNamesMap.get(splitNode));
+                      splitScripts.put(splitNode, splitScript);
+                      splitCmds.add(splitCmd);
+                      
+                      String cacheValue = "";
+                      String cacheLevelValue = "";
+
+                      cacheValue = splitCmd.getOptionValue("Cache");
+                      if (cacheValue.equals("true")) {
+                         cacheLevelValue = splitCmd.getOptionValue("Storage Level");
+                      }
+
+                      // New columns for repartitioning support
+                      String  repartitionValue = "";
+                      String  keyColumnRefs = "";
+                      boolean isMultiColumnKey = false;
+		      String  partitionFunc = "";
+                      Boolean sortPartitions = false;
+                      String  partitionSortOrder = "";
+                      Integer levelOfParallelism = 0;
+                      
+		      repartitionValue = splitCmd.getOptionValue("Repartition");
+		      if (repartitionValue.equals("true")) {
+			      keyColumnRefs = splitCmd.parseKMOptionToMapExpression("Partition Keys");
+			      isMultiColumnKey = StringUtils.isNotBlank(keyColumnRefs) && keyColumnRefs.split(",").length > 1;
+			      partitionFunc =  splitCmd.getOptionValue("Partition Function");
+			      if (isMultiColumnKey && StringUtils.isBlank(partitionFunc)) {
+				      throw new GenerationException("Must provide Partitioning Function if key contains multiple columns");
+			      }
+			      sortPartitions = Boolean.valueOf(splitCmd.getOptionValue("Sort Partitions"));
+			if (sortPartitions) {
+			  partitionSortOrder = splitCmd.getOptionValue("Partition Sort Order");
+			}
+		      }
+		      try {
+			String tLevelValue = splitCmd.getOptionValue("Level of Parallelism");
+			if (!tLevelValue.equals("default")) {
+			    levelOfParallelism = Integer.parseInt(tLevelValue);
+			}
+		      } catch(Exception e){
+			throw new OdiKMException(null, "ODIKM-SPARK-SPLIT-10001","Invalid value for KM option \"Level of Parallelism\".");
+		      }
+
+                      String splitScriptTargetName = splitScript.getOutputSchema().getName();
+                      if (component.isRemainder(splitNode.getLogicalConnectorPoint())) {
+                           owTargetAlias.add(splitScriptTargetName);     
+                           owCache.add(cacheValue);     
+                           owCacheLevel.add(cacheLevelValue);     
+                           
+                           // Populate repartition information
+                           owRepartitionValue.add(repartitionValue);
+                           owLevelParallelism.add(levelOfParallelism);
+                           owPartitionKeyFunc.add(keyColumnRefs);
+                           owIsMultiColumnKey.add(isMultiColumnKey);
+                           owSortPartitions.add(sortPartitions);
+                           owRepartitionFunc.add(partitionFunc);
+                           owPartitionSortType.add(partitionSortOrder);
+                           owUseSQLExpressions.add(splitCmd.getOptionValue("SQL_EXPRESSIONS").equalsIgnoreCase("true") ? true : false);     
+                      } 
+                      else {
+			    ifTargetAliases.add(splitScriptTargetName);
+			    ifCache.add(cacheValue);
+			    ifCacheLevel.add(cacheLevelValue);
+			    if (component.isNullSplitterCondition(splitNode.getLogicalConnectorPoint())) {
+			      throw new OdiKMException(null, "ODIKM-SPARK-SPLIT-10000","The split condition must either contain an expression or be marked as a remainder.");
+			    } 
+			    else {
+			      splitConditions.add(component.getSplitterCondition(splitNode.getLogicalConnectorPoint()));
+			      splitConditions_DF.add(component.getSplitterCondition(splitNode.getLogicalConnectorPoint()));
+                           
+			      // Populate repartition information
+			      ifRepartitionValue.add(repartitionValue);
+			      ifLevelParallelism.add(levelOfParallelism);
+			      ifPartitionKeyFunc.add(keyColumnRefs);
+			      ifIsMultiColumnKey.add(isMultiColumnKey);
+			      ifSortPartitions.add(sortPartitions);
+			      ifRepartitionFunc.add(partitionFunc);
+			      ifPartitionSortType.add(partitionSortOrder);
+			      ifUseSQLExpressions.add(splitCmd.getOptionValue("SQL_EXPRESSIONS").equalsIgnoreCase("true") ? true : false);
+			    }
+		      }
+		}
+            }
+
+            for (SparkSplitCmd sCmd : splitCmds) {
+               sCmd.setIfTargetAliases(ifTargetAliases);
+               sCmd.setIfCache(ifCache);
+               sCmd.setIfCacheLevel(ifCacheLevel);
+               sCmd.setIfRepartitionValue(ifRepartitionValue);
+               sCmd.setIfLevelParallelism(ifLevelParallelism);
+               sCmd.setIfPartitionKeyFunc(ifPartitionKeyFunc);
+               sCmd.setIfIsMultiColumnKey(ifIsMultiColumnKey);
+               sCmd.setIfSortPartitions(ifSortPartitions);
+               sCmd.setIfRepartitionFunc(ifRepartitionFunc);
+               sCmd.setIfPartitionSortType(ifPartitionSortType);
+               sCmd.setIfUseSQLExpressions(ifUseSQLExpressions);
+
+               sCmd.setOWTargetAlias(owTargetAlias);
+               sCmd.setOWCache(owCache);
+               sCmd.setOWCacheLevel(owCacheLevel);
+               sCmd.setSplitConditions(splitConditions); 
+               sCmd.setSplitConditions_DF(splitConditions_DF); 
+               sCmd.setOWRepartitionValue(owRepartitionValue);
+               sCmd.setOWLevelParallelism(owLevelParallelism);
+               sCmd.setOWPartitionKeyFunc(owPartitionKeyFunc);
+               sCmd.setOWIsMultiColumnKey(owIsMultiColumnKey);
+               sCmd.setOWSortPartitions(owSortPartitions);
+               sCmd.setOWRepartitionFunc(owRepartitionFunc);
+               sCmd.setOWPartitionSortType(owPartitionSortType);
+               sCmd.setOWUseSQLExpressions(owUseSQLExpressions);
+            }
+            
+            return splitScripts;
+        }
+        
+		private String getTargetAlias(MapConnectorPoint connectorPoint) {
+		
+			List<MapComponent> downstreamMapComponents = connectorPoint.getDownstreamConnectedComponents();
+				
+			MapComponent downstreamMapComponent = downstreamMapComponents.get(0);
+			return downstreamMapComponent.getName();
+		}
+	}
+
+  ]]></Field>
+	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:27.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[d1578feb-f57c-4713-b0a6-0f5d3d398096]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
+	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[73]]></Field>
+	<Field name="IsConcurrent" type="java.lang.String">null</Field>
+	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
+	<Field name="IFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IProject" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScBaseTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScOrigTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[159]]></Field>
+	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[1003]]></Field>
+	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmLang" type="java.lang.String"><![CDATA[PYTHON]]></Field>
+	<Field name="KmSrcLang" type="java.lang.String">null</Field>
+	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
+	<Field name="KmTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="KmVersion" type="java.lang.String">null</Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-16 16:28:13.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LCode" type="java.lang.String">null</Field>
+	<Field name="OggJkm" type="java.lang.String">null</Field>
+	<Field name="OrdFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ProcType" type="java.lang.String"><![CDATA[S]]></Field>
+	<Field name="ProdAstType" type="java.lang.String"><![CDATA[oracle.odi.mapping.generation.spark.SparkScript]]></Field>
+	<Field name="RepGuid" type="java.lang.String">null</Field>
+	<Field name="RepVersion" type="java.lang.String">null</Field>
+	<Field name="ScriptPath" type="java.lang.String">null</Field>
+	<Field name="ScOrigTrtTag" type="java.lang.String">null</Field>
+	<Field name="Subtype" type="java.lang.String"><![CDATA[*]]></Field>
+	<Field name="TrtName" type="java.lang.String"><![CDATA[XKM Spark Split]]></Field>
+	<Field name="TrtType" type="java.lang.String"><![CDATA[CK]]></Field>
+	<Field name="VariableDefs" type="java.lang.String">null</Field>
+	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExitGroup">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[602cf8f8-fe6b-4461-add3-fafe0add14be]]></Field>
+	<Field name="GroupName" type="java.lang.String"><![CDATA[DataFrames]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[159]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[2795]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[1004]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[479138B5-0E2F-43FE-E053-CEC0E40A04F8]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[159]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[1005]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[392]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[2795]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="ShortValue" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[SQL_EXPRESSIONS]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Use SQL Expressions]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[C]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[46ce37f0-6984-46b7-b784-4ba4df4364c2]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[1004]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)?"show=false,enable=false":"show=true,enable=true";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Column description]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_COL_DESC]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_COL]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[e1791b14-78fb-4afd-aecb-f71bccd75871]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[1005]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+Set this option to True if you are using generic SQL syntax for filter conditions.
+Set this option to False if you are using Spark Python syntax for filter conditions.
+NOTE:
+If this option is set to False (non-default), and expression is a constant - specify expression as lit(<my constant value>) 
+Check pyspark.sql.functions module reference for more info about lit function:
+pyspark.sql.functions.lit(col) - Creates a Column of literal value.  
+  
+  ]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[User Exit help]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_UE_HELP]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_USER_EXIT]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpReferencedObject">
+		<Field name="IObject" type="com.sunopsis.sql.DbInt"><![CDATA[3600]]></Field>
+	<Field name="ObjectPKasString" type="java.lang.String"><![CDATA[133]]></Field>
+	<Field name="ObjectAKasString" type="java.lang.String"><![CDATA[]]></Field>
+	<Field name="Description" type="java.lang.String"><![CDATA[SNP_TRT : SparkKM]]></Field>
+ <Field name="GlobalId" type="java.lang.String"><![CDATA[739e7da4-f732-4455-8936-782fafe91869]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[df5c958f-ff96-4cb8-be05-7e604f22391c]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[1003]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[COMPONENT NAME: XKM Spark Split
+COMPONENT VERSION: 1
+AUTHOR: Oracle
+COMPATIBILITY: ODI 12.1.3.0.1 or above
+
+DESCRIPTION:
+
+Split data into multiple paths with multiple conditions.]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Edit Command]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_TRT_TXT]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.1003]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[df5c958f-ff96-4cb8-be05-7e604f22391c]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.133]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[739e7da4-f732-4455-8936-782fafe91869]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkKM]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[7]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.159]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d1578feb-f57c-4713-b0a6-0f5d3d398096]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Spark Split]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[15]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.1005]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[e1791b14-78fb-4afd-aecb-f71bccd75871]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.2795]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[602cf8f8-fe6b-4461-add3-fafe0add14be]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Spark Split.DataFrames]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_USEREXITGROUP]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[15.10]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.1004]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[46ce37f0-6984-46b7-b784-4ba4df4364c2]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+</Object>
+</SunopsisExport>

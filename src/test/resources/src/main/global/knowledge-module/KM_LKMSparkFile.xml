@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="qhF7XqBk6OTLmtMsrLIrW5gQ72qA5K0zOT9gmO9DxK8=" keyVect="kp8hAw+mh6eHK0IZEkOUnQ==" exportKeySalt="65c1d79b-a240-49f2-b4bd-c55c32c3c8c2" containsCipherText="false"/>
+<Object class="com.sunopsis.dwg.dbobj.SnpTrt">
+		<Field name="CleanupOnError" type="java.lang.String">null</Field>
+	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
+	<Field name="DelegateClass" type="java.lang.String"><![CDATA[LKMSparkFile]]></Field>
+	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
+
+import com.sunopsis.tools.core.SnpsStringTools
+import oracle.odi.mapping.generation.AbstractSyntaxTree.ASTProducerMethod;
+import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.GeneratorDelegateClass;
+
+@GeneratorDelegateClass(componentType="AP", descriptionKey="GeneratorDelegateClass.LKMSparkFile")
+public class LKMSparkFile extends LKMSpark {
+
+    static { 
+        storageClasses.put(LKMSparkTextLoader.LOADER_FUNCTION,LKMSparkTextLoader.class); 
+        storageClasses.put(LKMSparkStreamingTextLoader.LOADER_FUNCTION,LKMSparkStreamingTextLoader.class); 
+        storageClasses.put(LKMSparkJsonLoader.LOADER_FUNCTION,LKMSparkJsonLoader.class);
+        storageClasses.put(LKMSparkSequenceLoader.LOADER_FUNCTION,LKMSparkSequenceLoader.class);
+        storageClasses.put(LKMSparkHadoopFileLoader.LOADER_FUNCTION,LKMSparkHadoopFileLoader.class); 
+        storageClasses.put(LKMSparkHadoopRDDLoader.LOADER_FUNCTION,LKMSparkHadoopRDDLoader.class);
+        storageClasses.put(LKMSparkNewHadoopFileLoader.LOADER_FUNCTION,LKMSparkNewHadoopFileLoader.class); 
+        storageClasses.put(LKMSparkNewHadoopRDDLoader.LOADER_FUNCTION,LKMSparkNewHadoopRDDLoader.class);
+        storageClasses.put(LKMSparkTextStore.STORAGE_FUNCTION,LKMSparkTextStore.class);
+        storageClasses.put(LKMSparkJsonStore.STORAGE_FUNCTION,LKMSparkJsonStore.class);
+        storageClasses.put(LKMSparkSequenceStore.STORAGE_FUNCTION,LKMSparkSequenceStore.class); 
+        storageClasses.put(LKMSparkHadoopFileStore.STORAGE_FUNCTION,LKMSparkHadoopFileStore.class);
+        storageClasses.put(LKMSparkNewHadoopFileStore.STORAGE_FUNCTION,LKMSparkNewHadoopFileStore.class);
+    }
+    
+    static class LKMSparkTextLoader extends LKMSpark.LKMSparkStorage { 
+        static final String LOADER_FUNCTION = "textFile"; 
+        @Override
+        String getLoaderFunction() {return LOADER_FUNCTION;} 
+    } 
+    
+  static class LKMSparkStreamingTextLoader extends LKMSpark.LKMSparkStorage { 
+        static final String LOADER_FUNCTION = "textFileStream"; 
+        @Override
+        String getLoaderFunction() { return LOADER_FUNCTION;} 
+        @Override
+        String getStorageFunctionParamString(List<LKMSpark.FunctionParam> funcParams, List<LKMSpark.FunctionOption> funcOptions, final boolean isLoader) throws AdapterException, GenerationException, MappingException {
+            return "protocol+strLoc";
+        }
+    } 
+    
+    static class LKMSparkJsonLoader extends LKMSpark.LKMSparkStorage { 
+        static final String LOADER_FUNCTION = "jsonFile"; 
+        @Override
+        String getLoaderFunction() { return LOADER_FUNCTION;} 
+    } 
+    
+    static class LKMSparkSequenceLoader extends LKMSpark.LKMSparkStorage { 
+        static final String LOADER_FUNCTION = "sequenceFile"; 
+        @Override
+        String getLoaderFunction() { return LOADER_FUNCTION; } 
+    } 
+
+    static class LKMSparkHadoopLoader extends LKMSpark.LKMSparkStorage { 
+        @Override
+        void addCommand(SparkCommand command) {
+           storageCommand = command;
+        }   
+        
+        @Override
+        String handleFunctionParam(LKMSpark.FunctionParam param, String value, boolean isLoader) throws AdapterException,MappingException {
+            if (param.name.equals("Job Configuration") && (value == null || value == "None" || value == "")) {
+                if (storageCommand !=null && storageCommand instanceof SparkLoadCmd){
+                    String rowSep = ((SparkLoadCmd)storageCommand).getRowSep();
+                    if (rowSep != null && rowSep != ""){
+                            return "{\"textinputformat.record.delimiter\":\""+ rowSep + "\"}";
+                        }
+                }
+            } else if ((param.name.equals(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS) 
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS)
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER) 
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER)
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_OUTPUT_FORMAT)
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_INPUT_FORMAT))
+                    && value != "None" && value != null && value != ""){
+                value = "'" + value + "'";                    
+            }                                      
+            return value;
+        }    
+    }
+
+    static class LKMSparkHadoopStorer extends LKMSpark.LKMSparkStorage { 
+        @Override
+        void addCommand(SparkCommand command) {
+           storageCommand = command;
+        }   
+        
+        @Override
+        String handleFunctionParam(LKMSpark.FunctionParam param, String value, boolean isLoader) throws AdapterException, MappingException {
+            if ((param.name.equals(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS) 
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS)
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER) 
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER)
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_OUTPUT_FORMAT)
+                    || param.name.equals(LKMSpark.LKMSparkStorage.PARAM_INPUT_FORMAT))
+                  && value != "None" && value != null && value != "")        {
+                value = "'" + value + "'";                    
+            }                                      
+            return value;
+        }    
+    }
+    
+    static class LKMSparkNewHadoopFileLoader extends LKMSparkHadoopLoader { 
+        static final String LOADER_FUNCTION = "newAPIHadoopFile"; 
+        static List<LKMSpark.FunctionParam> FUNCT_ARG = new ArrayList<LKMSpark.FunctionParam>();
+        
+        static {
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_INPUT_FORMAT));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_CONF_NAME));                  
+        }
+        
+        @Override
+        String getLoaderFunction() {return LOADER_FUNCTION;} 
+        
+        @Override
+        List<LKMSpark.FunctionParam> getLoaderFunctionParams() { return FUNCT_ARG;}
+    }
+     
+    static class LKMSparkNewHadoopRDDLoader extends LKMSparkHadoopLoader { 
+        static final String LOADER_FUNCTION = "newAPIHadoopRDD"; 
+        static List<LKMSpark.FunctionParam> FUNCT_ARG = new ArrayList<LKMSpark.FunctionParam>();
+        static {
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_INPUT_FORMAT));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_CONF_NAME));                  
+        }
+        @Override
+        String getLoaderFunction() { return LOADER_FUNCTION;} 
+        @Override
+        List<LKMSpark.FunctionParam> getLoaderFunctionParams() { return FUNCT_ARG;}    
+    } 
+
+    static class LKMSparkHadoopFileLoader extends LKMSparkHadoopLoader { 
+        static final String LOADER_FUNCTION = "hadoopFile"; 
+        static List<LKMSpark.FunctionParam> FUNCT_ARG = new ArrayList<LKMSpark.FunctionParam>();
+        static {
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_INPUT_FORMAT));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_CONF_NAME));                  
+        }
+        @Override
+        String getLoaderFunction() { return LOADER_FUNCTION;} 
+        
+        @Override
+        List<LKMSpark.FunctionParam> getLoaderFunctionParams() { return FUNCT_ARG;}
+    } 
+    
+    static class LKMSparkHadoopRDDLoader extends LKMSparkHadoopLoader { 
+        static final String LOADER_FUNCTION = "hadoopRDD"; 
+        static List<LKMSpark.FunctionParam> FUNCT_ARG = new ArrayList<LKMSpark.FunctionParam>();
+        
+        static {
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_INPUT_FORMAT));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_CONF_NAME));                  
+        }
+        
+        @Override
+        String getLoaderFunction() {return LOADER_FUNCTION;} 
+        
+        @Override
+        List<LKMSpark.FunctionParam> getLoaderFunctionParams() { return FUNCT_ARG;}
+    } 
+
+    static class LKMSparkHadoopFileStore extends LKMSparkHadoopStorer { 
+        static final String STORAGE_FUNCTION = "saveAsHadoopFile"; 
+        static List<LKMSpark.FunctionParam> FUNCT_ARG = new ArrayList<LKMSpark.FunctionParam>();
+        static {
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_OUTPUT_FORMAT));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_CONF_NAME));                  
+        }
+        
+        @Override
+        String getLoaderFunction() {  return STORAGE_FUNCTION; } 
+        @Override
+        String getStorerFunction() { return STORAGE_FUNCTION; }                 
+        @Override
+        List<LKMSpark.FunctionParam> getLoaderFunctionParams() { return FUNCT_ARG;}
+        @Override
+        List<LKMSpark.FunctionParam> getStorerFunctionParams() { return FUNCT_ARG;}
+    }
+
+    static class LKMSparkNewHadoopFileStore extends LKMSparkHadoopStorer { 
+        static final String STORAGE_FUNCTION = "saveAsNewAPIHadoopFile"; 
+        static List<LKMSpark.FunctionParam> FUNCT_ARG = new ArrayList<LKMSpark.FunctionParam>();
+        
+        static {
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_OUTPUT_FORMAT));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CLASS));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_KEY_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_VALUE_CONVERTER));
+            FUNCT_ARG.add(new LKMSpark.FunctionParam(LKMSpark.LKMSparkStorage.PARAM_CONF_NAME));                  
+        }
+        @Override
+        String getLoaderFunction() { return STORAGE_FUNCTION;} 
+        @Override
+        String getStorerFunction() { return STORAGE_FUNCTION;}              
+        @Override
+        List<LKMSpark.FunctionParam> getLoaderFunctionParams() { return FUNCT_ARG;}
+        @Override
+        List<LKMSpark.FunctionParam> getStorerFunctionParams() { return FUNCT_ARG;}                                                       
+    }
+
+    static class LKMSparkTextStore extends LKMSpark.LKMSparkStorage { 
+        static final String STORAGE_FUNCTION = "saveAsTextFile"; 
+        @Override
+        String getLoaderFunction() {return STORAGE_FUNCTION;}
+        @Override
+        String getStorerFunction() { return STORAGE_FUNCTION;} 
+    }
+    
+    static class LKMSparkJsonStore extends LKMSpark.LKMSparkStorage { 
+        static final String STORAGE_FUNCTION = "saveAsJsonFile"; 
+        @Override
+        String getLoaderFunction() {return STORAGE_FUNCTION;}
+        @Override
+        String getStorerFunction() { return STORAGE_FUNCTION;} 
+    }
+    
+                
+    static class LKMSparkSequenceStore extends LKMSpark.LKMSparkStorage { 
+        static final String STORAGE_FUNCTION = "saveAsSequenceFile"; 
+        @Override
+        String getLoaderFunction() { return STORAGE_FUNCTION;}
+        @Override
+        String getStorerFunction() { return STORAGE_FUNCTION;} 
+    }
+
+	@ASTProducerMethod(processingType=ProcessingType.SOURCE, producedASTType=SparkScript.class, styleKey="ProcessingStyleKey.Spark.ExtractScript")
+    AbstractSyntaxTree EXTRACT_TAP(SqlQuery sqlQuery) throws AdapterException, MappingException,GenerationException {
+    
+        supportDataFrames('LKM File to Spark', true)
+        
+        if (isDataFramesEnabled ()) {
+            generatorContext.putObject( "mapping.spark.includeJdbcJars", new Boolean( true ) )
+        }
+    
+        List<MapPhysicalNode> parentNodes = physicalNode.getUpstreamConnectedNodes();
+        if (parentNodes.size() != 1) {
+            throw new RuntimeException();
+        }
+        MapPhysicalNode parentNode = parentNodes.get(0);
+        String techno_type = parentNode.getExecutionTechnology().getInternalName();
+        String storageFn = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "Storage Function");
+        String inputFormatClass = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "InputFormatClass");
+        //should get streaming flag from EU
+        Boolean isStreamingMode = SparkScript.isNodeInStreamingMode(parentNode);
+        if ("textFile".equals(storageFn) && isStreamingMode) {
+          storageFn = "textFileStream";
+        }
+        if (storageFn.equals("")) {
+            throw new MappingException("The option 'Storage Function' requires a value");
+        }
+
+        String streamingContext = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "streamingContext");
+        LKMSpark.LKMSparkStorage lkmSpark = getLKMSpark(storageFn);  
+        lkmSpark.setPhysicalNodes(physicalNode, parentNode);
+        String dataSource = OdiRef.getOdiGeneratedAccessName("SOURCE_NAME", parentNode);
+        TemplateUtils templateUtils = getTemplateUtils();
+        SparkLoadCmd loadCmd = new SparkLoadCmd(templateUtils, parentNode);
+
+        if (lkmSpark.getBaseUrl() != null) {
+            dataSource = lkmSpark.getBaseUrl() + dataSource;
+        }
+
+        loadCmd.setTechnology(techno_type);
+		
+        Object srcCompBondObj = parentNode.getLogicalComponent().getBoundObject();
+        if (srcCompBondObj != null && srcCompBondObj instanceof oracle.odi.domain.model.OdiDataStore ) {
+             oracle.odi.domain.model.OdiDataStore srcTable = ((oracle.odi.domain.model.OdiDataStore) srcCompBondObj).getRealObject();
+             if (srcTable.getFileDescriptor() != null){
+                     loadCmd.setFieldSep(SnpsStringTools.escapeUnicode(SnpsStringTools.hexStrToStr(SnpsStringTools.replaceNVL(srcTable.getFileDescriptor().getFieldSeparator())),true));
+                     loadCmd.setRowSep(SnpsStringTools.escapeUnicode(SnpsStringTools.hexStrToStr(SnpsStringTools.replaceNVL(srcTable.getFileDescriptor().getRowSeparator())),true));
+             }
+         }    
+         if ("textFile".equals(storageFn) || "textFileStream".equals(storageFn)
+             || "jsonFile".equals(storageFn)){
+             loadCmd.setKeySupport(false);
+         }else{
+             loadCmd.setKeySupport(true);
+         }
+         
+         if ("hadoopRDD".equals(storageFn) || "newAPIHadoopRDD".equals(storageFn) || "newAPIHadoopFile".equals(storageFn) || "hadoopFile".equals(storageFn)){
+             if ("org.apache.avro.mapreduce.AvroKeyInputFormat".equals(inputFormatClass)){
+                 loadCmd.setFileFormat("AVRO");
+             }
+         }
+         
+        if ("hadoopRDD".equals(storageFn) || "newAPIHadoopRDD".equals(storageFn)) {
+             loadCmd.setLoadFile(false);
+        }
+        loadCmd.setFlexField("STREAMING_CONTEXT",streamingContext)
+        lkmSpark.addCommand(loadCmd);
+        lkmSpark.populateLoaderFunctionParams(loadCmd);
+        loadCmd.setFileLoc(dataSource);
+        loadCmd.setNeedFormatOutput(true)
+        
+        def inferSourceSchema = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "inferSchema");        
+        loadCmd.setInferSourceShema(inferSourceSchema.equalsIgnoreCase("true") ? true : false)
+         
+        def dateFormat = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "dateFormat");
+        loadCmd.setDateFormat(dateFormat == null ? "" : dateFormat)
+         
+        SparkScript sparkScript = new SparkScript(templateUtils, null);
+        sparkScript.addChild(loadCmd);
+        return sparkScript;
+    
+    }
+
+    @ASTProducerMethod(processingType=ProcessingType.TARGET, producedASTType=SparkScript.class, styleKey="ProcessingStyleKey.Spark.LoadScript")
+    AbstractSyntaxTree LOAD_TAP(SparkScript sparkScript) throws AdapterException, oracle.odi.domain.mapping.exception.MappingException, GenerationException {
+    
+        supportDataFrames('LKM Spark to File', true)
+        
+        if (isDataFramesEnabled ()) {
+            generatorContext.putObject( "mapping.spark.includeJdbcJars", new Boolean( true ) )
+        }
+    
+        List<MapPhysicalNode> parentNodes = physicalNode.getUpstreamConnectedNodes();
+        if (parentNodes.size() != 1) {
+            throw new RuntimeException();
+        }
+        String storageFn = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "Storage Function");
+        String outputFormatClass = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "OutputFormatClass");
+        if (storageFn.equals("")) {
+            throw new MappingException("The option 'Storage Function' requires a value");
+        }
+        
+        List<MapPhysicalNode> childNodes = physicalNode.getDownstreamConnectedNodes();
+        MapPhysicalNode childNode = childNodes.get(0);
+        String techno_type = childNode.getExecutionTechnology().getInternalName(); 
+        LKMSpark.LKMSparkStorage lkmSpark = getLKMSpark(storageFn); 
+        lkmSpark.setPhysicalNodes(physicalNode, childNode);
+        MapPhysicalNode parentNode = lkmSpark.getNonAPParentNode(parentNodes.get(0));
+        String outputLocation = OdiRef.getOdiGeneratedAccessName("TARG_NAME", childNode,  "D");
+    
+        if (lkmSpark.getBaseUrl() != null) {
+           outputLocation = lkmSpark.getBaseUrl() + outputLocation;
+        }
+        SparkStoreCmd storeCmd = new SparkStoreCmd(sparkScript.getTemplateUtils(), childNode);
+        
+        storeCmd.setTechnologyType(techno_type);
+        
+        storeCmd.setDirectory(outputLocation);
+        lkmSpark.addCommands(storeCmd);
+        lkmSpark.populateStorerFunctionParams(storeCmd);
+    
+        storeCmd.setTgtAttrExprs(lkmSpark.getMapExpressions(childNode));
+        storeCmd.setTgtAttrNames(lkmSpark.getMapExpressionAliases(childNode));
+        storeCmd.setFullTgtAttrs(childNode.getNodeAttributes());
+        storeCmd.setTgtDataTypes(lkmSpark.getConvertedTgtDataTypes(childNode,storeCmd.getTemplateUtils().getTechno()));
+        storeCmd.setStoreKeys(("saveAsNewAPIHadoopFile".equals(storageFn)|| "saveAsHadoopFile".equals(storageFn) || "saveAsSequenceFile".equals(storageFn)) ? true : false);
+        Object tgtCompBondObj = childNode.getLogicalComponent().getBoundObject();
+            if (tgtCompBondObj != null && tgtCompBondObj instanceof OdiDataStore ) {
+               oracle.odi.domain.model.OdiDataStore tgtTable = ((OdiDataStore) tgtCompBondObj).getRealObject();
+               if (tgtTable.getFileDescriptor() != null){
+                    storeCmd.setFieldSep(SnpsStringTools.escapeUnicode(SnpsStringTools.hexStrToStr(SnpsStringTools.replaceNVL(tgtTable.getFileDescriptor().getFieldSeparator())),true));
+                    storeCmd.setRowSep(SnpsStringTools.escapeUnicode(SnpsStringTools.hexStrToStr(SnpsStringTools.replaceNVL(tgtTable.getFileDescriptor().getRowSeparator())),true));
+
+              }
+          }
+
+        storeCmd.setUseSQLExpressions(getOptionValue("SQL_EXPRESSIONS").equalsIgnoreCase("true") ? true : false)
+            
+        List<SparkScript> sparkScripts = new ArrayList<SparkScript>(1);
+        sparkScripts.add(sparkScript);
+        SparkScript storeScript = new SparkScript(sparkScript.getTemplateUtils(), sparkScripts);             
+        storeScript.addChild(storeCmd);
+        return getLKMStoreScript(storeScript);
+    }
+    
+    @ASTProducerMethod(processingType=ProcessingType.TARGET, producedASTType=NullTarget.class, styleKey="ProcessingStyleKey.Spark.LoadScript")
+    AbstractSyntaxTree PRE_EXTRACT_TAP(SqlQuery input) {
+        NullTarget result = new NullTarget();
+        result.setUpstreamAST(input);
+        return result;
+    }
+}
+
+        ]]></Field>
+	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:23.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[a7c7dc44-16fc-4b90-9c67-fc41cb76446d]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
+	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IntgType" type="java.lang.String">null</Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[154]]></Field>
+	<Field name="IsConcurrent" type="java.lang.String">null</Field>
+	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[134]]></Field>
+	<Field name="IFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IProject" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScBaseTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScOrigTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmDefault" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="KmLang" type="java.lang.String"><![CDATA[SQL_FILE]]></Field>
+	<Field name="KmSrcLang" type="java.lang.String"><![CDATA[PYTHON]]></Field>
+	<Field name="KmSrcTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="KmTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="KmVersion" type="java.lang.String">null</Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-24 19:34:36.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LCode" type="java.lang.String">null</Field>
+	<Field name="OggJkm" type="java.lang.String">null</Field>
+	<Field name="OrdFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ProcType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="ProdAstType" type="java.lang.String">null</Field>
+	<Field name="RepGuid" type="java.lang.String">null</Field>
+	<Field name="RepVersion" type="java.lang.String">null</Field>
+	<Field name="ScriptPath" type="java.lang.String">null</Field>
+	<Field name="ScOrigTrtTag" type="java.lang.String">null</Field>
+	<Field name="Subtype" type="java.lang.String"><![CDATA[SELECT*]]></Field>
+	<Field name="TrtName" type="java.lang.String"><![CDATA[LKMSparkFile]]></Field>
+	<Field name="TrtType" type="java.lang.String"><![CDATA[CK]]></Field>
+	<Field name="VariableDefs" type="java.lang.String"><![CDATA[
+
+        ]]></Field>
+	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpReferencedObject">
+		<Field name="IObject" type="com.sunopsis.sql.DbInt"><![CDATA[3600]]></Field>
+	<Field name="ObjectPKasString" type="java.lang.String"><![CDATA[134]]></Field>
+	<Field name="ObjectAKasString" type="java.lang.String"><![CDATA[]]></Field>
+	<Field name="Description" type="java.lang.String"><![CDATA[SNP_TRT : LKMSpark]]></Field>
+ <Field name="GlobalId" type="java.lang.String"><![CDATA[80aa8be2-d68d-40fe-bc1e-0b0b3ee0105e]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[518dc0c9-ec39-4743-8d35-f3ea7b697233]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[150]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[c54e7e7a-4c47-489e-bd28-1f637e7397a1]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[149]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[2bcf2e74-ed21-47cc-86b9-a542fcbc9107]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[92]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[c630db92-df85-4d3e-891a-1996f6c314a6]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[cff30f93-ea03-45f2-aec6-2b1f622be284]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[152]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.134]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[80aa8be2-d68d-40fe-bc1e-0b0b3ee0105e]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKMSpark]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[8]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.135]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[a7c7dc44-16fc-4b90-9c67-fc41cb76446d]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKMSparkFile]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[12]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.150]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e082-2d00-11e6-93fb-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitSync]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[21]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.149]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bcb3a042-a6d7-11e6-ac06-23e5aaa09e30]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitCommon]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[23]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.92]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e05a-2d00-11e6-93fa-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmit]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[17]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.151]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e0aa-2d00-11e6-93fc-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitAsync]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.152]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bc17c799-d8eb-4fe2-9440-a78c825b817b]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonRESTSubmit]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[21]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[6]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+</Object>
+</SunopsisExport>
