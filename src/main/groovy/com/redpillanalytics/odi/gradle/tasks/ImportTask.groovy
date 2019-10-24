@@ -33,7 +33,7 @@ class ImportTask extends InstanceTask {
                  false
          )
 
-      } catch(OdiImportException e) {log.debug(e.toString())}
+      } catch(OdiImportException e) {log.info(e.toString())}
 
    }
 
@@ -51,7 +51,7 @@ class ImportTask extends InstanceTask {
                     false,
          )
 
-      } catch(OdiSmartImportException e) {log.debug(e.toString())}
+      } catch(OdiSmartImportException e) {log.info(e.toString())}
 
    }
 
@@ -68,7 +68,7 @@ class ImportTask extends InstanceTask {
                  false
          )
 
-      } catch(OdiImportException e) {log.debug(e.toString())}
+      } catch(OdiImportException e) {log.info(e.toString())}
 
    }
 
@@ -84,7 +84,7 @@ class ImportTask extends InstanceTask {
                  false
          )
 
-      } catch(OdiImportException e) {log.debug(e.toString())}
+      } catch(OdiImportException e) {log.info(e.toString())}
 
    }
 
