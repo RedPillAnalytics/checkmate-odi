@@ -56,13 +56,20 @@ class ImportTask extends InstanceTask {
    }
 
    @Internal
-   importTopology(String path) {
+   importKM(File file) {
 
-      try {
+      try{
 
-         importService.importTopologyFromFolder(
-                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
-                 path,
+//         importService.importReplaceKMFromXml(
+//                 file.canonicalPath,
+//                 true,
+//                 'checkmate-odi12c+' as char[],
+//                 false
+//         )
+
+         importService.importObjectFromXml(
+                 ImportServiceImpl.IMPORT_MODE_DUPLICATION,
+                 file.canonicalPath,
                  true,
                  'checkmate-odi12c+' as char[],
                  false
@@ -73,12 +80,13 @@ class ImportTask extends InstanceTask {
    }
 
    @Internal
-   importKM(File file) {
+   importTopology(String path) {
 
-      try{
+      try {
 
-         importService.importReplaceKMFromXml(
-                 file.canonicalPath,
+         importService.importTopologyFromFolder(
+                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+                 path,
                  true,
                  'checkmate-odi12c+' as char[],
                  false

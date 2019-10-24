@@ -40,38 +40,31 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         }
 
         instance.findAllGlobalCKM().each {
-            //exportObject(it,"${exportDir.canonicalPath}/knowledge-module", true)
-            smartExportObject(it, "${exportDir.canonicalPath}/knowledge-module", "KM", it.name)
+            exportObject(it,"${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalIKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            smartExportObject(it, "${exportDir.canonicalPath}/knowledge-module", "KM", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalJKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            smartExportObject(it, "${exportDir.canonicalPath}/knowledge-module", "KM", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalLKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            smartExportObject(it, "${exportDir.canonicalPath}/knowledge-module", "KM", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalRKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            smartExportObject(it, "${exportDir.canonicalPath}/knowledge-module", "KM", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalSKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            smartExportObject(it, "${exportDir.canonicalPath}/knowledge-module", "KM", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalXKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            smartExportObject(it, "${exportDir.canonicalPath}/knowledge-module", "KM", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.endTxn()
