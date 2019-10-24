@@ -87,7 +87,18 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
             "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
          }
 
-         if(['knowledge-module','variable', 'sequence', 'user-function'].contains(objectType)) {
+         // smart export the project objects
+         if (['knowledge-module'].contains(objectType)) {
+
+            instance."$finder"(projectCode).each { object ->
+               if (!nameList || nameList.contains(object.name)) {
+                  count++
+                  logger.debug "object name: ${object.name}"
+                  smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", "KM", object.name)
+               }
+            }
+
+         } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
 
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
@@ -96,7 +107,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
                }
             }
-
          } else {
 
             // export the folder objects

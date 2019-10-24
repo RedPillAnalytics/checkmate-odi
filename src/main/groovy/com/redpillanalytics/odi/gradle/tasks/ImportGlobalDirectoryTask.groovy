@@ -51,7 +51,7 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
-        importKMFiles(importKMFiles)
+        smartImportXmlFiles(importKMFiles)
         importXmlFiles(importFiles)
     }
 
