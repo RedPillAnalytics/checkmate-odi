@@ -36,7 +36,7 @@ class ExportProjectFileTask extends ExportTask {
 
    @OutputFile
    File getExportFile() {
-      return sourceFile ? project.file(sourceFile) : project.file("${sourceBase}/${projectCode}")
+      return sourceFile ? project.file(sourceFile) : project.file("${sourceBase}/${category}/${projectCode}")
    }
 
    @TaskAction
