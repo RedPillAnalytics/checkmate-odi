@@ -52,7 +52,7 @@ class ExportProjectFileTask extends ExportTask {
 
       instance.beginTxn()
 
-      smartExportObject(projectList, exportFile.parent,'FILE', exportFile.name)
+      smartExportList(projectList, exportFile.parent,'FILE', exportFile.name)
 
       instance.endTxn()
    }
