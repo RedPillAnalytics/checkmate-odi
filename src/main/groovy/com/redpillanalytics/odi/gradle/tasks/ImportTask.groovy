@@ -60,7 +60,9 @@ class ImportTask extends InstanceTask {
 
       try{
 
-         importService.importReplaceKMFromXml(
+         //importService.importReplaceKMFromXml(file.canonicalPath, true, 'checkmate-odi12c+' as char[], false)
+         importService.importObjectFromXml(
+                 ImportServiceImpl.IMPORT_MODE_DUPLICATION,
                  file.canonicalPath,
                  true,
                  'checkmate-odi12c+' as char[],
