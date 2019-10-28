@@ -32,6 +32,7 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
-        importTopology(importDir.canonicalPath)
+        // Import the Topology Objects
+        importXmlFiles(importFiles)
     }
 }

@@ -44,7 +44,7 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
             instance."$finder"().each { object ->
                 count++
                 logger.debug "object name: ${object.name}"
-                exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                exportObject(object, "${exportDir.canonicalPath}/${objectType}")
             }
         }
         instance.endTxn()
@@ -54,24 +54,5 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
         exportStageDir()
 
     }
-
-    //    @TaskAction
-//    def exportObjects() {
-//
-//        instance.connect()
-//
-//        // begin the transaction
-//        instance.beginTxn()
-//
-//        // export the topology objects
-//        exportTopology(exportDir.canonicalPath)
-//
-//        // end transaction
-//        instance.endTxn()
-//
-//        // execute the export stage process
-//        exportStageDir()
-//
-//    }
 
 }

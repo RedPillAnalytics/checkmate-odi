@@ -70,21 +70,4 @@ class ImportDirectoryTask extends ImportTask {
       instance.endTxn()
    }
 
-   /**
-    * Import Replace List of Knowledge Modules Objects.
-    */
-   @Internal
-   def importKMFiles(List<File> importKMFiles) {
-
-      //Make the Connection
-      instance.connect()
-      instance.beginTxn()
-
-      importKMFiles.each { file ->
-         log.info "Importing file '$file.canonicalPath'..."
-         importKM(file)
-      }
-
-      instance.endTxn()
-   }
 }

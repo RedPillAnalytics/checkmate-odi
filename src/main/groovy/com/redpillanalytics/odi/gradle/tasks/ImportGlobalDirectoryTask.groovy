@@ -19,26 +19,7 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
     @Internal
     List getImportFiles() {
 
-        def filePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
-
-        def result = new LinkedList()
-
-        filePrefix.each {
-            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-        }
-
-        return result
-    }
-
-    /**
-     * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
-     *
-     * @return The List of export files.
-     */
-    @Internal
-    List getImportKMFiles() {
-
-        def filePrefix = ['KM']
+        def filePrefix = ['KM', 'REUMAP', 'SEQ', 'UFN', 'VAR']
 
         def result = new LinkedList()
 
@@ -51,7 +32,6 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
-        smartImportXmlFiles(importKMFiles)
         importXmlFiles(importFiles)
     }
 

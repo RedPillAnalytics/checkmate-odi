@@ -54,40 +54,4 @@ class ImportTask extends InstanceTask {
       } catch(OdiSmartImportException e) {log.info(e.toString())}
 
    }
-
-   @Internal
-   importKM(File file) {
-
-      try{
-
-         //importService.importReplaceKMFromXml(file.canonicalPath, true, 'checkmate-odi12c+' as char[], false)
-         importService.importObjectFromXml(
-                 ImportServiceImpl.IMPORT_MODE_DUPLICATION,
-                 file.canonicalPath,
-                 true,
-                 'checkmate-odi12c+' as char[],
-                 false
-         )
-
-      } catch(OdiImportException e) {log.info(e.toString())}
-
-   }
-
-   @Internal
-   importTopology(String path) {
-
-      try {
-
-         importService.importTopologyFromFolder(
-                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
-                 path,
-                 true,
-                 'checkmate-odi12c+' as char[],
-                 false
-         )
-
-      } catch(OdiImportException e) {log.info(e.toString())}
-
-   }
-
 }
