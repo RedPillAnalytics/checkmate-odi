@@ -1,0 +1,812 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="7FhB3NuJFianUJpcoWy5v6g9SmxkShdrEOI5b1vpgl4=" keyVect="DqOe97bLVL/RZfD2oXbBlw==" exportKeySalt="a0e549a9-e694-4046-b3db-263c71fa6173" containsCipherText="false"/>
+<Object class="com.sunopsis.dwg.dbobj.SnpTrt">
+		<Field name="CleanupOnError" type="java.lang.String">null</Field>
+	<Field name="CompType" type="java.lang.String"><![CDATA[AGGREGATE]]></Field>
+	<Field name="DelegateClass" type="java.lang.String"><![CDATA[XKM_Spark_Aggregate]]></Field>
+	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
+import oracle.odi.domain.odireference.*
+import oracle.odi.domain.adapter.*
+import oracle.odi.domain.adapter.topology.*
+import oracle.odi.domain.adapter.relational.*
+import oracle.odi.domain.adapter.project.*
+import oracle.odi.domain.adapter.project.IKnowledgeModule.ProcessingType
+import oracle.odi.domain.mapping.*
+import oracle.odi.domain.mapping.component.*
+import oracle.odi.domain.mapping.physical.*
+import oracle.odi.domain.mapping.generator.*
+import oracle.odi.domain.mapping.expression.*
+import oracle.odi.mapping.generation.spark.*
+import oracle.odi.mapping.generation.AbstractSyntaxTree.ASTProducerMethod;
+import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.GeneratorDelegateClass;
+
+	
+	@GeneratorDelegateClass(componentType=AggregateComponent.COMPONENT_TYPE_NAME, descriptionKey="GeneratorDelegateClass.SparkAggregateCompKM")
+	public class XKM_Spark_Aggregate extends SparkKM {
+
+		@ASTProducerMethod(processingType=ProcessingType.SOURCE,producedASTType=SparkScript.class, styleKey="ProcessingStyleKey.SparkAggregate.SELECT")
+		SparkScript SELECT(SparkScript inputScript) {
+		
+			supportDataFrames('XKM Spark Aggregate', true);
+
+			String windowing = getOptionValue("WINDOW_AGGREGATION")
+			
+			if (windowing != null && windowing != "") {
+			  if (!inputScript.isCheckpointEnabled() && Boolean.valueOf(windowing)) {
+			    throw new OdiKMException("ODIKM-SPARK-AGGR-10000 : Checkpointing must be enabled when WINDOW_AGGREGATION = true. Set Spark execution unit EKM option spark.checkpointing = True to enable checkpointing.")
+			  }
+			}
+			
+			String stateful = getOptionValue("STATEFUL_AGGREGATION")
+			
+			if (stateful != null && stateful != "") {
+			  if (!inputScript.isCheckpointEnabled() && Boolean.valueOf(stateful)) {
+			    throw new OdiKMException("ODIKM-SPARK-AGGR-10001 : Checkpointing must be enabled when STATEFUL_AGGREGATION = true. Set Spark execution unit EKM option spark.checkpointing = True to enable checkpointing.")
+			  }
+			}
+		
+			SparkGroupCmd groupCmd = new SparkGroupCmd(physicalNode.getTemplateUtils(), physicalNode);
+			groupCmd.setAllAggFunctions(physicalNode.getExecutionUnit().getExecutionTechnology().getAggregateFunctionList());
+
+			AggregateComponent aggrComp = (AggregateComponent)component;
+
+			List<MapExpression> groupByExprs = new ArrayList<MapExpression>();
+			List<String> groupByAliases = new ArrayList<String>();
+			List<MapExpression> directMapExprs = new ArrayList<MapExpression>();
+			List<String> directMapAliases = new ArrayList<String>();
+			List<MapExpression> simpleAggrExprs = new ArrayList<MapExpression>();
+			List<String> simpleAggrFuncs = new ArrayList<String>();
+			List<String> simpleAggrAliases = new ArrayList<String>();
+			List<MapExpression> complexAggrExprs = new ArrayList<MapExpression>();
+			List<String> complexAggrAliases = new ArrayList<String>();
+			List<MapExpression> allAggrExprs = new ArrayList<MapExpression>();
+			List<String> allAggrAliases = new ArrayList<String>();
+			
+			int groupby = 0;
+			int simpleAggr = 0;
+			int complexAggr = 0;
+			int directMap = 0;
+			int allAggr = 0;
+			
+			for (MapAttribute attr : aggrComp.getAttributes()) {
+				boolean isGroupFunction = false;
+				String groupByOption = attr.isGroupFunction().toUpperCase();
+				// if the option is AUTO, we try to figure out whether the attribute is in the group by clause, else use the user set yes or no value an attribute must be in the group by if it does NOT participate in an aggregation.
+				if (groupByOption.equals("AUTO")) {
+					def containsAggregate = attr.getExpression().containsAggregationFunction(physicalNode.getExecutionUnit().getExecutionTechnology())
+					if (!containsAggregate) {
+					  // check if lower case aggregate function has been used by error
+					  def clonedExpr = attr.getExpression().clone()
+					  clonedExpr.setText(clonedExpr.getText().toUpperCase())
+					  if (clonedExpr.containsAggregationFunction(physicalNode.getExecutionUnit().getExecutionTechnology()))  {
+					    if (isDataFramesEnabled ()) {
+						isGroupFunction = false
+					    } else {
+						throw new OdiKMException("ERROR : Attribute expression " + attr.getExpression().getText() + " contains lower case aggregate function call. Aggregate functions must be in upper case.")
+					    }
+					  } else {
+						isGroupFunction = true
+					  }
+					} else {
+                                  isGroupFunction = false
+					}
+					
+				} else if (groupByOption.equals("YES")) {
+					isGroupFunction = true;
+				}
+
+				if (isGroupFunction) { //group by
+					if (attr.getDataType() != null && attr.getDataType().getName().toUpperCase().equals("COMPLEX")) {
+					  throw new OdiKMException("ERROR : Complex type attribute " + attr.getName() + " cannot be part of Group By clause, set Group By to No.")
+					}
+					groupByExprs.add(attr.getExpression());
+					groupByAliases.add(attr.getName());
+					groupby++;
+				} else {
+					if (attr.getExpression().containsAggregationFunction(physicalNode.getExecutionUnit().getExecutionTechnology())) {
+											
+						String exprText = attr.getExpression().getText();
+						//Simple expression
+						if (attr.getExpression().getFunctionCallList().size() == 1 && exprText.matches(/^[a-zA-Z]+\(([^)]*)\)$/)) {							
+							simpleAggrExprs.add(new MapExpression(attr, exprText.substring(exprText.indexOf("(") + 1, exprText.length()-1)));
+							simpleAggrFuncs.add(exprText.substring(0, exprText.indexOf("(")));
+							simpleAggrAliases.add(attr.getName());
+							simpleAggr++;
+						} else {
+							complexAggrExprs.add(attr.getExpression());
+							complexAggrAliases.add(attr.getName());
+							complexAggr++;
+						}
+					} else { 
+						// check if lower case aggregate function has been used by error
+						def clonedExpr = attr.getExpression().clone()                                              
+						clonedExpr.setText(clonedExpr.getText().toUpperCase())
+						if (clonedExpr.containsAggregationFunction(physicalNode.getExecutionUnit().getExecutionTechnology()) && !isDataFramesEnabled ())  {
+						    throw new OdiKMException("ERROR : Attribute expression " + attr.getExpression().getText() + " contains lower case aggregate function call. Aggregate functions must be in upper case.")
+						} else {
+						  // direct map
+						  directMapExprs.add(attr.getExpression());
+						  directMapAliases.add(attr.getName());
+						  directMap++;
+						}
+					}					
+				}
+				allAggrExprs.add(attr.getExpression());
+				allAggrAliases.add(attr.getName());
+				allAggr++;
+			}
+
+			if (groupby > 0) {
+				groupCmd.setGroupByExprs(groupByExprs);
+				groupCmd.setGroupByAliases(groupByAliases);
+			} else {
+				groupCmd.setGroupByExprs(null);
+				groupCmd.setGroupByAliases(null);
+			}
+			if (simpleAggr > 0) {
+				groupCmd.setSimpleAggrExprs(simpleAggrExprs);
+				groupCmd.setSimpleAggrFuncs(simpleAggrFuncs);
+				groupCmd.setSimpleAggrAliases(simpleAggrAliases);
+			} else {
+				groupCmd.setSimpleAggrExprs(null);
+				groupCmd.setSimpleAggrFuncs(null);
+				groupCmd.setSimpleAggrAliases(null);
+			}
+
+			if (complexAggr > 0) {
+				groupCmd.setComplexAggrExprs(complexAggrExprs);
+				groupCmd.setComplexAggrAliases(complexAggrAliases);
+			} else {
+				groupCmd.setComplexAggrExprs(null);
+				groupCmd.setComplexAggrAliases(null);
+			}
+			
+			if (allAggr > 0) {
+				groupCmd.setAllAggrExprs(allAggrExprs);
+				groupCmd.setAllAggrAliases(allAggrAliases);
+			} else {
+				groupCmd.setAllAggrExprs(null);
+				groupCmd.setAllAggrAliases(null);
+			}
+			
+			if (directMap > 0) {
+				groupCmd.setDirectMapExprs(directMapExprs);
+				groupCmd.setDirectMapAliases(directMapAliases);
+			} else {
+				groupCmd.setDirectMapExprs(null);
+				groupCmd.setDirectMapAliases(null);
+			}
+
+			//having condition
+			String havingCond = aggrComp.getHavingText();
+			if (havingCond == null || havingCond.length() == 0) {
+				groupCmd.setHavingCond(null);
+			} else {
+				groupCmd.setHavingCond(aggrComp.getHaving());
+			}
+			
+			//manual group by clause
+			MapExpression manualGroupBy = aggrComp.getManualGroupBy();
+			groupCmd.setManualGroupBy(manualGroupBy);
+			
+			groupCmd.setUseSQLExpressions(getOptionValue("SQL_EXPRESSIONS").equalsIgnoreCase("true") ? true : false)
+   
+			// Processes WINDOW_AGGREGATION, WINDOWING, WINDOW_LENGTH, and SLIDING_INTERVAL options
+			groupCmd.setWindowingValues(groupCmd);
+  	
+			//set STATEFUL_AGGREGATION option
+			def statefulOption = physicalNode.getOptionValue(oracle.odi.domain.adapter.project.IKnowledgeModule.ProcessingType.SOURCE, "STATEFUL_AGGREGATION");
+			if (statefulOption != null) {
+			  def statefulOptionValue = statefulOption.getOptionValue().toString();
+			  if (statefulOptionValue.length() > 0)
+				groupCmd.enableStateful(Boolean.valueOf(statefulOptionValue));
+			}
+  
+			//set FORWARD_ONLY_UPDATED_ROWS option
+			def updatesOnlyOption = physicalNode.getOptionValue(oracle.odi.domain.adapter.project.IKnowledgeModule.ProcessingType.SOURCE, "FORWARD_ONLY_UPDATED_ROWS");
+			if (updatesOnlyOption != null) {
+			  def updatesOnlyOptionValue = updatesOnlyOption.getOptionValue().toString();
+			  if (updatesOnlyOptionValue.length() > 0)
+				groupCmd.enableUpdatesOnly(Boolean.valueOf(updatesOnlyOptionValue));
+			}
+  
+			//set STATE_RETENTION_PERIOD option
+			def retentionOption = physicalNode.getOptionValue(oracle.odi.domain.adapter.project.IKnowledgeModule.ProcessingType.SOURCE, "STATE_RETENTION_PERIOD");
+			if (retentionOption != null) {
+			  def retentionOptionValue = retentionOption.getOptionValue().toString();
+			  if (retentionOptionValue.length() > 0) {
+				groupCmd.setStateRetention(Integer.valueOf(retentionOptionValue));
+			  } else {
+  				groupCmd.setStateRetention(0);
+			  } 
+			}
+  	              
+			List<SparkScript> scripts = new ArrayList<SparkScript>(1);
+			scripts.add(inputScript); 
+
+			SparkScript groupScript = new SparkScript(inputScript.getTemplateUtils(), scripts);
+			groupScript.addChild(groupCmd);
+
+			return groupScript;
+		}
+	}
+
+  ]]></Field>
+	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-10-25 14:41:03.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[4cb3b24d-108b-4307-ae9e-4477b84c5f68]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndJrnMethod" type="java.lang.String"><![CDATA[S]]></Field>
+	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
+	<Field name="IsConcurrent" type="java.lang.String">null</Field>
+	<Field name="IsSeeded" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
+	<Field name="IFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IProject" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScBaseTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScOrigTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[17441]]></Field>
+	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmLang" type="java.lang.String"><![CDATA[PYTHON]]></Field>
+	<Field name="KmSrcLang" type="java.lang.String">null</Field>
+	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
+	<Field name="KmTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="KmVersion" type="java.lang.String">null</Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-25 14:41:03.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
+	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LCode" type="java.lang.String">null</Field>
+	<Field name="OggJkm" type="java.lang.String">null</Field>
+	<Field name="OrdFolder" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ProcType" type="java.lang.String"><![CDATA[S]]></Field>
+	<Field name="ProdAstType" type="java.lang.String"><![CDATA[oracle.odi.mapping.generation.spark.SparkScript]]></Field>
+	<Field name="RepGuid" type="java.lang.String">null</Field>
+	<Field name="RepVersion" type="java.lang.String">null</Field>
+	<Field name="ScriptPath" type="java.lang.String">null</Field>
+	<Field name="ScOrigTrtTag" type="java.lang.String">null</Field>
+	<Field name="Subtype" type="java.lang.String"><![CDATA[*]]></Field>
+	<Field name="TrtName" type="java.lang.String"><![CDATA[Copy (2) of XKM Spark Aggregate]]></Field>
+	<Field name="TrtType" type="java.lang.String"><![CDATA[CK]]></Field>
+	<Field name="VariableDefs" type="java.lang.String">null</Field>
+	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExitGroup">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[eb5d708d-6702-496f-b7bd-680026a65f39]]></Field>
+	<Field name="GroupName" type="java.lang.String"><![CDATA[DataFrames]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3044]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17439]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[f30e665b-7647-45c4-a9e7-ae6f435dd0cc]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[17440]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[4989]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3044]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
+	<Field name="ShortValue" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[SQL_EXPRESSIONS]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Use SQL Expressions]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[C]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[229c211f-8fe9-4b88-93d9-087a3a3ab27c]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17439]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)?"show=false,enable=false":"show=true,enable=true";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Column description]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_COL_DESC]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_COL]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[5d0b6b97-7b3d-4f0f-b9ec-a6746d9ddea4]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17440]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+Set this option to True if you are using generic SQL syntax for aggregate expressions.
+Set this option to False if you are using Spark Python syntax for aggregate expressions.
+NOTE:
+If this option is set to False (non-default), and expression is a constant - specify expression as lit(<my constant value>) 
+Check pyspark.sql.functions module reference for more info about lit function:
+pyspark.sql.functions.lit(col) - Creates a Column of literal value.  
+  
+  ]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[User Exit help]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_UE_HELP]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_USER_EXIT]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpReferencedObject">
+		<Field name="IObject" type="com.sunopsis.sql.DbInt"><![CDATA[3600]]></Field>
+	<Field name="ObjectPKasString" type="java.lang.String"><![CDATA[133]]></Field>
+	<Field name="ObjectAKasString" type="java.lang.String"><![CDATA[]]></Field>
+	<Field name="Description" type="java.lang.String"><![CDATA[SNP_TRT : SparkKM]]></Field>
+ <Field name="GlobalId" type="java.lang.String"><![CDATA[739e7da4-f732-4455-8936-782fafe91869]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[c3a026b5-6fe2-410c-814a-44a6746b94e4]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17441]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+COMPONENT NAME: XKM Spark Aggregate
+COMPONENT VERSION: 1
+AUTHOR: Oracle
+COMPATIBILITY: ODI 12.1.3.0.1 or above
+
+DESCRIPTION:
+
+Aggregates data from multiple rows using various aggregate functions such as SUM, MIN, MAX and GROUP BY clause.	     
+	  	
+  ]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Edit Command]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_TRT_TXT]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17442]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[51f1f1aa-82ef-4ca3-b298-5395f0e3e34e]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[17443]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[4990]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="ShortValue" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[WINDOW_AGGREGATION]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Enable window aggregation]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[C]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[39b69afe-8733-4bcc-8776-6ca2c2636a8b]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17442]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)? options.getValue("STATEFUL_AGGREGATION").equals("false")?"show=true,enable=true":"show=true,enable=false":"show=false,enable=false";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[14a19712-decb-4db5-9b7c-86c6c6df03b1]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17443]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+This option enables window aggregation. To be used in combination with WINDOW_LENGTH and SLIDING_INTERVAL options.
+For more information regarding Spark Window oprations refer to Spark Programming Guide:	
+http://spark.apache.org/docs/latest/streaming-programming-guide.html#window-operations	
+	
+	]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17444]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[b6aa4277-6994-477a-83a1-e82b3b9774fe]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[17445]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[4991]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
+	<Field name="ShortValue" type="java.lang.String"><![CDATA[3]]></Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[WINDOW_LENGTH]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[The duration of window in windowed computations]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[2f80aef5-ae51-4a96-a33c-49c24c3d8912]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17444]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)? options.getValue("WINDOW_AGGREGATION").equals("true")?"show=true,enable=true":"show=false,enable=false":"show=false,enable=false";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[ca3a6bc6-ac49-4d43-b806-ba9bd15b3988]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17445]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+This option defines the duration of aggregation window in number of batch intervals. 
+Default = 3. It will be later multiplied by the batch duration to give us the absolute Window duration. 
+Example if WINDOW_LENGTH = 3 and spark.batchDuration = 10, the Window length used in Spark will be 30.	
+	
+	]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17446]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[885c3657-e9a9-4df0-b6c4-bab1a6259e29]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[17447]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[4992]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[5]]></Field>
+	<Field name="ShortValue" type="java.lang.String"><![CDATA[2]]></Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[SLIDING_INTERVAL]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[The interval at which the window operation is performed]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[f6966704-0ea6-4271-805c-d380f649f524]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17446]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)? options.getValue("WINDOW_AGGREGATION").equals("true")?"show=true,enable=true":"show=false,enable=false":"show=false,enable=false";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[eb85c437-2dcd-41b0-8f1f-3fc0bbff0e57]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17447]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+This option defines the interval at which the window operation is performed in number of batch intervals. 
+Default = 2. It will be later multiplied by the batch duration to give us the absolute value of Sliding interval. 
+Example if SLIDING_INTERVAL = 2 and spark.batchDuration = 10, the Sliding interval used in Spark will be 20.	
+Using a SLIDING_INTERVAL > 1 results in fewer RDDs being generated. 
+The aggregation component will only output an RDD every SLIDING_INTERVAL batches. 
+In case of complex mappings using e.g. joins this lower output frequency will impact join results if the two join sources use different windowing settings.
+SLIDING_INTERVAL should be shorter than spark.streaming.timeout, otherwise the streaming session will be shut down before any data could be gathered at the end of sliding interval. This results in no data returned from the stream.			
+	
+	]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17448]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[7ca8bcad-5915-4aa8-be57-902db06fee52]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[17449]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[4993]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[6]]></Field>
+	<Field name="ShortValue" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[STATEFUL_AGGREGATION]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Enable stateful aggregation]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[C]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[971209cb-a95c-41dc-a17c-ab0a7178739d]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17448]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)? options.getValue("WINDOW_AGGREGATION").equals("false")?"show=true,enable=true":"show=true,enable=false":"show=false,enable=false";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[bb2b104f-2512-4a41-ace4-aeb47259107b]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17449]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+This option enables stateful aggregation. To be used in combination with STATE_RETENTION_PERIOD and FORWARD_ONLY_UPDATED_ROWS options.
+When data must be aggregated across all data of a stream, stateful aggregation is required.
+In stateful aggregation Spark builds a so called "State" Stream containing the aggregated values for all keys. 
+For every incoming RDD this state is updated, e.g. aggregated sums are updated based on new incoming data.
+By default a "State" Stream will output all stored values for every incoming RDD. 		
+	
+	]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17450]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[5b28739c-6c5f-49e4-a4de-b89173ff16fe]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[17451]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[4994]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[7]]></Field>
+	<Field name="ShortValue" type="java.lang.String">null</Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[STATE_RETENTION_PERIOD]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Time in seconds to retain a key/value aggregate inside the Spark state object]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[40c38499-8fa0-4f28-9d7f-95fc1d9bdc06]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17450]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)? options.getValue("STATEFUL_AGGREGATION").equals("true")?"show=true,enable=true":"show=false,enable=false":"show=false,enable=false";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[9730c857-2ee8-4d81-879d-70e312f79903]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17451]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+Time in seconds to retain a key/value aggregate inside the Spark state object. 
+A key is removed from the Spark state object, when LastUpdated + StateRetentionTime < CurrentTime. 
+If left blank, keys will be retained for an unlimited amount of time. Please note that this may lead to the Spark state object growing infinitely.
+This option only applies to keys that are no more in use, i.e. incoming RDDs do not contain the key anymore.			
+	
+	]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
+		<Field name="ExprITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17452]]></Field>
+	<Field name="ExtVersion" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[13a185db-9b0f-4999-9285-01007f6f6d12]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1661]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[17453]]></Field>
+	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[4995]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[8]]></Field>
+	<Field name="ShortValue" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="Subtypes" type="java.lang.String">null</Field>
+	<Field name="UeName" type="java.lang.String"><![CDATA[FORWARD_ONLY_UPDATED_ROWS]]></Field>
+	<Field name="UeSdesc" type="java.lang.String"><![CDATA[Only modified aggregate values are forwarded to downstream components]]></Field>
+	<Field name="UeType" type="java.lang.String"><![CDATA[C]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[0c7f6d39-4be0-42b7-9217-079e732bdcb2]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17452]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[105]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[return (isStreaming)? options.getValue("STATEFUL_AGGREGATION").equals("true")?"show=true,enable=true":"show=false,enable=false":"show=false,enable=false";]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String">null</Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[921c4877-f220-49e5-912b-6af13ffbae9e]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[17453]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+If set, only modified keys and aggregate values are forwarded to downstream components as opposed to all keys in the state.	
+	
+	]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17441]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[c3a026b5-6fe2-410c-814a-44a6746b94e4]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.133]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[739e7da4-f732-4455-8936-782fafe91869]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkKM]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[7]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.1661]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[4cb3b24d-108b-4307-ae9e-4477b84c5f68]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[Copy (2) of XKM Spark Aggregate]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[31]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17440]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[5d0b6b97-7b3d-4f0f-b9ec-a6746d9ddea4]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.3044]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[eb5d708d-6702-496f-b7bd-680026a65f39]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[Copy (2) of XKM Spark Aggregate.DataFrames]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_USEREXITGROUP]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[31.10]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17439]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[229c211f-8fe9-4b88-93d9-087a3a3ab27c]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17443]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[14a19712-decb-4db5-9b7c-86c6c6df03b1]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17442]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[39b69afe-8733-4bcc-8776-6ca2c2636a8b]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_ORIGTXT.105]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String">null</Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_ORIGTXT.111]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String">null</Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17445]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[ca3a6bc6-ac49-4d43-b806-ba9bd15b3988]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17444]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[2f80aef5-ae51-4a96-a33c-49c24c3d8912]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17447]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[eb85c437-2dcd-41b0-8f1f-3fc0bbff0e57]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17446]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[f6966704-0ea6-4271-805c-d380f649f524]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17449]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bb2b104f-2512-4a41-ace4-aeb47259107b]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17448]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[971209cb-a95c-41dc-a17c-ab0a7178739d]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17451]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[9730c857-2ee8-4d81-879d-70e312f79903]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17450]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[40c38499-8fa0-4f28-9d7f-95fc1d9bdc06]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17453]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[921c4877-f220-49e5-912b-6af13ffbae9e]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.17452]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[0c7f6d39-4be0-42b7-9217-079e732bdcb2]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[15]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[10]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[15]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+</Object>
+</SunopsisExport>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
 <Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="sUrmRCJTv+1MXEeoxy8xtk+DzTzNiBxrIkj5jDYQPbI=" keyVect="S1pIfR0GqsmVqpqtjeDuNg==" exportKeySalt="87808903-a969-4171-8b65-a4dd9304f595" containsCipherText="false"/>
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="0cfYJ4SB3iZYEFW9JwlxNmHfg4EzbiGdeeD2K9VNiBE=" keyVect="GXPylkOScQLNSBH1JkMu4w==" exportKeySalt="d08d2369-34eb-4b6d-b333-ea5e0be6602f" containsCipherText="false"/>
 <Object class="com.sunopsis.dwg.dbobj.SnpTrt">
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String">null</Field>
@@ -2473,6 +2473,13 @@ or	(ODI_ERR_TYPE = '<%=odiRef.getInfo("CT_ERR_TYPE")%>'	and ODI_ORIGIN = '<%=odi
 ]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[63e4ab40-be5e-4278-84e0-344082327338]]></Field>
+	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[440]]></Field>
+	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1605]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[399]]></Field>
+	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
 		<Field name="GlobalId" type="java.lang.String"><![CDATA[1a13f6dc-2929-41a8-8450-0712ce44d8b9]]></Field>
 	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[441]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1605]]></Field>
@@ -2554,13 +2561,6 @@ or	(ODI_ERR_TYPE = '<%=odiRef.getInfo("CT_ERR_TYPE")%>'	and ODI_ORIGIN = '<%=odi
 	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[443]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1605]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[398]]></Field>
-	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[63e4ab40-be5e-4278-84e0-344082327338]]></Field>
-	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[440]]></Field>
-	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[1605]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[399]]></Field>
 	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
@@ -3306,6 +3306,13 @@ or	(ODI_ERR_TYPE = '<%=odiRef.getInfo("CT_ERR_TYPE")%>'	and ODI_ORIGIN = '<%=odi
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[10.17]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.440]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[df4b8f51-a4e2-435f-9961-902d582c2edc]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[CKM Oracle.Create index on PK]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[10.18]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.441]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[957ff3db-6b35-4a13-9cfa-9b8913a3e451]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[CKM Oracle.insert PK errors]]></Field>
@@ -3367,13 +3374,6 @@ or	(ODI_ERR_TYPE = '<%=odiRef.getInfo("CT_ERR_TYPE")%>'	and ODI_ORIGIN = '<%=odi
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[CKM Oracle.insert AK errors]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[10.16]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.440]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[df4b8f51-a4e2-435f-9961-902d582c2edc]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[CKM Oracle.Create index on PK]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[10.18]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.444]]></Field>
