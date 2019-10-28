@@ -93,7 +93,11 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                if (!nameList || nameList.contains(object.name)) {
                   count++
                   logger.debug "object name: ${object.name}"
-                  exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                  if(objectType == 'knowledge-module') {
+                     smartExportObject(object,"${exportDir.canonicalPath}/${objectType}", "KM", object.name)
+                  } else {
+                     exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
+                  }
                }
             }
          } else {

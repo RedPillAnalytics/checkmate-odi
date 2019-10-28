@@ -73,7 +73,7 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       // Import the Project Object
       importXmlFiles(importProjectFile)
       // Smart Import the KM Objects
-      importKMFiles(importKMFiles)
+      smartImportXmlFiles(importKMFiles)
       // Import the Objects
       importXmlFiles(importFiles)
    }
