@@ -19,7 +19,9 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
     @Internal
     List getImportFiles() {
 
-        def filePrefix = ['KM', 'REUMAP', 'SEQ', 'UFN', 'VAR']
+        //def filePrefix = ['KM', 'REUMAP', 'SEQ', 'UFN', 'VAR']
+
+        def filePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
 
         def result = new LinkedList()
 

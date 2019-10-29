@@ -33,7 +33,7 @@ class ImportTask extends InstanceTask {
                  false
          )
 
-      } catch(OdiImportException e) {log.info(e.toString())}
+      } catch(Exception e) {log.info(e.toString())}
 
    }
 
@@ -51,7 +51,7 @@ class ImportTask extends InstanceTask {
                     false,
          )
 
-      } catch(OdiSmartImportException e) {log.info(e.toString())}
+      } catch(Exception e) {log.info(e.toString())}
 
    }
 }
