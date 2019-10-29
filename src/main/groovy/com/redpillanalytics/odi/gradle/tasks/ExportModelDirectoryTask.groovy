@@ -59,8 +59,10 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
       instance.endTxn()
 
-      // execute the export stage process
-      exportStageDir()
+      if ( !modelCode || !modelfolderName ) {
+         // execute the export stage process
+         exportStageDir()
+      }
 
    }
 }
