@@ -11,9 +11,6 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
     // specify the model subdirectory
     String category = 'scenario'
 
-    @Internal
-    Instance instance
-
     @SuppressWarnings("GroovyAssignabilityCheck")
     @TaskAction
     def exportScenarios() {

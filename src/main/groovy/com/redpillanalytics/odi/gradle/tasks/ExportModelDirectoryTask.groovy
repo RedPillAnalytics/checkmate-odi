@@ -3,6 +3,7 @@ package com.redpillanalytics.odi.gradle.tasks
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -29,6 +30,11 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
    @Option(option = "model-folder",
            description = "The ODI model folder name to export. Default: null, which means all model folders are exported.")
    String modelfolderName
+
+   @OutputDirectory
+   File getExportDir() {
+      return sourceDir ? project.file(sourceDir) : ( !modelCode || !modelfolderName ) ? buildDir : sourceBase
+   }
 
    @TaskAction
    def exportModelDirectory() {

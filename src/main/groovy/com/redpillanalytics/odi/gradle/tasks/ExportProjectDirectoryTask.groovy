@@ -6,6 +6,7 @@ import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -55,6 +56,11 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
    @Internal
    String category = 'project'
+
+   @OutputDirectory
+   File getExportDir() {
+      return sourceDir ? project.file(sourceDir) : ( !objectList || !nameList ) ? buildDir : sourceBase
+   }
 
    @TaskAction
    def exportObjects() {
