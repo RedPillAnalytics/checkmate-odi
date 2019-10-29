@@ -1,6 +1,7 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
@@ -56,7 +57,7 @@ class ImportDirectoryTask extends ImportTask {
     * Import the File List of Objects.
     */
    @Internal
-   def importXmlFiles(List<File> importFiles) {
+   def importXmlFiles(List<File> importFiles, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
       //Make the Connection
       instance.connect()
@@ -64,7 +65,7 @@ class ImportDirectoryTask extends ImportTask {
 
       importFiles.each { file ->
          log.info "Importing file '$file.canonicalPath'..."
-         importObject(file)
+         importObject(file, importMode)
       }
 
       instance.endTxn()
