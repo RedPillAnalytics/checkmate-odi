@@ -21,12 +21,12 @@ class ImportTask extends InstanceTask {
    }
 
    @Internal
-   importObject(File file) {
+   importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
       try{
 
          importService.importObjectFromXml(
-                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+                 importMode,
                  file.canonicalPath,
                  true,
                  'checkmate-odi12c+' as char[],
