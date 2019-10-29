@@ -33,7 +33,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
    @OutputDirectory
    File getExportDir() {
-      return sourceDir ? project.file(sourceDir) : ( !modelCode || !modelfolderName ) ? buildDir : sourceBase
+      return sourceDir ? project.file(sourceDir) : ( !modelCode && !modelfolderName ) ? buildDir : sourceBase
    }
 
    @TaskAction
@@ -59,7 +59,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
       instance.endTxn()
 
-      if ( !modelCode || !modelfolderName ) {
+      if ( !modelCode && !modelfolderName ) {
          // execute the export stage process
          exportStageDir()
       }

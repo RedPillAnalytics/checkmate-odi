@@ -59,7 +59,8 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
    @OutputDirectory
    File getExportDir() {
-      return sourceDir ? project.file(sourceDir) : ( !objectList || !nameList ) ? buildDir : sourceBase
+      return sourceDir ? project.file(sourceDir) :
+              ( objectList.size() == objectMaster.size() && !nameList ) ? buildDir : sourceBase
    }
 
    @TaskAction
@@ -125,7 +126,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
 
-      if ( !objectList || !nameList ) {
+      if ( objectList.size() == objectMaster.size() && !nameList ) {
          // execute the export stage process
          exportStageDir()
       }
