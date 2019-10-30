@@ -191,7 +191,7 @@ class ExportTest extends Specification {
    def "Execute :exportProjectFile task with --source-file option"() {
       given:
       taskName = 'exportProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=/src/main/file/JUMP.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-file=JUMP', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
