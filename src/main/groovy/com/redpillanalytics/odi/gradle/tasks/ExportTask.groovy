@@ -45,7 +45,7 @@ class ExportTask extends InstanceTask {
    }
 
    @Internal
-   def smartExportObject(ISmartExportable object, String path, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
+   def smartExportObject(ISmartExportable object, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
@@ -57,7 +57,7 @@ class ExportTask extends InstanceTask {
          result = smartExportService.exportToXml(
                  smartExportList,
                  path,
-                 objectName.replaceAll("[^a-zA-Z0-9]+","_").toUpperCase(),
+                 "${objectPrefix}_${objectName.replaceAll("[^a-zA-Z0-9]+","_")}",
                  overwrite,
                  isZip,
                  encodingOptions,

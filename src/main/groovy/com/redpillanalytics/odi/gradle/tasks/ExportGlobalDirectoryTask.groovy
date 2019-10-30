@@ -2,6 +2,7 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
+import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
@@ -19,61 +20,51 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
     def exportGlobals() {
 
         instance.connect()
+
         instance.beginTxn()
 
-        instance.findAllGlobalCKM().each {
-            exportObject(it,"${exportDir.canonicalPath}/ckm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/ckm", it.name)
-        }
-
-        instance.findAllGlobalIKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/ikm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/ikm", it.name)
-        }
-
-        instance.findAllGlobalJKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/jkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/jkm", it.name)
-        }
-
-        instance.findAllGlobalLKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/lkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/lkm", it.name)
-        }
-
-        instance.findAllGlobalRKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/rkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/rkm", it.name)
-        }
-
-        instance.findAllGlobalSKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/skm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/skm", it.name)
-        }
-
-        instance.findAllGlobalXKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/xkm", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/xkm", it.name)
-        }
-
         instance.findAllGlobalReusableMappings().each {
-            exportObject(it, "${exportDir.canonicalPath}/reusable-mapping", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/reusable-mapping", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/reusable-mapping")
         }
 
         instance.findAllGlobalUserFunctions().each {
-            exportObject(it, "${exportDir.canonicalPath}/user-function", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/user-function", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/user-function")
         }
 
         instance.findAllGlobalSequences().each {
-            exportObject(it, "${exportDir.canonicalPath}/sequence", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/sequence", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/sequence")
         }
 
         instance.findAllGlobalVariables().each {
-            exportObject(it, "${exportDir.canonicalPath}/variable", true)
-            //smartExportObject(it, "${exportDir.canonicalPath}/variable", it.name)
+            exportObject(it, "${exportDir.canonicalPath}/variable")
+        }
+
+        instance.findAllGlobalCKM().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+        }
+
+        instance.findAllGlobalIKM().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
+        }
+
+        instance.findAllGlobalJKM().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+        }
+
+        instance.findAllGlobalLKM().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+        }
+
+        instance.findAllGlobalRKM().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+        }
+
+        instance.findAllGlobalSKM().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+        }
+
+        instance.findAllGlobalXKM().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
         }
 
         instance.endTxn()

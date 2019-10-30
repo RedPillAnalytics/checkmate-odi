@@ -1,10 +1,15 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.TaskAction
 
 @Slf4j
 class ImportTopologyDirectoryTask extends ImportDirectoryTask {
+
+    @Input
+    String category = 'topology'
 
     /**
      * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
@@ -14,7 +19,7 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
     @Internal
     List getImportFiles() {
 
-        def filePrefix = ['CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
+        def filePrefix = ['TECH','CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
 
         def result = new LinkedList()
 
@@ -23,5 +28,11 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
         }
 
         return result
+    }
+
+    @TaskAction
+    def taskAction() {
+        // Import the Topology Objects
+        importXmlFiles(importFiles)
     }
 }

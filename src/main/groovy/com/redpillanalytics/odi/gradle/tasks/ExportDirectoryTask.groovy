@@ -77,7 +77,7 @@ class ExportDirectoryTask extends ExportTask {
             // If the XML file does not exist in Source Base copy from Build to Source Base
             log.info("Object ${buildFile.name} created, copying to source base ...")
             ant.copy(file: buildFile.canonicalPath,
-                    tofile: "${sourceBase}/${buildFile.canonicalPath.minus(buildDir.canonicalPath)}",
+                    tofile: "${sourceBase}/${(buildFile.canonicalPath - buildDir.canonicalPath)}",
                     overwrite: true)
          }
       }

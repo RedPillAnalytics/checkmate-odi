@@ -20,11 +20,16 @@ class ExportWorkRepoTask extends ExportDirectoryTask {
       instance.connect()
 
       instance.beginTxn()
+
       exportService.exportWorkInFolder(
               exportDir.canonicalPath,
-              new EncodingOptions("1.0", "ISO8859_9", "ISO-8859-9"),
-              null, true
+               new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION,
+                                   EncodingOptions.DEFAULT_JAVA_CHARSET,
+                                   EncodingOptions.DEFAULT_XML_CHARSET),
+              'checkmate-odi12c+' as char[],
+              false
       )
+
       instance.endTxn()
    }
 }

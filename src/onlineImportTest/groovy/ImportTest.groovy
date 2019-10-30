@@ -158,7 +158,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectFile task with --source-file option"() {
       given:
       taskName = 'importProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=src/main/file/JUMP.xml', '-Si'])
+      result = executeSingleTask(taskName, ['--source-file=src/main/file/FILE_JUMP.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

@@ -21,32 +21,37 @@ class ImportTask extends InstanceTask {
    }
 
    @Internal
-   importObject(File file) {
+   importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
+
       try{
+
          importService.importObjectFromXml(
-                 ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+                 importMode,
                  file.canonicalPath,
                  true,
                  'checkmate-odi12c+' as char[],
                  false
          )
-      } catch(IllegalArgumentException e) {log.debug(e.toString())}
+
+      } catch(Exception e) {log.info(e.toString())}
 
    }
 
    @Internal
    smartImportObject(File file) {
+
       smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
+
       try {
-                  smartImportService.importFromXml(
-                 file.canonicalPath,
-                          null,
-                 'checkmate-odi12c+' as char[],
-                 false,
+
+            smartImportService.importFromXml(
+                    file.canonicalPath,
+                    null,
+                    'checkmate-odi12c+' as char[],
+                    false,
          )
 
-
-      } catch(OdiSmartImportException e) {log.debug(e.toString())}
+      } catch(Exception e) {log.info(e.toString())}
 
    }
 }

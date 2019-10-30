@@ -109,7 +109,7 @@ shadowJar {
    classifier = ''
    zip64 true
 }
-tasks.build.dependsOn tasks.shadowJar
+tasks.build.mustRunAfter tasks.shadowJar
 
 repositories {
    jcenter()

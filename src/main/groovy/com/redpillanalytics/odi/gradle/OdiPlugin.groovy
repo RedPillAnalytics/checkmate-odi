@@ -113,25 +113,6 @@ class OdiPlugin implements Plugin<Project> {
 
             if (project.extensions.odi.isDevelopment()) {
 
-               // Task that creates a project
-               project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
-
-                  group taskGroup
-                  projectCode defaultProjectCode
-                  projectName defaultProjectName
-                  instance odiInstance
-                  description = "Create project name '${defaultProjectName}' with project code '${defaultProjectCode}' in the ODI repositorty."
-               }
-
-               // Task that deletes a project
-               project.task(bg.getTaskName('deleteProject'), type: DeleteProjectTask) {
-
-                  group taskGroup
-                  description = "Delete project code '${defaultProjectCode}' from the ODI repositorty."
-                  projectCode defaultProjectCode
-                  instance odiInstance
-               }
-
                // Task that conect to the ODI Repository to Validate Parameters
                project.task(bg.getTaskName('getOdiConnection'), type: GetOdiConnectionTask) {
 
@@ -139,14 +120,6 @@ class OdiPlugin implements Plugin<Project> {
                   description = "Test connection to ODI repository to validate connection parameters"
                   instance odiInstance
                }
-
-               // Task that deletes a model
-//               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
-//
-//                  group taskGroup
-//                  description = "Delete one or more models from the ODI repository."
-//                  instance odiInstance
-//               }
 
                project.task(bg.getTaskName('importProjectFile'), type: ImportProjectFileTask) {
 
@@ -275,25 +248,31 @@ class OdiPlugin implements Plugin<Project> {
 //                  instance odiInstance
 //                  //sourceDir projectSource
 //               }
-//
-//               // Task that exports the Model Folders by Name in the Repository
-//               project.task(bg.getTaskName('importWorkRepo'), type: ImportWorkRepoTask) {
+
+               // Task that deletes a model
+//               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
 //
 //                  group taskGroup
-//                  description "Traditional import of all work items in the ODI repository."
+//                  description = "Delete one or more models from the ODI repository."
 //                  instance odiInstance
-//                  sourceDir odiSource
-//                  category 'model'
 //               }
 
-//               // Task that executes the export of all the Load Plans and Scenarios by Project Folder
-//               project.task(bg.getTaskName('exportLoadPlansAndScenarios'), type: ExportLoadPlansAndScenariosTask) {
+//               // Task that creates a project
+//               project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
 //
 //                  group taskGroup
-//                  description = "Executes a Export of all the Load Plans and Scenarios by Project Folder"
-//                  sourcePath sourceBase
 //                  projectCode defaultProjectCode
-//                  folder projectFolder
+//                  projectName defaultProjectName
+//                  instance odiInstance
+//                  description = "Create project name '${defaultProjectName}' with project code '${defaultProjectCode}' in the ODI repositorty."
+//               }
+//
+//               // Task that deletes a project
+//               project.task(bg.getTaskName('deleteProject'), type: DeleteProjectTask) {
+//
+//                  group taskGroup
+//                  description = "Delete project code '${defaultProjectCode}' from the ODI repositorty."
+//                  projectCode defaultProjectCode
 //                  instance odiInstance
 //               }
 

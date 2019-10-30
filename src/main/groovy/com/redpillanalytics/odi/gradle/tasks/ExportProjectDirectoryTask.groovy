@@ -2,9 +2,11 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiFolder
+import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -12,7 +14,7 @@ import org.gradle.api.tasks.options.Option
 class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
    @Internal
-   List objectMaster = ['variable', 'sequence', 'knowledge-module', 'user-function', 'reusable-mapping', 'mapping', 'procedure', 'package']
+   List objectMaster = ['knowledge-module', 'variable', 'sequence', 'user-function', 'reusable-mapping', 'mapping', 'procedure', 'package']
 
    /**
     * The ODI project code to export. Default: value of 'odi.projectName', or the name of the project subdirectory.
@@ -55,6 +57,12 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    @Internal
    String category = 'project'
 
+   @OutputDirectory
+   File getExportDir() {
+      return sourceDir ? project.file(sourceDir) :
+              ( objectList.size() == objectMaster.size() && !nameList ) ? buildDir : sourceBase
+   }
+
    @TaskAction
    def exportObjects() {
 
@@ -70,6 +78,12 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       Integer count = 0
 
+      // begin the transaction
+      instance.beginTxn()
+
+      // export the project
+      exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
+
       objectList.each { objectType ->
 
          log.info "Exporting ${objectType}s..."
@@ -80,24 +94,17 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
             "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
          }
 
-         // begin the transaction
-         instance.beginTxn()
+         if(['knowledge-module', 'variable', 'sequence', 'user-function'].contains(objectType)) {
 
-         // export the project
-         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
-
-         // export the project objects
-         if (['variable', 'sequence', 'knowledge-module', 'user-function'].contains(objectType)) {
             instance."$finder"(projectCode).each { object ->
                if (!nameList || nameList.contains(object.name)) {
                   count++
                   logger.debug "object name: ${object.name}"
-                  exportObject(object, "${exportDir.canonicalPath}/${objectType}", true)
-                  //smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", object.name)
+                  exportObject(object, "${exportDir.canonicalPath}/${objectType}")
                }
             }
-         }
-         else {
+         } else {
+
             // export the folder objects
             folders.each { OdiFolder folder ->
                // export the folder
@@ -107,20 +114,22 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   if (!nameList || nameList.contains(object.name)) {
                      count++
                      logger.debug "object name: ${object.name}"
-                     exportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", true)
-                     //smartExportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}", object.name)
+                     exportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}")
                   }
                }
             }
          }
+
       }
 
       instance.endTxn()
 
       if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
 
-      // execute the export stage process
-      exportStageDir()
+      if ( objectList.size() == objectMaster.size() && !nameList ) {
+         // execute the export stage process
+         exportStageDir()
+      }
 
    }
 }

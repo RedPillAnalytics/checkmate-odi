@@ -1,6 +1,7 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
@@ -10,9 +11,6 @@ import org.gradle.api.tasks.options.Option
 
 @Slf4j
 class ImportDirectoryTask extends ImportTask {
-
-   @Input
-   String category = 'odi'
 
    /**
     * The base directory to import content from. Default: 'src/main/project' for ODI projects, and 'src/main/model' for ODI models.
@@ -29,47 +27,37 @@ class ImportDirectoryTask extends ImportTask {
 
       log.debug "sourceBase: $sourceBase"
 
-      if (sourceDir) {
-         File dir = new File("${sourceBase}/${category}/${sourceDir}")
-         return dir.exists() ? dir : project.file(sourceDir).exists() ? project.file(sourceDir) : project.file(sourceBase)
-      } else {
+      if (!sourceDir) {
          return sourceBase
+      } else {
+         File dir = new File(sourceDir)
+         return dir.exists() ? project.file(sourceDir) : project.file(sourceBase)
       }
    }
 
    /**
-    * Gets the hierarchical collection of XML files, sorted using folder structure and alphanumeric logic.
-    *
-    * @return The List of export files.
+    * Smart Import the File List of Objects.
     */
    @Internal
-   List getImportFiles() {
-      def tree = project.fileTree(dir: importDir, include: '**/*.xml')
-      return tree.sort()
-   }
-
-   /**
-    * Smart Imports all objects returned by the {@link #getImportFiles} FileTree object.
-    */
-   @Internal
-   def smartImportXmlFiles() {
+   def smartImportXmlFiles(List<File> smartImportFiles) {
 
       //Make the Connection
       instance.connect()
       instance.beginTxn()
 
-      importFiles.each { file ->
+      smartImportFiles.each { file ->
          log.info "Importing file '$file.canonicalPath'..."
          smartImportObject(file)
       }
+
       instance.endTxn()
    }
 
    /**
-    * Imports all objects returned by the {@link #getImportFiles} FileTree object.
+    * Import the File List of Objects.
     */
    @Internal
-   def importXmlFiles() {
+   def importXmlFiles(List<File> importFiles, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
       //Make the Connection
       instance.connect()
@@ -77,14 +65,10 @@ class ImportDirectoryTask extends ImportTask {
 
       importFiles.each { file ->
          log.info "Importing file '$file.canonicalPath'..."
-         importObject(file)
+         importObject(file, importMode)
       }
+
       instance.endTxn()
    }
 
-   @TaskAction
-   def taskAction() {
-      //smartImportXmlFiles()
-      importXmlFiles()
-   }
 }

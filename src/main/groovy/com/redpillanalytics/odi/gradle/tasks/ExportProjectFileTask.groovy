@@ -25,18 +25,18 @@ class ExportProjectFileTask extends ExportTask {
    String category = 'file'
 
    /**
-    * The file to export content to. Default: 'src/main/file/<PROJECTCODE>.xml'.
+    * The file to export content to. Default: 'src/main/file/FILE_<PROJECTCODE>'.
     */
    @Input
    @Optional
    @Option(option = "source-file",
-           description = "The file to export content to. Default: 'src/main/file/<PROJECTCODE>.xml'."
+           description = "The file to export content to. Default: 'src/main/file/FILE_<PROJECTCODE>'."
    )
    String sourceFile
 
    @OutputFile
    File getExportFile() {
-      return sourceFile ? project.file(sourceFile) : project.file("${sourceBase}/${projectCode}.xml")
+      return sourceFile ? project.file(sourceFile) : project.file("${sourceBase}/${category}/${projectCode}")
    }
 
    @TaskAction
@@ -52,8 +52,8 @@ class ExportProjectFileTask extends ExportTask {
 
       instance.beginTxn()
 
-      projectList.each {
-         smartExportObject(it,exportFile.parent,exportFile.name)
+      projectList.each { project ->
+         smartExportObject(project, exportFile.parent,'FILE', exportFile.name)
       }
 
       instance.endTxn()
