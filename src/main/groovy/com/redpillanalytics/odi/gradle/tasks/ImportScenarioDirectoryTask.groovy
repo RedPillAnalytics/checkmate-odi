@@ -39,8 +39,13 @@ class ImportScenarioDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
+
+        //Make the Connection
+        instance.connect()
+
         // Import the Scenario Folders
         smartImportXmlFiles(importScenarioFolderFiles)
+
         // Import the Scenarios
         importXmlFiles(importScenarioFiles)
     }

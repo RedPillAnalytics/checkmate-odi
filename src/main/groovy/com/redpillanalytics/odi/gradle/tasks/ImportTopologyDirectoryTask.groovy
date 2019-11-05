@@ -29,6 +29,9 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
     @TaskAction
     def taskAction() {
 
+        //Make the Connection
+        instance.connect()
+
         def filePrefix = ['TECH','CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
 
         // Import the Topology Objects
