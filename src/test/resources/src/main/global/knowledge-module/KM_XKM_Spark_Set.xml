@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
 <Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="J/OWLOS4JavQ7cq0HVp/eovQ5gCo+M8sVKv/0XFi4f0=" keyVect="FbYEvCG7iLQiaaT+YKTBDg==" exportKeySalt="f09a03f4-5dca-4748-b985-cd700f817f0e" containsCipherText="false"/>
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="BnkxpzG6Xy1V7mTSM7qx1EZHaTqLwCMXlrHYr5tbEDY=" keyVect="FJuo8uoIZ/RqH5EqWXbxYA==" exportKeySalt="9d0e8049-5da6-453b-af0a-227852c6f1e2" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTrt#157]]></Include>
 </SmartExportList>
@@ -83,7 +83,7 @@
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[73]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[79]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
@@ -102,7 +102,7 @@
 	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-16 16:28:12.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 17:07:59.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
@@ -122,10 +122,10 @@
 	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpUserExitGroup">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[5de29f2d-4b1c-4d40-bbd6-5bf6375c3851]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[15548dbe-247b-4a12-8700-0ae34b09a693]]></Field>
 	<Field name="GroupName" type="java.lang.String"><![CDATA[DataFrames]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[157]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[2794]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3700]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
@@ -137,7 +137,7 @@
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[989]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[385]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[2794]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3700]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
 	<Field name="ShortValue" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="Subtypes" type="java.lang.String">null</Field>
@@ -377,8 +377,8 @@ SLIDING_INTERVAL should be shorter than spark.streaming.timeout, otherwise the s
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.2794]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[5de29f2d-4b1c-4d40-bbd6-5bf6375c3851]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.3700]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[15548dbe-247b-4a12-8700-0ae34b09a693]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Spark Set.DataFrames]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_USEREXITGROUP]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[13.10]]></Field>
