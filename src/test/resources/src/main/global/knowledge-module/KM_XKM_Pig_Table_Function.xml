@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="wiUHtkLUECU0sDwz/t2xeatzKThAbAnJl8AumdzweMI=" keyVect="Rzy7ESuqKggzdOsIJPR2JA==" exportKeySalt="3a870951-1040-470c-8e69-f194a12cfa2a" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="06s9MAY9dv93izrr9hHxRJx7fRRhsbu4zMm95FHXe80=" keyVect="KfkwfK7BPU8HfGcjYggFww==" exportKeySalt="ca3ddfe9-fe91-41f9-8071-f52163f0ea48" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#128]]></Include>
+</SmartExportList>
 <Object class="com.sunopsis.dwg.dbobj.SnpTrt">
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[TABLEFUNCTION]]></Field>

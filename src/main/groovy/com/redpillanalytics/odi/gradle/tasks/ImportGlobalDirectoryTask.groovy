@@ -32,8 +32,22 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
         return result
     }
 
+    @Internal
+    List getImportKMFiles() {
+
+        def result = new LinkedList()
+
+        result.addAll(project.fileTree(dir: importDir, include: "**/KM_*.xml").toList())
+
+        return result
+    }
+
     @TaskAction
     def taskAction() {
+        // Import the Global KM
+        smartImportXmlFiles(importKMFiles)
+
+        // Import the Global Objects
         importXmlFiles(importFiles)
     }
 

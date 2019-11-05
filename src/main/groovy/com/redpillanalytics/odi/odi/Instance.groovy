@@ -144,9 +144,13 @@ class Instance {
 
    def endTxn(Boolean commit = true) {
 
-      if (commit) {
-         odi.getTransactionManager().commit(this.transaction)
-      }
+      try {
+
+         if (commit) {
+            odi.getTransactionManager().commit(this.transaction)
+         }
+
+      } catch(Exception e) {log.info(e.toString())}
 
       odi.close()
    }

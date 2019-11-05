@@ -57,7 +57,7 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       importXmlFiles(importProjectFiles, importService.IMPORT_MODE_SYNONYM_INSERT_UPDATE)
 
       // Import the Project KM
-      importXmlFiles(importKMFiles, importService.IMPORT_MODE_DUPLICATION)
+      smartImportXmlFiles(importKMFiles)
 
       // Import the Project Objects
       importXmlFiles(importFiles, importService.IMPORT_MODE_SYNONYM_INSERT)
