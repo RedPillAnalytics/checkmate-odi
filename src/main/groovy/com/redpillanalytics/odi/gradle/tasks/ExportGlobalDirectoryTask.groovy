@@ -40,7 +40,7 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         }
 
         instance.findAllGlobalCKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalIKM().each {
@@ -48,23 +48,23 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
         }
 
         instance.findAllGlobalJKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalLKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalRKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalSKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.findAllGlobalXKM().each {
-            exportObject(it, "${exportDir.canonicalPath}/knowledge-module")
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
 
         instance.endTxn()
