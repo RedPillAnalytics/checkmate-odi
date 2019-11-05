@@ -22,22 +22,36 @@ class ExportTask extends InstanceTask {
    }
 
    @Internal
-   def exportObject(IExportable object, String path, Boolean overwrite = true, Boolean recursive = true) {
+   def exportObject(IExportable object, String path, Boolean parents = false, Boolean recursive = true, Boolean overwrite = true) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
 
       try {
 
-         result = exportService.exportToXml(
-                 object,
-                 path,
-                 overwrite,
-                 recursive,
-                 encodingOptions,
-                 'checkmate-odi12c+' as char[],
-                 false
-         )
+         if(!parents) {
+
+            result = exportService.exportToXml(
+                    object,
+                    path,
+                    overwrite,
+                    recursive,
+                    encodingOptions,
+                    'checkmate-odi12c+' as char[],
+                    false)
+
+         } else {
+
+            result = exportService.exportToXmlWithParents(
+                    object,
+                    path,
+                    overwrite,
+                    recursive,
+                    encodingOptions,
+                    'checkmate-odi12c+' as char[],
+                    false)
+
+         }
 
       } catch(Exception e) {log.info("Error exporting object: ${object.name} error message: ${e.toString()}")}
 
@@ -67,6 +81,25 @@ class ExportTask extends InstanceTask {
                  exportWithoutCipherData)
 
       } catch(Exception e) {log.info("Error exporting object: ${object.name} error message: ${e.toString()}")}
+
+      return result
+   }
+
+   @Internal
+   def exportTopology(String folderPath) {
+
+      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
+      def result
+
+      try {
+
+         result = exportService.exportTopologyInFolder(
+                 folderPath,
+                 encodingOptions,
+                 'checkmate-odi12c+' as char[],
+                 false)
+
+      } catch(Exception e) {log.info("Error exporting: Topology error message: ${e.toString()}")}
 
       return result
    }
