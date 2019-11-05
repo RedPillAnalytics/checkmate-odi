@@ -28,6 +28,11 @@ class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
+
+        //Make the Connection
+        instance.connect()
+
+        // Import the Load Plans
         importXmlFiles(importFiles)
     }
 }

@@ -39,6 +39,9 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
     @TaskAction
     def taskAction() {
 
+        //Make the Connection
+        instance.connect()
+
         def filePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
 
         // Import the Global KM

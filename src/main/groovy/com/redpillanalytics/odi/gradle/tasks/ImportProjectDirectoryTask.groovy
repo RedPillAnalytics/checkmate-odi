@@ -59,6 +59,9 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
    @TaskAction
    def taskAction() {
 
+      //Make the Connection
+      instance.connect()
+
       def projectFilePrefix = ['VAR', 'UFN', 'SEQ']
 
       def folderFilePrefix = ['TRT','REUMAP','MAP','PACK']

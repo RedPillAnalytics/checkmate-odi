@@ -38,6 +38,10 @@ class ImportModelDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
+
+        //Make the Connection
+        instance.connect()
+
         // Import the Model Folders
         smartImportXmlFiles(importModelFolderFiles)
 
