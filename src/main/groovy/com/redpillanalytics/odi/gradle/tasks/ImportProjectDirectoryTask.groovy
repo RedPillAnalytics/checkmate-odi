@@ -85,6 +85,9 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
          importXmlFiles(getImportFiles(it), importService.IMPORT_MODE_SYNONYM_INSERT)
       }
 
+      // Close the Connection
+      instance.close()
+
    }
 
 }

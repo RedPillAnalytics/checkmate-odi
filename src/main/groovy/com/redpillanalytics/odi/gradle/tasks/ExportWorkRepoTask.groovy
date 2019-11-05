@@ -31,5 +31,7 @@ class ExportWorkRepoTask extends ExportDirectoryTask {
       )
 
       instance.endTxn()
+
+      instance.close()
    }
 }

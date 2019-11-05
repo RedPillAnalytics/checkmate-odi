@@ -55,6 +55,10 @@ class ImportProjectFileTask extends ImportTask {
       smartImportObject(importFile)
 
       instance.endTxn()
+
+      // Close the Connection
+      instance.close()
+
    }
 }
 

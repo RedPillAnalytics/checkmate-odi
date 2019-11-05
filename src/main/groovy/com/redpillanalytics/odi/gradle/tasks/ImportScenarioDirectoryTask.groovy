@@ -48,6 +48,10 @@ class ImportScenarioDirectoryTask extends ImportDirectoryTask {
 
         // Import the Scenarios
         importXmlFiles(importScenarioFiles)
+
+        // Close the Connection
+        instance.close()
+
     }
 
 }

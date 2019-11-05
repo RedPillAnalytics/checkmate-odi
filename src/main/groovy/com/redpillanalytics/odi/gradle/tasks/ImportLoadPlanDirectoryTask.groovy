@@ -34,5 +34,8 @@ class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
 
         // Import the Load Plans
         importXmlFiles(importFiles)
+
+        // Close the Connection
+        instance.close()
     }
 }

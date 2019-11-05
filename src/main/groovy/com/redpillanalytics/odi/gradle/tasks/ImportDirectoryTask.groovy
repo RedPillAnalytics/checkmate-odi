@@ -65,6 +65,7 @@ class ImportDirectoryTask extends ImportTask {
       }
 
       instance.endTxn()
+
    }
 
 }

@@ -59,6 +59,8 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
 
         instance.endTxn()
 
+        instance.close()
+
         // execute the export stage process
         exportStageDir()
 

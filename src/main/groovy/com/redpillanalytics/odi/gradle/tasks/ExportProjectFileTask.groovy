@@ -57,5 +57,8 @@ class ExportProjectFileTask extends ExportTask {
       }
 
       instance.endTxn()
+
+      instance.close()
+
    }
 }

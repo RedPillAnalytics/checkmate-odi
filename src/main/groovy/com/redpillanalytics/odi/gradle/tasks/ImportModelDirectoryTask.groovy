@@ -47,5 +47,9 @@ class ImportModelDirectoryTask extends ImportDirectoryTask {
 
         // Import the Models
         importXmlFiles(importModelFiles)
+
+        // Close the Connection
+        instance.close()
+
     }
 }
