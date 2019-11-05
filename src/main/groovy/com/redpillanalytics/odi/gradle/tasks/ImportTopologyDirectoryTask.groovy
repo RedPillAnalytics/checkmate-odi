@@ -17,22 +17,26 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
      * @return The List of export files.
      */
     @Internal
-    List getImportFiles() {
-
-        def filePrefix = ['TECH','CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
+    List getImportFiles(String filePrefix) {
 
         def result = new LinkedList()
 
-        filePrefix.each {
-            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-        }
+        result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
 
         return result
     }
 
     @TaskAction
     def taskAction() {
+
+        def filePrefix = ['TECH','CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
+
         // Import the Topology Objects
-        importXmlFiles(importFiles)
+        filePrefix.each {
+            // Get the import files by prefix
+            importXmlFiles(getImportFiles(it))
+
+        }
+
     }
 }

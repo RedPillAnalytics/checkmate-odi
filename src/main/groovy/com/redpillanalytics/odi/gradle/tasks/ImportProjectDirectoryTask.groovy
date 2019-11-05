@@ -17,15 +17,11 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
     * @return The List of export files.
     */
    @Internal
-   List getImportFiles() {
-
-      def filePrefix = ['VAR', 'UFN', 'SEQ','FOLD','TRT','REUMAP','MAP','PACK']
+   List getImportFiles(String filePrefix) {
 
       def result = new LinkedList()
 
-      filePrefix.each {
-         result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-      }
+      result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
 
       return result
    }
@@ -36,6 +32,16 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       def result = new LinkedList()
 
       result.addAll(project.fileTree(dir: importDir, include: "**/PROJ_*.xml").toList())
+
+      return result
+   }
+
+   @Internal
+   List getImportFolderFiles() {
+
+      def result = new LinkedList()
+
+      result.addAll(project.fileTree(dir: importDir, include: "**/FOLD_*.xml").toList())
 
       return result
    }
@@ -53,6 +59,10 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
    @TaskAction
    def taskAction() {
 
+      def projectFilePrefix = ['VAR', 'UFN', 'SEQ']
+
+      def folderFilePrefix = ['TRT','REUMAP','MAP','PACK']
+
       // Import the Project Object
       importXmlFiles(importProjectFiles, importService.IMPORT_MODE_SYNONYM_INSERT_UPDATE)
 
@@ -60,7 +70,18 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       smartImportXmlFiles(importKMFiles)
 
       // Import the Project Objects
-      importXmlFiles(importFiles, importService.IMPORT_MODE_SYNONYM_INSERT)
+      projectFilePrefix.each {
+         importXmlFiles(getImportFiles(it))
+      }
+
+      // Import the Project Folders
+      smartImportXmlFiles(importFolderFiles)
+
+      // Import the Project Folder Objects
+      folderFilePrefix.each {
+         importXmlFiles(getImportFiles(it), importService.IMPORT_MODE_SYNONYM_INSERT)
+      }
+
    }
 
 }

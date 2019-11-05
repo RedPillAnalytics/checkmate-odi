@@ -17,22 +17,32 @@ class ImportScenarioDirectoryTask extends ImportDirectoryTask {
      * @return The List of export files.
      */
     @Internal
-    List getImportFiles() {
-
-        def filePrefix = ['SFOL', 'SCEN']
+    List getImportScenarioFolderFiles() {
 
         def result = new LinkedList()
 
-        filePrefix.each {
-            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-        }
+        result.addAll(project.fileTree(dir: importDir, include: "**/SFOL*.xml").toList())
 
         return result
     }
 
+    @Internal
+    List getImportScenarioFiles() {
+
+        def result = new LinkedList()
+
+        result.addAll(project.fileTree(dir: importDir, include: "**/SCEN*.xml").toList())
+
+        return result
+    }
+
+
     @TaskAction
     def taskAction() {
-        importXmlFiles(importFiles)
+        // Import the Scenario Folders
+        smartImportXmlFiles(importScenarioFolderFiles)
+        // Import the Scenarios
+        importXmlFiles(importScenarioFiles)
     }
 
 }

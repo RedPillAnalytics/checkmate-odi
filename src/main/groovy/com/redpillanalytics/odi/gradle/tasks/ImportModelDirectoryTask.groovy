@@ -38,8 +38,10 @@ class ImportModelDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
+        // Import the Model Folders
         smartImportXmlFiles(importModelFolderFiles)
 
+        // Import the Models
         importXmlFiles(importModelFiles)
     }
 }

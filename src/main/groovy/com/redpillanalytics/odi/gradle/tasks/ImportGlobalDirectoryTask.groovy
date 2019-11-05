@@ -17,17 +17,11 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
      * @return The List of export files.
      */
     @Internal
-    List getImportFiles() {
-
-        //def filePrefix = ['KM', 'REUMAP', 'SEQ', 'UFN', 'VAR']
-
-        def filePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
+    List getImportFiles(String filePrefix) {
 
         def result = new LinkedList()
 
-        filePrefix.each {
-            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-        }
+        result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
 
         return result
     }
@@ -44,11 +38,20 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
 
     @TaskAction
     def taskAction() {
+
+        def filePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
+
         // Import the Global KM
         smartImportXmlFiles(importKMFiles)
 
         // Import the Global Objects
-        importXmlFiles(importFiles)
+        filePrefix.each {
+
+            // Import the files by prefix
+            importXmlFiles(getImportFiles(it))
+
+        }
+
     }
 
 }
