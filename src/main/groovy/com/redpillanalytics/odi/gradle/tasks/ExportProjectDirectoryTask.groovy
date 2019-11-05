@@ -82,7 +82,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
 
       // export the project
-      exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
+      exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
 
       objectList.each { objectType ->
 
