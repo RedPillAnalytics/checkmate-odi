@@ -55,6 +55,9 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
 
         }
 
+        // Close the Connection
+        instance.close()
+
     }
 
 }

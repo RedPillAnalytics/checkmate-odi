@@ -41,5 +41,8 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
 
         }
 
+        // Close the Connection
+        instance.close()
+
     }
 }

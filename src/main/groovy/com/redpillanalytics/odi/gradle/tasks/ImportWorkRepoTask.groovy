@@ -23,5 +23,9 @@ class ImportWorkRepoTask extends ImportDirectoryTask {
       instance.connect()
 
       importXmlFiles()
+
+      // Close the Connection
+      instance.close()
+
    }
 }

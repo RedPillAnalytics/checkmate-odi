@@ -120,7 +120,7 @@ class Instance {
    }
 
    def connect() {
-
+      // Create the connection
       this.masterDb = getMasterRepo(url, driver, masterRepo, masterPassword)
       this.workDb = getWorkRepo(workRepo)
 
@@ -136,7 +136,7 @@ class Instance {
    }
 
    def beginTxn() {
-
+      // Create Transaction
       this.transaction = odi.getTransactionManager()
               .getTransaction(new DefaultTransactionDefinition())
 
@@ -145,18 +145,25 @@ class Instance {
    def endTxn(Boolean commit = true) {
 
       try {
-
+         // Commit the Transaction
          if (commit) {
             odi.getTransactionManager().commit(this.transaction)
          }
 
       } catch(Exception e) {log.info(e.toString())}
 
+   }
+
+   def close() {
+      // Close the connection
       odi.close()
+
    }
 
    def flush() {
+
       odi.getTransactionalEntityManager().flush()
+
    }
 
    // IFinder Objects
