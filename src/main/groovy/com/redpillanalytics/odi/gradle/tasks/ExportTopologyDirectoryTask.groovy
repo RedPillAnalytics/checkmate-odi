@@ -52,6 +52,8 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
 
         instance.connect()
 
+        instance.beginTxn()
+
         // export the topology in export directory
         exportTopology(exportDir.canonicalPath)
 
