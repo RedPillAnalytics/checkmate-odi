@@ -32,7 +32,7 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
         //Make the Connection
         instance.connect()
 
-        def filePrefix = ['TECH','CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
+        def filePrefix = ['TECH', 'DT', 'CONVDT' , 'ACT' , 'CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
 
         // Import the Topology Objects
         filePrefix.each {
