@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="CnWWP6D5j9ek7LWOQ8TmKfnrEImf08khQjcQDAbmIdA=" keyVect="MF+bRJgkTAXdumI0UAeukQ==" exportKeySalt="681c352c-8ec9-4669-aa97-acd9f6a4930b" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="sMqINynWYHoARW1NstYyIKd5caz0NVdxvl97ZQeK+JM=" keyVect="WJtEBcszfWXW4EIr8//WSQ==" exportKeySalt="51623007-6636-4c27-ba39-0eab2cf09986" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#84]]></Include>
+</SmartExportList>
 <Object class="com.sunopsis.dwg.dbobj.SnpTrt">
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
@@ -155,7 +158,7 @@
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[APPEND_STAGED_DATA]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[175]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[207]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
@@ -174,7 +177,7 @@
 	<Field name="KmSrcTechno" type="java.lang.String"><![CDATA[FILE]]></Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[ORACLE_OBJECT_STORAGE]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:44.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:42.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[P]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
@@ -313,7 +316,7 @@ Set this property to True if you want temporary objects to be automatically clea
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:22.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:22.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -400,7 +403,7 @@ OdiObjectStorageUpload "-TRG_LOGICAL_SCHEMA=$[targetSchema]" "-SRC_LOGICAL_SCHEM
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:22.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:22.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>

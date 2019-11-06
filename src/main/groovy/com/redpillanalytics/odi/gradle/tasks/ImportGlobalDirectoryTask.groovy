@@ -17,24 +17,47 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
      * @return The List of export files.
      */
     @Internal
-    List getImportFiles() {
-
-        //def filePrefix = ['KM', 'REUMAP', 'SEQ', 'UFN', 'VAR']
-
-        def filePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
+    List getImportFiles(String filePrefix) {
 
         def result = new LinkedList()
 
-        filePrefix.each {
-            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-        }
+        result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
+
+        return result
+    }
+
+    @Internal
+    List getImportKMFiles() {
+
+        def result = new LinkedList()
+
+        result.addAll(project.fileTree(dir: importDir, include: "**/KM_*.xml").toList())
 
         return result
     }
 
     @TaskAction
     def taskAction() {
-        importXmlFiles(importFiles)
+
+        //Make the Connection
+        instance.connect()
+
+        def filePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
+
+        // Import the Global KM
+        smartImportXmlFiles(importKMFiles)
+
+        // Import the Global Objects
+        filePrefix.each {
+
+            // Import the files by prefix
+            importXmlFiles(getImportFiles(it))
+
+        }
+
+        // Close the Connection
+        instance.close()
+
     }
 
 }

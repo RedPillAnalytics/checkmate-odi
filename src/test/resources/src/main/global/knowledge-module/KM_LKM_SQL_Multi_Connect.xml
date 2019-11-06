@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="Y4WkLDEOwfekfZE1rEGci754bwNXn9vk93kZPwC83+I=" keyVect="fp3wOPuCckpCMzst86fDqw==" exportKeySalt="11c0e836-425e-4904-a646-9fa006bbabf8" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="tsaUXGvRqPxrHWOJaDGMThxtVpOdcGkZhw7aPpsnvfk=" keyVect="m9Pk57CiD2B//eFXc6EXdw==" exportKeySalt="1ef75740-2909-4429-8609-087acdfe5c2c" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#42]]></Include>
+</SmartExportList>
 <Object class="com.sunopsis.dwg.dbobj.SnpTrt">
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
@@ -24,7 +27,7 @@
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SQL_MULTI_CONNECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[83]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[91]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
@@ -43,7 +46,7 @@
 	<Field name="KmSrcTechno" type="java.lang.String"><![CDATA[GENERIC_SQL]]></Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[GENERIC_SQL]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-16 16:28:07.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:35:03.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[T]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>

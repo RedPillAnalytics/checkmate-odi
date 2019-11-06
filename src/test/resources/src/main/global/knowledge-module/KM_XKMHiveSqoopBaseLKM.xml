@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="ynKOXAbWHfFr8F7e6+TbIXEyz7M1N0PyGwUkotOrb/Y=" keyVect="+oPamgxUtIDQW2IdI+BUmg==" exportKeySalt="819ec90b-d9ed-4c6c-87cf-a1266a4f9eca" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="K9AjqINOh9zTxnAmdjVckHTFUAZZOoFS+wdVe4XiTdA=" keyVect="+HnGQM3PLv/LkzcRC7y/iQ==" exportKeySalt="416827c3-913f-4165-9b1c-8a8b591edab6" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#67]]></Include>
+</SmartExportList>
 <Object class="com.sunopsis.dwg.dbobj.SnpTrt">
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
@@ -259,7 +262,7 @@
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[CONTROL_APPEND]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[166]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[198]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[56]]></Field>
@@ -278,7 +281,7 @@
 	<Field name="KmSrcTechno" type="java.lang.String"><![CDATA[GENERIC_SQL]]></Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[GENERIC_SQL]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:44.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:42.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
@@ -298,10 +301,10 @@
 	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpUserExitGroup">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[febdc516-733a-463a-8c42-ca9d5f3f5735]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[bb105ed2-94c7-4ad1-8a1f-2ef258ecaa1b]]></Field>
 	<Field name="GroupName" type="java.lang.String"><![CDATA[Advanced]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3266]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3786]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
@@ -313,7 +316,7 @@
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[241]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[62]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3266]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3786]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
 	<Field name="Subtypes" type="java.lang.String">null</Field>
@@ -347,7 +350,7 @@
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[243]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[63]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3266]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3786]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[5]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
 	<Field name="Subtypes" type="java.lang.String">null</Field>
@@ -374,7 +377,7 @@
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[245]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[64]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3266]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3786]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[6]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
 	<Field name="Subtypes" type="java.lang.String">null</Field>
@@ -400,28 +403,13 @@
  <Field name="GlobalId" type="java.lang.String"><![CDATA[f5a07b3d-e76f-425e-a851-59ebaaaf5853]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[3502090d-fffe-4b5c-b7f5-631bab8c2e45]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
 		<Field name="GlobalId" type="java.lang.String"><![CDATA[16951dcd-1dfd-4caf-a5d2-ff6f22333592]]></Field>
 	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[fddb4d25-3f36-4c6b-b247-bf5e29c1883d]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[201]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[5c1ca67e-e1cb-44c9-9057-41596362aad7]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[184]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[2c8d3041-0419-4b46-85d5-c878fad6d0f2]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[181]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[f5ecfccb-4ebd-4ac0-8e01-e276097197d3]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[37]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
@@ -430,18 +418,23 @@
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[2c8d3041-0419-4b46-85d5-c878fad6d0f2]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[181]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[5c1ca67e-e1cb-44c9-9057-41596362aad7]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[184]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
 		<Field name="GlobalId" type="java.lang.String"><![CDATA[aada474a-7251-4dd8-a155-8a244147292a]]></Field>
 	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[192]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[3502090d-fffe-4b5c-b7f5-631bab8c2e45]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[ada16d89-0ff7-4734-aa36-54cf77efc0c3]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[30]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[e6798efe-aa03-4b03-aa41-0ed147615c41]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[193]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
@@ -450,8 +443,18 @@
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[e6798efe-aa03-4b03-aa41-0ed147615c41]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[193]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[fddb4d25-3f36-4c6b-b247-bf5e29c1883d]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[201]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[ada16d89-0ff7-4734-aa36-54cf77efc0c3]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[30]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[f5ecfccb-4ebd-4ac0-8e01-e276097197d3]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[37]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[67]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
@@ -609,7 +612,7 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:20.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:21.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -682,7 +685,7 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:20.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:21.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -755,7 +758,7 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:20.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:21.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -828,7 +831,7 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:20.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:21.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -901,7 +904,7 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[2]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:20.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:21.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -974,7 +977,7 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:20.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:21.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -992,7 +995,7 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
  <Field name="GlobalId" type="java.lang.String"><![CDATA[ddc3bc5a-7fc4-44f6-98ca-b4e67c02b490]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[8535c903-73c4-44af-a54c-5a6139aa8e9e]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[3b7b6b58-f4e2-4ec7-8b9a-2fbe7fd64598]]></Field>
 	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[144]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[34]]></Field>
@@ -1027,8 +1030,8 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.3266]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[febdc516-733a-463a-8c42-ca9d5f3f5735]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.3786]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bb105ed2-94c7-4ad1-8a1f-2ef258ecaa1b]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[HiveSqoopBaseLKM.Advanced]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_USEREXITGROUP]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[16.8]]></Field>
@@ -1055,39 +1058,18 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.9]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f3ce-2d00-11e6-9458-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[JoinTable]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.1]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46d13c-2d00-11e6-93ac-00163e1ffd72]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SqlQuery]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[8]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.201]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f0d6-2d00-11e6-9444-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PrepareHiveSession]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.184]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d6adac9f-1454-408b-b609-0d4682643358]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[DropTable]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.181]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46ee06-2d00-11e6-9434-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[CreateTable]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[11]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.37]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46d8e4-2d00-11e6-93c8-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[TableFunctionReference]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.10]]></Field>
@@ -1097,6 +1079,20 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[5]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.181]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46ee06-2d00-11e6-9434-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[CreateTable]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[11]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.184]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d6adac9f-1454-408b-b609-0d4682643358]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[DropTable]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.192]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46efa0-2d00-11e6-943c-00163e1ffd72]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[CreateTempIndexStage]]></Field>
@@ -1104,16 +1100,9 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[20]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.9]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f3ce-2d00-11e6-9458-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[JoinTable]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.30]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[c4633cfe-e55c-4fc2-8556-c2a8de93b01c]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SourceMapAttribute]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.193]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46efc8-2d00-11e6-943d-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[DropTempIndexStage]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
 </Object>
@@ -1125,11 +1114,25 @@ Leave blank to use system's default temp dir (<?=System.getProperty("java.io.tmp
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[24]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.193]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46efc8-2d00-11e6-943d-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[DropTempIndexStage]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.201]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f0d6-2d00-11e6-9444-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PrepareHiveSession]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.30]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[c4633cfe-e55c-4fc2-8556-c2a8de93b01c]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SourceMapAttribute]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.37]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46d8e4-2d00-11e6-93c8-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[TableFunctionReference]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.247]]></Field>

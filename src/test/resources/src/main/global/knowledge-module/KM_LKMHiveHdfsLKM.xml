@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="qdhzQtHr/o6YCbfOf3/d1us9C88Xx2dFhVVTSLvYSfY=" keyVect="mpB+saLJGo/ukrG8+zypDQ==" exportKeySalt="1a409ed1-2f03-43e8-a5e0-d92ad210ba0b" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="gsBANF0f6Mk5dIr8OtNdmi0tbfwnCo/x4VfLyw5VKZc=" keyVect="MB6K5pPbSLE82uxR3FB3PA==" exportKeySalt="1498ea05-8ce9-499b-ba56-3d8f04b25a43" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#57]]></Include>
+</SmartExportList>
 <Object class="com.sunopsis.dwg.dbobj.SnpTrt">
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
@@ -77,7 +80,7 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[APPEND_STAGED_DATA]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[176]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[208]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[56]]></Field>
@@ -96,7 +99,7 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 	<Field name="KmSrcTechno" type="java.lang.String"><![CDATA[GENERIC_SQL]]></Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[GENERIC_SQL]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:44.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:41.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[P]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
@@ -130,11 +133,6 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
 		<Field name="GlobalId" type="java.lang.String"><![CDATA[e4028956-12fc-4406-a3a4-41d9048b0bce]]></Field>
 	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[201]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[57]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[62fe4650-b634-43e3-a3e1-9bcfb622da0f]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[57]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
@@ -175,6 +173,11 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
 		<Field name="GlobalId" type="java.lang.String"><![CDATA[699ddbb8-1e86-4946-a576-c3e7c72beb86]]></Field>
 	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[193]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[57]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[62fe4650-b634-43e3-a3e1-9bcfb622da0f]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[57]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
@@ -325,7 +328,7 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:13.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:15.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -398,7 +401,7 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:13.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:15.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -471,7 +474,7 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:13.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:15.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -544,7 +547,7 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:13.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:15.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -617,7 +620,7 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:13.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:15.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -690,7 +693,7 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-28 17:14:13.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:15.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[L]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -741,13 +744,6 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PrepareHiveSession]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.9]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f3ce-2d00-11e6-9458-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[JoinTable]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.37]]></Field>
@@ -804,6 +800,13 @@ If USE_STAGE_TABLE=true, the source DataStore must have as many columns as the S
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[DropTempIndexStage]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.9]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f3ce-2d00-11e6-9458-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[JoinTable]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.172]]></Field>

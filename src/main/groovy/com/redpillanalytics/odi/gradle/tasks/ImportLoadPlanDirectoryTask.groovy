@@ -19,19 +19,23 @@ class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
     @Internal
     List getImportFiles() {
 
-        def filePrefix = ['LP']
-
         def result = new LinkedList()
 
-        filePrefix.each {
-            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-        }
+        result.addAll(project.fileTree(dir: importDir, include: "**/LP_*.xml").toList())
 
         return result
     }
 
     @TaskAction
     def taskAction() {
+
+        //Make the Connection
+        instance.connect()
+
+        // Import the Load Plans
         importXmlFiles(importFiles)
+
+        // Close the Connection
+        instance.close()
     }
 }

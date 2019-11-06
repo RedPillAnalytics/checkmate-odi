@@ -41,8 +41,6 @@ class ImportDirectoryTask extends ImportTask {
    @Internal
    def smartImportXmlFiles(List<File> smartImportFiles) {
 
-      //Make the Connection
-      instance.connect()
       instance.beginTxn()
 
       smartImportFiles.each { file ->
@@ -59,8 +57,6 @@ class ImportDirectoryTask extends ImportTask {
    @Internal
    def importXmlFiles(List<File> importFiles, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
-      //Make the Connection
-      instance.connect()
       instance.beginTxn()
 
       importFiles.each { file ->
@@ -69,6 +65,7 @@ class ImportDirectoryTask extends ImportTask {
       }
 
       instance.endTxn()
+
    }
 
 }

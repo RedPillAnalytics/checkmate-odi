@@ -19,6 +19,13 @@ class ImportWorkRepoTask extends ImportDirectoryTask {
     */
    @TaskAction
    def taskAction() {
+      //Make the Connection
+      instance.connect()
+
       importXmlFiles()
+
+      // Close the Connection
+      instance.close()
+
    }
 }

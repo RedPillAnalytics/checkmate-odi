@@ -17,21 +17,39 @@ class ImportModelDirectoryTask extends ImportDirectoryTask {
      * @return The List of export files.
      */
     @Internal
-    List getImportFiles() {
-
-        def filePrefix = ['MFOL', 'MOD']
+    List getImportModelFolderFiles() {
 
         def result = new LinkedList()
 
-        filePrefix.each {
-            result.addAll(project.fileTree(dir: importDir, include: "**/${it}_*.xml").toList())
-        }
+        result.addAll(project.fileTree(dir: importDir, include: "**/MFOL_*.xml").toList())
+
+        return result
+    }
+
+    @Internal
+    List getImportModelFiles() {
+
+        def result = new LinkedList()
+
+        result.addAll(project.fileTree(dir: importDir, include: "**/MOD_*.xml").toList())
 
         return result
     }
 
     @TaskAction
     def taskAction() {
-        importXmlFiles(importFiles)
+
+        //Make the Connection
+        instance.connect()
+
+        // Import the Model Folders
+        smartImportXmlFiles(importModelFolderFiles)
+
+        // Import the Models
+        importXmlFiles(importModelFiles)
+
+        // Close the Connection
+        instance.close()
+
     }
 }

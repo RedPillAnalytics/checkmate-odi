@@ -82,7 +82,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
 
       // export the project
-      exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", true,false)
+      exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
 
       objectList.each { objectType ->
 
@@ -100,9 +100,14 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                if (!nameList || nameList.contains(object.name)) {
                   count++
                   logger.debug "object name: ${object.name}"
-                  exportObject(object, "${exportDir.canonicalPath}/${objectType}")
+                  if(!['knowledge-module'].contains(objectType)) {
+                     exportObject(object, "${exportDir.canonicalPath}/${objectType}")
+                  } else {
+                     smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", "KM", object.name)
+                  }
                }
             }
+
          } else {
 
             // export the folder objects
@@ -123,6 +128,8 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       }
 
       instance.endTxn()
+
+      instance.close()
 
       if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
 

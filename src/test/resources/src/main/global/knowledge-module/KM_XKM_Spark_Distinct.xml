@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="zwlJKBJ4EDoLItu9qYHQquH/2+Q3JbTTullRbqjIl+s=" keyVect="n3g+7SWT9Y5K4f6Fq+Y6ZQ==" exportKeySalt="f9ffd664-d205-498a-ba8a-8d2e6227c166" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="V5UrMb49rI5Q2qWJPsaz9YJwQWsL1m8MTKBnQ6Rr9Js=" keyVect="fCo/b09FE9mnW4TvTSK7Gw==" exportKeySalt="d0066a0c-51dc-4dd3-8f4e-43b5256fb998" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpTrt#149]]></Include>
+</SmartExportList>
 <Object class="com.sunopsis.dwg.dbobj.SnpTrt">
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[DISTINCT]]></Field>
@@ -78,7 +81,7 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[73]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[81]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
@@ -97,7 +100,7 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-10-16 16:28:12.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:36:06.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
@@ -117,10 +120,10 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpUserExitGroup">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[d1463979-dc0e-483f-9fcb-5800193747da]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[5209a306-9260-48d8-8b87-ed852dad6146]]></Field>
 	<Field name="GroupName" type="java.lang.String"><![CDATA[DataFrames]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[149]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[2786]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3762]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpUserExit">
@@ -132,7 +135,7 @@ import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.Generator
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[945]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[367]]></Field>
-	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[2786]]></Field>
+	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[3762]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[6]]></Field>
 	<Field name="ShortValue" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="Subtypes" type="java.lang.String">null</Field>
@@ -372,8 +375,8 @@ http://spark.apache.org/docs/latest/streaming-programming-guide.html#window-oper
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.2786]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d1463979-dc0e-483f-9fcb-5800193747da]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXITGROUP.3762]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[5209a306-9260-48d8-8b87-ed852dad6146]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Spark Distinct.DataFrames]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_USEREXITGROUP]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18.10]]></Field>

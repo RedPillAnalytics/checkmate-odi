@@ -1,6 +1,7 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import oracle.odi.domain.impexp.IExportable
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
@@ -49,15 +50,17 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
       instance.beginTxn()
       // export the model folders
       modelfolders.each {
-         exportObject(it, "${exportDir.canonicalPath}/model-folder", true, false)
+         exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false)
       }
 
       // export the models
       models.each {
-         exportObject(it, "${exportDir.canonicalPath}/model")
+         exportObject(it as IExportable, "${exportDir.canonicalPath}/model")
       }
 
       instance.endTxn()
+
+      instance.close()
 
       if ( !modelCode && !modelfolderName ) {
          // execute the export stage process
