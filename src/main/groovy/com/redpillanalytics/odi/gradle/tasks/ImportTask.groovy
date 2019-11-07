@@ -40,13 +40,12 @@ class ImportTask extends InstanceTask {
    @Internal
    smartImportObject(File file) {
 
-      smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
+      //smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
 
       try {
 
-            smartImportService.importFromXml(
+            smartImportService.importObjectsFromXml(
                     file.canonicalPath,
-                    null,
                     'checkmate-odi12c+' as char[],
                     false,
          )
