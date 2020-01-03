@@ -1,34 +1,29 @@
-import com.redpillanalytics.aws.tasks.S3UploadSyncTask
-import com.redpillanalytics.aws.tasks.S3DownloadSyncTask
-
 plugins {
-   id "com.gradle.plugin-publish" version "0.10.1"
-   id "pl.allegro.tech.build.axion-release" version "1.10.1"
-   id "com.github.breadmoirai.github-release" version "2.2.8"
    id 'groovy'
    id 'java-gradle-plugin'
-   id 'org.unbroken-dome.test-sets' version '2.1.1'
-   id "com.github.ben-manes.versions" version "0.21.0"
-   id 'com.adarshr.test-logger' version '1.6.0'
-   id "com.redpillanalytics.gradle-analytics" version "1.2.3"
-   id "com.redpillanalytics.gradle-aws" version "0.1.5"
    id "com.github.johnrengelman.shadow" version "4.0.4"
-//   id "com.redpillanalytics.checkmate.odi.api" version "0.1.16"
+   id "com.gradle.plugin-publish" version "0.10.1"
+   id "pl.allegro.tech.build.axion-release" version "1.10.2"
+   id "com.github.breadmoirai.github-release" version "2.2.10"
+   id 'org.unbroken-dome.test-sets' version '2.2.1'
+   id "com.avast.gradle.docker-compose" version "0.10.7"
+   id "com.github.ben-manes.versions" version "0.27.0"
+   id "com.redpillanalytics.gradle-analytics" version "1.3.0"
+   id 'com.adarshr.test-logger' version '2.0.0'
+   id 'build-dashboard'
 }
 
 // send analytics
 analytics {
    organization = 'Red Pill Analytics'
-   sinks {
-      pubsub
-      s3 {
+   gcs {
+      devops {
          prefix = 'rpa-gradle-analytics'
       }
    }
 }
 
 scmVersion {
-
    tag {
       prefix = 'v'
       versionSeparator = ''
@@ -88,17 +83,16 @@ dependencies {
 
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
 
-   // Gradle Analytics plugin
+   // Gradle Properties
    // It also has the Common library in it, thus the dependency here
-   compile "gradle.plugin.com.redpillanalytics:gradle-analytics:+"
+   compile "gradle.plugin.com.redpillanalytics:gradle-properties:+"
 
-   testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
-
-   // Plugin so classes can be used
    //implementation "gradle.plugin.com.redpillanalytics:odi-api:0.1.14"
    //implementation fileTree(dir: project.odiApi.libsDir, include: '*.jar')
    compile fileTree(dir: 'libs', include: '*.jar')
    compile 'org.xmlunit:xmlunit-core:2.6.3'
+   // tsting
+   testCompile 'org.spockframework:spock-core:1.3-RC1-groovy-2.5'
 }
 
 // Default artifact naming.
@@ -141,54 +135,52 @@ task cleanLibs(type: Delete) {
    delete getLibsDir()
 }
 
-onlineExportTest.mustRunAfter onlineImportTest
-
-ext.docsBucket = 'documentation.redpillanalytics.com'
-ext.resourceBucket = 'rpa-build-resources'
-
-task publishVersionDocs(type: S3UploadSyncTask) {
-
-   description = 'Upload version Groovydocs to s3.'
-   group = 'documentation'
-
-   bucketName docsBucket
-   filePath groovydoc.destinationDir.getPath()
-   keyName "${rootProject.name}/${version}"
-
-   dependsOn groovydoc
-}
-
-task publishLatestDocs(type: S3UploadSyncTask) {
-
-   description = 'Upload latest Groovydocs to s3.'
-   group = 'documentation'
-
-   bucketName docsBucket
-   filePath groovydoc.destinationDir.getPath()
-   keyName "${rootProject.name}/latest"
-
-   dependsOn groovydoc
-}
-
-publishPlugins.dependsOn publishVersionDocs
-publishVersionDocs.dependsOn publishLatestDocs
-
-task copyBuildResources(type: S3DownloadSyncTask) {
-   description 'Copy build resource files from S3.'
-   group 'build'
-   bucketName resourceBucket
-   keyName 'gradle'
-   filePath gradle.getGradleUserHomeDir().toString()
-   doFirst {
-      logger.warn "gradle home: ${gradle.getGradleUserHomeDir().toString()}"
+def versionUrl = "${docBucket}/${rootProject.name}/${version}"
+task publishVersionDocs(type: Exec) {
+   description = 'Publish version Groovydocs to S3.'
+   group = 'publishing'
+   executable 'aws'
+   args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://${versionUrl}"
+   doLast {
+      logger.warn "\nVersion docs: https://s3.amazonaws.com/${versionUrl}/index.html"
    }
+   dependsOn groovydoc
+}
+
+def latestUrl = "${docBucket}/${rootProject.name}/latest"
+task publishLatestDocs(type: Exec) {
+   description = 'Publish latest Groovydocs to S3.'
+   group = 'publishing'
+   executable 'aws'
+   args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://${latestUrl}"
+   doLast {
+      logger.warn "\nLatest docs: https://s3.amazonaws.com/${latestUrl}/index.html"
+   }
+   dependsOn groovydoc
 }
 
 task runAllTests {
-   description = 'Run all defined tests.'
-   group = 'verification'
-   dependsOn onlineExportTest, onlineImportTest
+   description 'Run all defined tests.'
+   group 'verification'
 }
 
-//tasks.build.dependsOn tasks.extractApi
-//tasks.compileGroovy.mustRunAfter tasks.extractApi
+tasks.withType(Test) {
+   runAllTests.dependsOn it
+   failFast true
+   ignoreFailures true
+   testLogging.showStandardStreams true
+   systemProperty 'projectDir', temporaryDir
+   systemProperty 'analyticsVersion', analyticsVersion
+}
+
+//dockerCompose.isRequiredBy tasks.runAllTests
+
+// create a publish task
+task publish {
+   description 'Custom publish task.'
+   group 'publishing'
+   dependsOn tasks.publishPlugins, tasks.publishVersionDocs, tasks.publishLatestDocs, tasks.githubRelease, tasks.build
+}
+
+tasks.githubRelease.mustRunAfter tasks.publishPlugins, tasks.build
+tasks.deployTest.mustRunAfter tasks.buildTest
