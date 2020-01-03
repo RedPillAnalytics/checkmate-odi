@@ -169,7 +169,7 @@ tasks.withType(Test) {
    systemProperty 'masterUrl', masterUrl
 }
 
-//dockerCompose.isRequiredBy tasks.runAllTests
+tasks.onlineExportTest.mustRunAfter tasks.onlineImportTest
 
 // create a publish task
 task publish {

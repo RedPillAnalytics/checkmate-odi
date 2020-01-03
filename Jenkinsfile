@@ -34,7 +34,7 @@ pipeline {
 
       stage('Test') {
          steps {
-            sh "$gradle cleanJunit cV runAllTests -PmasterPassword=${env.ODI_MASTER_PSW} -PodiPassword=${env.ODI_SUPER_PSW} -PmasterUrl=jdbc:oracle:thin:@odi:1521/XEPDB1"
+            sh "$gradle cleanJunit cV runAllTests -PmasterPassword=${env.ODI_MASTER_PSW} -PodiPassword=${env.ODI_SUPER_PSW}"
          }
          post {
             always {
