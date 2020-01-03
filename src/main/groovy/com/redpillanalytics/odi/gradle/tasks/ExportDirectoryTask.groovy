@@ -27,7 +27,6 @@ class ExportDirectoryTask extends ExportTask {
       return sourceDir ? project.file(sourceDir) : buildDir
    }
 
-   @Internal
    def xmlDiff(File controlXml, File testXml) {
 
       Diff result = DiffBuilder.compare(org.xmlunit.builder.Input.fromFile(controlXml))
@@ -39,7 +38,6 @@ class ExportDirectoryTask extends ExportTask {
 
    }
 
-   @Internal
    def exportStageDir() {
 
       // Find and remove the deleted objects in the source base comparing with the build objects

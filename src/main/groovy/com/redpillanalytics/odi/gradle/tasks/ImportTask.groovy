@@ -20,8 +20,7 @@ class ImportTask extends InstanceTask {
       return new SmartImportServiceImpl(instance.odi)
    }
 
-   @Internal
-   importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
+   def importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
       try{
 
@@ -37,8 +36,7 @@ class ImportTask extends InstanceTask {
 
    }
 
-   @Internal
-   smartImportObject(File file) {
+   def smartImportObject(File file) {
 
       //smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
 

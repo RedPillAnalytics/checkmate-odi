@@ -2,7 +2,6 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
@@ -16,13 +15,9 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
      *
      * @return The List of export files.
      */
-    @Internal
     List getImportFiles(String filePrefix) {
-
         def result = new LinkedList()
-
         result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
-
         return result
     }
 
@@ -38,11 +33,9 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
         filePrefix.each {
             // Get the import files by prefix
             importXmlFiles(getImportFiles(it))
-
         }
 
         // Close the Connection
         instance.close()
-
     }
 }
