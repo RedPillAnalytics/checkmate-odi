@@ -1,12 +1,26 @@
-def options = '-Si'
-def properties = "-Panalytics.buildId=${env.BUILD_TAG}"
+def options = '-S'
+def properties = "-Panalytics.buildTag=${env.BUILD_TAG}"
 def gradle = "./gradlew ${options} ${properties}"
 
 pipeline {
-   agent { label 'java-compile' }
-
+   agent {
+      kubernetes {
+         defaultContainer 'agent'
+         yamlFile 'pod-template.yaml'
+         slaveConnectTimeout 200
+      }
+   }
    environment {
-      GOOGLE_APPLICATION_CREDENTIALS = '/var/lib/jenkins/.gcp/gradle-analytics-build-user.json'
+      ORG_GRADLE_PROJECT_githubToken = credentials('github-redpillanalyticsbot-secret')
+      ORG_GRADLE_PROJECT_kafkaServers = 'localhost:9092'
+      ODI_MASTER = credentials("odi-master-repo")
+      ODI_SUPER = credentials("odi-supervisor")
+      AWS_ACCESS_KEY_ID = "${env.AWS_USR}"
+      AWS_SECRET_ACCESS_KEY = "${env.AWS_PSW}"
+      AWS_REGION = 'us-east-1'
+      GRADLE_COMBINED = credentials("gradle-publish-key")
+      GRADLE_KEY = "${env.GRADLE_COMBINED_USR}"
+      GRADLE_SECRET = "${env.GRADLE_COMBINED_PSW}"
    }
 
    stages {
@@ -18,35 +32,27 @@ pipeline {
          }
       }
 
-      stage('Build') {
+      stage('Test') {
          steps {
-            sh "$gradle build copyBuildResources"
+            sh "$gradle cleanJunit cV runAllTests -PmasterPassword=${env.ODI_MASTER_PSW} -PodiPassword=${env.ODI_SUPER_PSW}"
          }
-      }
-
-      stage('Integration') {
-          steps {
-              sh "$gradle onlineImportTest onlineExportTest"
-          }
+         post {
+            always {
+               junit testResults: 'build/test-results/**/*.xml', allowEmptyResults: true
+            }
+         }
       }
 
       stage('Publish') {
          when { branch "master" }
          steps {
-            sh "$gradle publishPlugins githubRelease"
+            sh "$gradle publish -Pgradle.publish.key=${env.GRADLE_KEY} -Pgradle.publish.secret=${env.GRADLE_SECRET}"
+         }
+         post {
+            always {
+               archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true, allowEmptyArchive: true
+            }
          }
       }
-      // Place for new Stage
-
-   } // end of Stages
-
-   post {
-      always {
-         junit testResults: "build/test-results/**/*.xml", allowEmptyResults: true, keepLongStdio: true
-         archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
-         sh "$gradle cleanJunit"
-         sh "$gradle producer"
-      }
    }
-
 }

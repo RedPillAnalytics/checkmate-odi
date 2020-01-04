@@ -16,7 +16,6 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
     *
     * @return The List of export files.
     */
-   @Internal
    List getImportFiles(String filePrefix) {
 
       def result = new LinkedList()

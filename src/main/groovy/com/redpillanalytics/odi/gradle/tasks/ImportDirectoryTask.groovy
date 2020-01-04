@@ -38,7 +38,6 @@ class ImportDirectoryTask extends ImportTask {
    /**
     * Smart Import the File List of Objects.
     */
-   @Internal
    def smartImportXmlFiles(List<File> smartImportFiles) {
 
       instance.beginTxn()
@@ -54,7 +53,6 @@ class ImportDirectoryTask extends ImportTask {
    /**
     * Import the File List of Objects.
     */
-   @Internal
    def importXmlFiles(List<File> importFiles, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
       instance.beginTxn()

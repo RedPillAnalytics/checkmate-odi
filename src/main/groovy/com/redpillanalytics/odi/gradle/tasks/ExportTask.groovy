@@ -21,7 +21,6 @@ class ExportTask extends InstanceTask {
       return new SmartExportServiceImpl(instance.odi)
    }
 
-   @Internal
    def exportObject(IExportable object, String path, Boolean parents = false, Boolean recursive = true, Boolean overwrite = true) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
@@ -58,7 +57,6 @@ class ExportTask extends InstanceTask {
       return result
    }
 
-   @Internal
    def smartExportObject(ISmartExportable object, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
@@ -85,7 +83,6 @@ class ExportTask extends InstanceTask {
       return result
    }
 
-   @Internal
    def exportTopology(String folderPath) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
