@@ -12,9 +12,9 @@ pipeline {
    }
    environment {
       ORG_GRADLE_PROJECT_githubToken = credentials('github-redpillanalyticsbot-secret')
-      ORG_GRADLE_PROJECT_kafkaServers = 'localhost:9092'
       ODI_MASTER = credentials("odi-master-repo")
       ODI_SUPER = credentials("odi-supervisor")
+      AWS = credentials("rpa-development-build-server-svc")
       AWS_ACCESS_KEY_ID = "${env.AWS_USR}"
       AWS_SECRET_ACCESS_KEY = "${env.AWS_PSW}"
       AWS_REGION = 'us-east-1'
