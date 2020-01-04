@@ -22,6 +22,17 @@ spec:
           name: database-port
         - containerPort: 20910
           name: agent-port
+      startupProbe:
+        exec:
+          command:
+            - nc
+            - localhost
+            - 20910
+            - <
+            - /dev/null
+        initialDelaySeconds: 300
+        periodSeconds: 60
+        failureThreshold: 30
       tty: true
       resources:
         requests:
