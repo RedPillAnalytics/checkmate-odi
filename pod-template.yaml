@@ -22,11 +22,12 @@ spec:
           name: database-port
         - containerPort: 20910
           name: agent-port
-      readinessProbe:
+      startupProbe:
         tcpSocket:
           port: 20910
         initialDelaySeconds: 300
         periodSeconds: 60
+        failureThreshold: 30
       tty: true
       resources:
         requests:
