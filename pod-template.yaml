@@ -22,7 +22,7 @@ spec:
           name: database-port
         - containerPort: 20910
           name: agent-port
-      startupProbe:
+      readinessProbe:
         exec:
           command:
             - nc
