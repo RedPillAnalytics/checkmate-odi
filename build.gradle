@@ -155,6 +155,30 @@ task runAllTests {
    group 'verification'
 }
 
+task waitForAgent {
+   description 'Wait until the ODI Agent is available.'
+   group 'verification'
+   doLast{
+
+      // hack to do bottom-checking loop
+      for (; ;) { // infinite for
+         logger.info "Waiting for ODI agent $agentUrl to be available..."
+         def response
+         try {
+            def conn = agentUrl.toURL().openConnection()
+            response = conn.responseCode
+            conn.disconnect()
+         } catch(ConnectException e){
+            logger.debug "Agent not available. Sleeping..."
+            sleep 10000
+         }
+         if (response == 200) {
+            break
+         }
+      }
+   }
+}
+
 tasks.withType(Test) {
    runAllTests.dependsOn it
    failFast true
@@ -170,6 +194,8 @@ tasks.withType(Test) {
 }
 
 tasks.onlineExportTest.mustRunAfter tasks.onlineImportTest
+tasks.onlineImportTest.dependsOn tasks.waitForAgent
+tasks.onlineExportTest.dependsOn tasks.waitForAgent
 
 // create a publish task
 task publish {
