@@ -1,6 +1,5 @@
 package com.redpillanalytics.odi.gradle
 
-import com.redpillanalytics.common.GradleUtils
 import com.redpillanalytics.odi.gradle.tasks.ExportGlobalDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ExportTopologyDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportGlobalDirectoryTask
@@ -8,6 +7,7 @@ import com.redpillanalytics.odi.gradle.tasks.ImportLoadPlanDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportModelDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportScenarioDirectoryTask
 import com.redpillanalytics.odi.gradle.tasks.ImportTopologyDirectoryTask
+import com.redpillanalytics.odi.gradle.tasks.WaitForAgentTask
 import com.redpillanalytics.odi.odi.Instance
 import com.redpillanalytics.odi.gradle.containers.BuildGroupContainer
 import com.redpillanalytics.odi.gradle.tasks.CreateProjectTask
@@ -32,6 +32,7 @@ class OdiPlugin implements Plugin<Project> {
 
       // apply Gradle built-in plugins
       project.apply plugin: 'base'
+      project.apply plugin: 'com.redpillanalytics.gradle-properties'
 
       project.configure(project) {
          extensions.create('odi', OdiPluginExtension)
@@ -56,8 +57,9 @@ class OdiPlugin implements Plugin<Project> {
 
       project.afterEvaluate {
 
-         // set all 'obi.<property>' -P options to the 'obi' extension
-         GradleUtils.setParameters(project, 'odi')
+         // Go look for any -P properties that have "odi." in them
+         // If so... update the extension value
+         project.pluginProps.setParameters(project, 'odi')
 
          // get the taskGroup
          String taskGroup = project.extensions.odi.taskGroup
@@ -283,7 +285,11 @@ class OdiPlugin implements Plugin<Project> {
 
                project.task(bg.getTaskName('import')) {
                   group taskGroup
-                  description = "Executes all configured 'import' tasks."
+                  description "Executes all configured 'import' tasks."
+               }
+
+               project.task('waitForAgent', type: WaitForAgentTask) {
+                  agentUrl project.extensions.odi.agentUrl
                }
 
                // Add Export/Import task Dependency Level

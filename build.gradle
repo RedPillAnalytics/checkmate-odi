@@ -85,10 +85,8 @@ dependencies {
 
    // Gradle Properties
    // It also has the Common library in it, thus the dependency here
-   compile "gradle.plugin.com.redpillanalytics:gradle-properties:+"
+   compile "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.5"
 
-   //implementation "gradle.plugin.com.redpillanalytics:odi-api:0.1.14"
-   //implementation fileTree(dir: project.odiApi.libsDir, include: '*.jar')
    compile fileTree(dir: 'libs', include: '*.jar')
    compile 'org.xmlunit:xmlunit-core:2.6.3'
    // testing
@@ -116,6 +114,7 @@ repositories {
 testSets {
    onlineExportTest
    onlineImportTest
+   onlineWaitTest
 }
 
 task cleanJunit(type: Delete) {
@@ -155,47 +154,22 @@ task runAllTests {
    group 'verification'
 }
 
-task waitForAgent {
-   description 'Wait until the ODI Agent is available.'
-   group 'verification'
-   doLast{
-
-      // hack to do bottom-checking loop
-      for (; ;) { // infinite for
-         logger.info "Waiting for ODI agent $agentUrl to be available..."
-         def response
-         try {
-            def conn = agentUrl.toURL().openConnection()
-            response = conn.responseCode
-            conn.disconnect()
-         } catch(ConnectException e){
-            logger.debug "Agent not available. Sleeping..."
-            sleep 10000
-         }
-         if (response == 200) {
-            break
-         }
-      }
-   }
-}
-
 tasks.withType(Test) {
    runAllTests.dependsOn it
    failFast true
    ignoreFailures true
-   testLogging.showStandardStreams true
    systemProperty 'projectDir', temporaryDir
+   systemProperty 'projectBase', temporaryDir
    systemProperty 'analyticsVersion', analyticsVersion
    testLogging.showStandardStreams true
-   systemProperty 'projectDir', temporaryDir
    systemProperty 'odiPassword', odiPassword
    systemProperty 'masterPassword', masterPassword
    systemProperty 'masterUrl', masterUrl
 }
 
 tasks.onlineExportTest.mustRunAfter tasks.onlineImportTest
-tasks.onlineImportTest.dependsOn tasks.waitForAgent
-tasks.onlineExportTest.dependsOn tasks.waitForAgent
+tasks.onlineImportTest.mustRunAfter tasks.onlineWaitTest
+tasks.onlineExportTest.mustRunAfter tasks.onlineWaitTest
 
 // create a publish task
 task publish {

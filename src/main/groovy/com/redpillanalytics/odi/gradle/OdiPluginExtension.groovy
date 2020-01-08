@@ -87,8 +87,13 @@ class OdiPluginExtension {
    String contentPolicy = 'dir'
 
    /**
-    * When enabled, all Instance Tasks ensure that the ODI API zip file is downloaded and extracted. Only applicable with the 'com.redpillanalytics.checkmate.odi.api' plugin is enabled.
+    * URL for an ODI Agent used in CI/CD pipelines.
     */
+   String agentUrl = 'http://localhost:20910/oraclediagent'
+
+//   /**
+//    * When enabled, all Instance Tasks ensure that the ODI API zip file is downloaded and extracted. Only applicable with the 'com.redpillanalytics.checkmate.odi.api' plugin is enabled.
+//    */
 //   Boolean extractOdiApi = false
 
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"

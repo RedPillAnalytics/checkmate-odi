@@ -1,5 +1,3 @@
-
-
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.ClassRule
@@ -18,11 +16,11 @@ class TasksTest extends Specification {
    TemporaryFolder testProjectDir = new TemporaryFolder()
 
    @Shared
-           buildFile
+   File buildFile
    @Shared
-           result
+   def result
    @Shared
-           indexedResultOutput
+   def indexedResultOutput
 
    // run the Gradle build
    // return regular output
@@ -41,7 +39,7 @@ class TasksTest extends Specification {
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Si', 'tasks','--all')
+              .withArguments('-Si', 'tasks', '--all')
               .withPluginClasspath()
               .build()
 
@@ -61,5 +59,4 @@ class TasksTest extends Specification {
       where:
       task << ['build']
    }
-
 }
