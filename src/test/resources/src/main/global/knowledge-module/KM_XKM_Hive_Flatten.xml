@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="N7EZKEWaW2TefrBIVb9208vm9cT9d3wuXZAMY5n9Wdc=" keyVect="wFF+sz/tW7lsnNB4Sm0MnA==" exportKeySalt="f3563d4a-7002-4897-a81e-38cbb8596b55" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="X4osOKjjyHBl0S6Rh4i+x2xEXtFqY/FbgmVAPdRhmD8=" keyVect="O8aIObohon+wvcWpe9+Ozw==" exportKeySalt="81136994-3c94-4129-98d1-7bc9d439559e" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTrt#64]]></Include>
 </SmartExportList>
@@ -13,20 +13,20 @@
 import oracle.odi.mapping.generation.AbstractSyntaxTree.ASTProducerMethod;
 import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.GeneratorDelegateClass;
 @GeneratorDelegateClass(componentType=FlattenComponent.COMPONENT_TYPE_NAME, descriptionKey="GeneratorDelegateClass.HiveFlattenCompKM")
-    
+
 public class XKM_Hive_Flatten extends HiveBaseKM {
-        
+
   public XKM_Hive_Flatten() {}
-  
-  @ASTProducerMethod(processingType=ProcessingType.SOURCE, producedASTType=SqlQuery.class, styleKey="ProcessingStyleKey.Hive.SELECT")        
+
+  @ASTProducerMethod(processingType=ProcessingType.SOURCE, producedASTType=SqlQuery.class, styleKey="ProcessingStyleKey.Hive.SELECT")
   SqlQuery SELECT(SqlQuery inputQuery) {
-    	
+
     def lvTabAlias = getOption("LATERAL_VIEW_TAB_ALIAS")
     def lvColAlias = getOption("LATERAL_VIEW_COL_ALIAS")
     def includeNulls = component.getBooleanPropertyValue("Include Nulls")
     def isFlattenCollection = component.getBooleanPropertyValue("Collection")
     MapAttribute upstreamComplexAttr = null
-          
+
     MapExpression propComplexAttr = component.getExpressionPropertyValue("Complex Type Attribute")
     List<MapExpressionXRef> xrefs = propComplexAttr.getCrossReferences();
     if (xrefs != null  && xrefs.size() > 0) {
@@ -34,10 +34,10 @@ public class XKM_Hive_Flatten extends HiveBaseKM {
           // an xref will be present, verified by logical component validation earlier.
         upstreamComplexAttr = xrefs.get(0).getReferencedAttribute();
            }
-            
+
     List<ISelectItem> inputSelectList = inputQuery.getSelectList()
     List<FromClause> inputFromList = inputQuery.getFromList()
-             
+
     List<ISelectItem> newselectList = new ArrayList<ISelectItem>()
     List<MapPhysicalExpression> exprs = physicalNode.getSortedTargetPhysicalExpressions();
     for (MapPhysicalExpression expr : exprs) {
@@ -50,16 +50,16 @@ public class XKM_Hive_Flatten extends HiveBaseKM {
       arrayExpr.setRefObject(mapAttr);
       newselectList.add(arrayExpr);
     }
-        
+
     ISelectItem complexAttr
       // get the select item for the complex type attribute, which is upstream of this component
-    inputSelectList.each { 
+    inputSelectList.each {
        if (it.getRefAttributeWithPath().getAttribute() == upstreamComplexAttr)
-           complexAttr = it 
+           complexAttr = it
             }
     def complexAttrFullName = complexAttr.getText()
     def complexAttrShortName = complexAttr.getRefAttributeWithPath().getAttribute().getName()
-    
+
     if ( lvTabAlias.trim() == "" ) {
        lvTabAlias = "lv_" + complexAttrShortName
                     }
@@ -68,12 +68,12 @@ public class XKM_Hive_Flatten extends HiveBaseKM {
                     }
 
     def prefix
-    
+
     if (isFlattenCollection) {
        prefix = lvColAlias
     } else {
        prefix = complexAttrFullName
-            }            
+            }
       // complex attribute members don't have expressions, since they are just projected attriutes and don't refer to anything upstream
     def complexAttributes = []
     component.getAttributes().each {
@@ -81,14 +81,14 @@ public class XKM_Hive_Flatten extends HiveBaseKM {
         complexAttributes.add(it)
         }
 
-      // add a new select item for each projected complex type member.  Above, we used a new ArrayExpression, 
+      // add a new select item for each projected complex type member.  Above, we used a new ArrayExpression,
       // here just a StringExpression since we don't reference upstream and would never need redirection offered by the ArrayExpression
     complexAttributes.each {
         StringExpression newItem
         if (!component.isStructure() && isFlattenCollection) {
             // if flattening an array of primitive types, there is no element name to qualify
           newItem = new StringExpression(prefix, it, it)
-        } else { 
+        } else {
             // use the lateral view alias (prefix) and qualify with the name of the structure element.
             // the name of the structure element usually matches the attribute name, but not if the user changed it or it was
             // automatically changed to avoid a name collision.  If the "tag" property is set, use  the tag. The tag specifies
@@ -105,31 +105,31 @@ public class XKM_Hive_Flatten extends HiveBaseKM {
 
     hivesqlquery.setSelectList(newselectList)
     hivesqlquery.addFlattenedComplexColumn(isFlattenCollection, complexAttrFullName, lvTabAlias, lvColAlias, includeNulls);
-                               
+
     // println hivesqlquery.getText()
-              
+
     return hivesqlquery;
       }
 }
 ]]></Field>
 	<Field name="ExpectedAstClass" type="java.lang.String"><![CDATA[oracle.odi.mapping.generation.SqlQuery]]></Field>
 	<Field name="ExtVersion" type="java.lang.String">null</Field>
-	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:11.0]]></Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:25:53.0]]></Field>
 	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[354274E973BC2044E053B853F20A08F6]]></Field>
-	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
-	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndChange" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[81]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
@@ -140,16 +140,16 @@ public class XKM_Hive_Flatten extends HiveBaseKM {
 	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[64]]></Field>
 	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[184]]></Field>
 	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="KmDefault" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="KmLang" type="java.lang.String"><![CDATA[SQL]]></Field>
 	<Field name="KmSrcLang" type="java.lang.String">null</Field>
 	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[HIVE]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:35:50.0]]></Field>
-	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:25:53.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="LCode" type="java.lang.String">null</Field>
@@ -178,8 +178,8 @@ public class XKM_Hive_Flatten extends HiveBaseKM {
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[48f51e07-9fa6-48a0-8954-bad632153d87]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[d5a76e81-8f4d-450c-a393-5dc1c870cd96]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[184]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[
@@ -206,9 +206,9 @@ Flatten complex data.
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[354274E973BD2044E053B853F20A08F6]]></Field>
 	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[64]]></Field>
-	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[201]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[185]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[49]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[39]]></Field>
 	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
@@ -221,8 +221,8 @@ Flatten complex data.
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[6ddf93d4-4c51-440b-addd-5da03cd12492]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[201]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[0f884a46-7e62-49b5-acdb-ceaf4afa0b5c]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[185]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[If not set alias will be created as lv_(complex_type_column_name). Use this option only for collections.]]></Field>
@@ -240,9 +240,9 @@ Flatten complex data.
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[354274E973BE2044E053B853F20A08F6]]></Field>
 	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[64]]></Field>
-	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[202]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[186]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[50]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[40]]></Field>
 	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
@@ -255,15 +255,15 @@ Flatten complex data.
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[1bc88974-40de-4cbb-ab36-ebdfc6d0984d]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[202]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[95efb271-da43-4ff0-941b-77495be8549b]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[186]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[If not set alias will be created as c_(complex_type_column_name). Use this option only for collections.]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.200]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[48f51e07-9fa6-48a0-8954-bad632153d87]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.184]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d5a76e81-8f4d-450c-a393-5dc1c870cd96]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -283,15 +283,15 @@ Flatten complex data.
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[16]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.201]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[6ddf93d4-4c51-440b-addd-5da03cd12492]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.185]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[0f884a46-7e62-49b5-acdb-ceaf4afa0b5c]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.202]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[1bc88974-40de-4cbb-ab36-ebdfc6d0984d]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.186]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[95efb271-da43-4ff0-941b-77495be8549b]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -324,6 +324,6 @@ Flatten complex data.
 	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
 	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
 </Object>
 </SunopsisExport>

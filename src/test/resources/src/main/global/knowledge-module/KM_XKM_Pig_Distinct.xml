@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="fmPAhGLUXJIMQZb4KXknuwPOK8f5IQVhs7fcYlwx1cg=" keyVect="Dy/h+R0uBZ7TUte70CUR0w==" exportKeySalt="86ea4a0d-6a6d-4be5-9247-39305dbaf03e" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="G5XRiK69KLMl+mWGcV1QDaTQwsBuxuwTjTAU51MVd9s=" keyVect="Mc4hEUEaN/sSk2WS+QwZrQ==" exportKeySalt="083ff72d-40df-4b61-8410-78c514a8c749" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTrt#117]]></Include>
 </SmartExportList>
@@ -9,8 +9,7 @@
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[DISTINCT]]></Field>
 	<Field name="DelegateClass" type="java.lang.String"><![CDATA[XKM_Pig_Distinct]]></Field>
-	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
-     
+	<Field name="DelegateScript" type="java.lang.String"><![CDATA[ 
     
     public class XKM_Pig_Distinct extends PigKM {
     
@@ -40,26 +39,25 @@
 	      return distinctScript;
 	    }
 	}
-    
-  ]]></Field>
+    ]]></Field>
 	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
 	<Field name="ExtVersion" type="java.lang.String">null</Field>
-	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:20.0]]></Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:26:00.0]]></Field>
 	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[1d5bf8b8-0142-430b-874e-8218f87f6067]]></Field>
-	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
-	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndChange" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[81]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[104]]></Field>
@@ -70,7 +68,7 @@
 	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[117]]></Field>
 	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[651]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[660]]></Field>
 	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KmLang" type="java.lang.String"><![CDATA[PIGLATIN]]></Field>
@@ -78,8 +76,8 @@
 	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[PIG]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:35:58.0]]></Field>
-	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:26:00.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="LCode" type="java.lang.String">null</Field>
@@ -108,8 +106,8 @@
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[33d2b22a-5332-4be6-ab18-5af530002a01]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[651]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[d761010c-63ac-49ed-8257-5b0440b80ab4]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[660]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[COMPONENT NAME: XKM Pig Distinct
@@ -129,8 +127,8 @@ Eliminates duplicates in data.]]></Field>
 	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.651]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[33d2b22a-5332-4be6-ab18-5af530002a01]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.660]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d761010c-63ac-49ed-8257-5b0440b80ab4]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -163,6 +161,6 @@ Eliminates duplicates in data.]]></Field>
 	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
 	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
 </Object>
 </SunopsisExport>

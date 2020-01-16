@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="vHJPYWV3USJLFAE5Wpx3PVUoFORnfEoTEAuO6FYbcHc=" keyVect="UHyzWrcj1SwAZpgPWVctHA==" exportKeySalt="24b1650a-1861-487f-9633-f2892e154ba2" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="0vu29DL+x5EY18iOvM6j8/g6YsugEkZdzUnxu8ioOBc=" keyVect="OrDijVPESJnue+s/wCzGMw==" exportKeySalt="50a5dfaa-8094-4109-abbb-7c7d137aabf9" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTrt#135]]></Include>
 </SmartExportList>
@@ -10,10 +10,10 @@
 	<Field name="CompType" type="java.lang.String"><![CDATA[AP]]></Field>
 	<Field name="DelegateClass" type="java.lang.String"><![CDATA[LKMSparkFile]]></Field>
 	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
-
 import com.sunopsis.tools.core.SnpsStringTools
 import oracle.odi.mapping.generation.AbstractSyntaxTree.ASTProducerMethod;
 import oracle.odi.domain.mapping.generator.KMGeneratorDelegateRegistry.GeneratorDelegateClass;
+import oracle.odi.domain.model.OdiDataStore;
 
 @GeneratorDelegateClass(componentType="AP", descriptionKey="GeneratorDelegateClass.LKMSparkFile")
 public class LKMSparkFile extends LKMSpark {
@@ -255,6 +255,112 @@ public class LKMSparkFile extends LKMSpark {
         String getStorerFunction() { return STORAGE_FUNCTION;} 
     }
 
+    String getDelimDataStoreStorageValue(MapPhysicalNode dsNode) throws AdapterException, MappingException {
+
+              OdiDataStore dataStore = (OdiDataStore)dsNode.getLogicalComponent().getBoundObject();
+
+              String fieldSeparator = "";
+              String rowDelimiter = "";
+              String textDelimiter = "";
+              int headerLines = 0;
+
+              if (dataStore.getFileDescriptor() != null){
+                  fieldSeparator = SnpsStringTools.escapeUnicode(SnpsStringTools.hexStrToStr(SnpsStringTools.replaceNVL(dataStore.getFileDescriptor().getFieldSeparator())),true);
+                  rowDelimiter = SnpsStringTools.escapeUnicode(SnpsStringTools.hexStrToStr(SnpsStringTools.replaceNVL(dataStore.getFileDescriptor().getRowSeparator())),true);
+                  textDelimiter = dataStore.getFileDescriptor().getTextDelimiter();
+                  headerLines = dataStore.getFileDescriptor().getSkipHeadingLines();
+              }
+
+              StringBuilder strBuilder = new StringBuilder();
+
+              if (headerLines > 0 ) {
+                  strBuilder.append("header='true'");
+              } else {
+                  strBuilder.append("header='false'");
+              }
+              if(fieldSeparator != null && fieldSeparator != "" ) {
+                strBuilder.append(", delimiter=");
+                if(fieldSeparator.equalsIgnoreCase("0x09") || fieldSeparator.equalsIgnoreCase('\\u0009')){
+                    strBuilder.append("'\\t'");
+                } else {
+                    strBuilder.append("'");
+                    strBuilder.append(fieldSeparator);
+                    strBuilder.append("'");
+                }
+              }
+              return strBuilder.toString();
+    }
+
+    String getStoreOptions(String storageFn) throws AdapterException, MappingException {
+
+        StringBuilder strBuilder = new StringBuilder();
+
+        def dateFormat = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "dateFormat")
+        def timestampFormat = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "timestampFormat")
+        def nullValue = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "nullValue")
+        def addOptions = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "ADDITIONAL_STORE_OPTIONS")
+
+        if (dateFormat != null && dateFormat != '') {
+            strBuilder.append("dateFormat='${dateFormat}'")
+        }
+
+        if (timestampFormat != null && timestampFormat != '') {
+            if (strBuilder.length() != 0) { strBuilder.append(", ") }
+            strBuilder.append("timestampFormat='${timestampFormat}'")
+        }
+
+        if (!storageFn.equals("jsonFile") && !storageFn.equals("saveAsJsonFile")) {
+            if (nullValue != null) {
+                if (strBuilder.length() != 0) { strBuilder.append(", ") }
+                if (nullValue.equals('None')) {nullValue = ''}
+                strBuilder.append("nullValue='${nullValue}'")
+            }
+        }
+
+        if (addOptions != null && addOptions != '') {
+            if (strBuilder.length() != 0) { strBuilder.append(", ") }
+            strBuilder.append("${addOptions}")
+        }
+
+        return strBuilder.toString();
+
+    }
+
+    String getLoadOptions(String storageFn) throws AdapterException, MappingException {
+
+        StringBuilder strBuilder = new StringBuilder();
+
+        def dateFormat = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "dateFormat")
+        def timestampFormat = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "timestampFormat")
+        def nullValue = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "nullValue")
+        def addOptions = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "ADDITIONAL_LOAD_OPTIONS")
+
+        if (dateFormat != null && dateFormat != '') {
+            strBuilder.append("dateFormat='${dateFormat}'")
+        }
+
+        if (timestampFormat != null && timestampFormat != '') {
+            if (strBuilder.length() != 0) { strBuilder.append(", ") }
+            strBuilder.append("timestampFormat='${timestampFormat}'")
+        }
+
+        if (!storageFn.equals("jsonFile") && !storageFn.equals("saveAsJsonFile")) {
+            if (nullValue != null) {
+                if (strBuilder.length() != 0) { strBuilder.append(", ") }
+                if (nullValue.equals('None')) {nullValue = ''}
+                strBuilder.append("nullValue='${nullValue}'")
+            }
+        }
+
+        if (addOptions != null && addOptions != '') {
+            if (strBuilder.length() != 0) { strBuilder.append(", ") }
+            strBuilder.append("${addOptions}")
+        }
+
+        return strBuilder.toString();
+
+	}
+
 	@ASTProducerMethod(processingType=ProcessingType.SOURCE, producedASTType=SparkScript.class, styleKey="ProcessingStyleKey.Spark.ExtractScript")
     AbstractSyntaxTree EXTRACT_TAP(SqlQuery sqlQuery) throws AdapterException, MappingException,GenerationException {
     
@@ -272,6 +378,9 @@ public class LKMSparkFile extends LKMSpark {
         String techno_type = parentNode.getExecutionTechnology().getInternalName();
         String storageFn = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "Storage Function");
         String inputFormatClass = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "InputFormatClass");
+        String optionsFromDataStore = getDelimDataStoreStorageValue(parentNode);
+        String optionsFromKM = getLoadOptions(storageFn);
+
         //should get streaming flag from EU
         Boolean isStreamingMode = SparkScript.isNodeInStreamingMode(parentNode);
         if ("textFile".equals(storageFn) && isStreamingMode) {
@@ -286,6 +395,7 @@ public class LKMSparkFile extends LKMSpark {
         lkmSpark.setPhysicalNodes(physicalNode, parentNode);
         String dataSource = OdiRef.getOdiGeneratedAccessName("SOURCE_NAME", parentNode);
         TemplateUtils templateUtils = getTemplateUtils();
+
         SparkLoadCmd loadCmd = new SparkLoadCmd(templateUtils, parentNode);
 
         if (lkmSpark.getBaseUrl() != null) {
@@ -302,8 +412,7 @@ public class LKMSparkFile extends LKMSpark {
                      loadCmd.setRowSep(SnpsStringTools.escapeUnicode(SnpsStringTools.hexStrToStr(SnpsStringTools.replaceNVL(srcTable.getFileDescriptor().getRowSeparator())),true));
              }
          }    
-         if ("textFile".equals(storageFn) || "textFileStream".equals(storageFn)
-             || "jsonFile".equals(storageFn)){
+         if ("textFile".equals(storageFn) || "textFileStream".equals(storageFn) || "jsonFile".equals(storageFn)){
              loadCmd.setKeySupport(false);
          }else{
              loadCmd.setKeySupport(true);
@@ -329,6 +438,31 @@ public class LKMSparkFile extends LKMSpark {
          
         def dateFormat = LKMSpark.LKMSparkStorage.getOptionValue(physicalNode, "dateFormat");
         loadCmd.setDateFormat(dateFormat == null ? "" : dateFormat)
+
+        String inferOption = ""
+        if ("textFile".equals(storageFn) ) {
+            if (inferSourceSchema != null) {
+                boolean infer = inferSourceSchema.equalsIgnoreCase("true") ? true : false
+                if ( infer ) {
+                    inferOption = "inferSchema='true'"
+                }
+            }
+            String options = "${optionsFromDataStore}"
+            if (optionsFromKM != null && optionsFromKM != '') {
+                options = "${options}, ${optionsFromKM}"
+            }
+            if (!inferOption.equals("")) {
+               options = "${inferOption}, ${options}"
+            }
+            options = "options(${options})"
+            loadCmd.setLoadOptions(options);
+        } else if ("jsonFile".equals(storageFn)) {
+            if (optionsFromKM != null && optionsFromKM != '') {
+                loadCmd.setLoadOptions("options(${optionsFromKM})");
+            }
+
+        }
+
          
         SparkScript sparkScript = new SparkScript(templateUtils, null);
         sparkScript.addChild(loadCmd);
@@ -366,6 +500,10 @@ public class LKMSparkFile extends LKMSpark {
         if (lkmSpark.getBaseUrl() != null) {
            outputLocation = lkmSpark.getBaseUrl() + outputLocation;
         }
+
+        String optionsFromDataStore = getDelimDataStoreStorageValue(childNode);
+        String optionsFromKM = getStoreOptions(storageFn);
+
         SparkStoreCmd storeCmd = new SparkStoreCmd(sparkScript.getTemplateUtils(), childNode);
         
         storeCmd.setTechnologyType(techno_type);
@@ -379,6 +517,7 @@ public class LKMSparkFile extends LKMSpark {
         storeCmd.setFullTgtAttrs(childNode.getNodeAttributes());
         storeCmd.setTgtDataTypes(lkmSpark.getConvertedTgtDataTypes(childNode,storeCmd.getTemplateUtils().getTechno()));
         storeCmd.setStoreKeys(("saveAsNewAPIHadoopFile".equals(storageFn)|| "saveAsHadoopFile".equals(storageFn) || "saveAsSequenceFile".equals(storageFn)) ? true : false);
+
         Object tgtCompBondObj = childNode.getLogicalComponent().getBoundObject();
             if (tgtCompBondObj != null && tgtCompBondObj instanceof OdiDataStore ) {
                oracle.odi.domain.model.OdiDataStore tgtTable = ((OdiDataStore) tgtCompBondObj).getRealObject();
@@ -390,6 +529,19 @@ public class LKMSparkFile extends LKMSpark {
           }
 
         storeCmd.setUseSQLExpressions(getOptionValue("SQL_EXPRESSIONS").equalsIgnoreCase("true") ? true : false)
+
+        if ("saveAsTextFile".equals(storageFn) ) {
+				String options = "${optionsFromDataStore}"
+				if (optionsFromKM != null && optionsFromKM != '') {
+					options = "${options}, ${optionsFromKM}"
+				}
+				options = "options(${options})"
+				storeCmd.setStoreOptions(options);
+        } else if ("saveAsJsonFile".equals(storageFn)) {
+				if (optionsFromKM != null && optionsFromKM != '') {
+					storeCmd.setStoreOptions("options(${optionsFromKM})");
+				}
+        }
             
         List<SparkScript> sparkScripts = new ArrayList<SparkScript>(1);
         sparkScripts.add(sparkScript);
@@ -405,26 +557,25 @@ public class LKMSparkFile extends LKMSpark {
         return result;
     }
 }
-
-        ]]></Field>
+]]></Field>
 	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
 	<Field name="ExtVersion" type="java.lang.String">null</Field>
-	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:23.0]]></Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:26:03.0]]></Field>
 	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[a7c7dc44-16fc-4b90-9c67-fc41cb76446d]]></Field>
 	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
-	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String">null</Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[196]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[134]]></Field>
@@ -435,16 +586,16 @@ public class LKMSparkFile extends LKMSpark {
 	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
 	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[831]]></Field>
 	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KmDefault" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="KmLang" type="java.lang.String"><![CDATA[SQL_FILE]]></Field>
 	<Field name="KmSrcLang" type="java.lang.String"><![CDATA[PYTHON]]></Field>
 	<Field name="KmSrcTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
-	<Field name="KmTechno" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="KmTechno" type="java.lang.String"><![CDATA[FILE]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:41.0]]></Field>
-	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:27:24.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="LCode" type="java.lang.String">null</Field>
@@ -459,9 +610,7 @@ public class LKMSparkFile extends LKMSpark {
 	<Field name="Subtype" type="java.lang.String"><![CDATA[SELECT*]]></Field>
 	<Field name="TrtName" type="java.lang.String"><![CDATA[LKMSparkFile]]></Field>
 	<Field name="TrtType" type="java.lang.String"><![CDATA[CK]]></Field>
-	<Field name="VariableDefs" type="java.lang.String"><![CDATA[
-
-        ]]></Field>
+	<Field name="VariableDefs" type="java.lang.String">null</Field>
 	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpReferencedObject">
@@ -472,29 +621,53 @@ public class LKMSparkFile extends LKMSpark {
  <Field name="GlobalId" type="java.lang.String"><![CDATA[80aa8be2-d68d-40fe-bc1e-0b0b3ee0105e]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[518dc0c9-ec39-4743-8d35-f3ea7b697233]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[150]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[2bcf2e74-ed21-47cc-86b9-a542fcbc9107]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[94]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
 		<Field name="GlobalId" type="java.lang.String"><![CDATA[c54e7e7a-4c47-489e-bd28-1f637e7397a1]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[149]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[2bcf2e74-ed21-47cc-86b9-a542fcbc9107]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[92]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[c630db92-df85-4d3e-891a-1996f6c314a6]]></Field>
 	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[cff30f93-ea03-45f2-aec6-2b1f622be284]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[518dc0c9-ec39-4743-8d35-f3ea7b697233]]></Field>
 	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[152]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[c630db92-df85-4d3e-891a-1996f6c314a6]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[153]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[cff30f93-ea03-45f2-aec6-2b1f622be284]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[154]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
+		<Field name="Enc" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="EncKey" type="java.lang.String">null</Field>
+ <Field name="EncKeyVect" type="java.lang.String">null</Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[18405b03-e59d-4f30-809e-bc3f3efc5857]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[831]]></Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
+ <Field name="Txt" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
+		<Field name="GlobalId" type="java.lang.String">null</Field>
+	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
+	<Field name="OrigineName" type="java.lang.String"><![CDATA[Edit Command]]></Field>
+	<Field name="SnpsCol" type="java.lang.String"><![CDATA[I_TXT_TRT_TXT]]></Field>
+	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.831]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[18405b03-e59d-4f30-809e-bc3f3efc5857]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String">null</Field>
+ <Field name="RefObjFQType" type="java.lang.String">null</Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.134]]></Field>
@@ -511,21 +684,7 @@ public class LKMSparkFile extends LKMSpark {
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[12]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.150]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e082-2d00-11e6-93fb-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitSync]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[21]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.149]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bcb3a042-a6d7-11e6-ac06-23e5aaa09e30]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitCommon]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[23]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.92]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.94]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e05a-2d00-11e6-93fa-00163e1ffd72]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmit]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
@@ -533,13 +692,27 @@ public class LKMSparkFile extends LKMSpark {
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.151]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bcb3a042-a6d7-11e6-ac06-23e5aaa09e30]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitCommon]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[23]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.152]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e082-2d00-11e6-93fb-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitSync]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[21]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.153]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e0aa-2d00-11e6-93fc-00163e1ffd72]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitAsync]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.152]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.154]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bc17c799-d8eb-4fe2-9440-a78c825b817b]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonRESTSubmit]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
@@ -555,17 +728,17 @@ public class LKMSparkFile extends LKMSpark {
 	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
-	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[6]]></Field>
 	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
-	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
 	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
 </Object>
 </SunopsisExport>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="gfKCSBKaCVLLCkJx4MVP0bJz2fbbhSFsTAj0t3q58xY=" keyVect="AtdfAbCqwAZgct4Vwk39Tg==" exportKeySalt="f6585af0-d2fd-435f-b8fa-f2408c44c5c2" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="8RpMN3r/GADKygpYnhHe3Y6b2rLhxAWJN05bK9SlZOs=" keyVect="jEvSvPklNbrGm5+P8fR3nA==" exportKeySalt="e8c419b6-cdd7-4a09-8bf3-b457f2fb89bf" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTrt#121]]></Include>
 </SmartExportList>
@@ -9,8 +9,7 @@
 		<Field name="CleanupOnError" type="java.lang.String">null</Field>
 	<Field name="CompType" type="java.lang.String"><![CDATA[JOIN]]></Field>
 	<Field name="DelegateClass" type="java.lang.String"><![CDATA[XKM_Pig_Join]]></Field>
-	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
- 
+	<Field name="DelegateScript" type="java.lang.String"><![CDATA[ 
 
     public class XKM_Pig_Join extends PigKM {
     
@@ -102,26 +101,25 @@
           return pigJoinScript;
         }
     }        
-
-  ]]></Field>
+]]></Field>
 	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
 	<Field name="ExtVersion" type="java.lang.String">null</Field>
-	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:20.0]]></Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:26:00.0]]></Field>
 	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[d37fe4d1-8e63-4347-a77c-7f709f22c422]]></Field>
-	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
-	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndChange" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[81]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[104]]></Field>
@@ -132,7 +130,7 @@
 	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[121]]></Field>
 	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[657]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[666]]></Field>
 	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KmLang" type="java.lang.String"><![CDATA[PIGLATIN]]></Field>
@@ -140,8 +138,8 @@
 	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[PIG]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:36:01.0]]></Field>
-	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:26:00.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="LCode" type="java.lang.String">null</Field>
@@ -170,8 +168,8 @@
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[660c9a7d-dfc1-49cb-99a2-a83fe25ca054]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[657]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[b70ee682-5256-42ef-afa7-d904d149e2dd]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[666]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[COMPONENT NAME: XKM Pig Join
@@ -198,7 +196,7 @@ Joins more than one input sources based on the join condition.]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[121]]></Field>
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[227]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[228]]></Field>
 	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
@@ -215,7 +213,7 @@ Joins more than one input sources based on the join condition.]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[121]]></Field>
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[228]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[229]]></Field>
 	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
@@ -232,7 +230,7 @@ Joins more than one input sources based on the join condition.]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[121]]></Field>
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[229]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[230]]></Field>
 	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
@@ -249,7 +247,7 @@ Joins more than one input sources based on the join condition.]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[121]]></Field>
 	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[230]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[231]]></Field>
 	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="Position" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
 	<Field name="ShortValue" type="java.lang.String">null</Field>
@@ -259,8 +257,8 @@ Joins more than one input sources based on the join condition.]]></Field>
 	<Field name="UeType" type="java.lang.String"><![CDATA[V]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.657]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[660c9a7d-dfc1-49cb-99a2-a83fe25ca054]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.666]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[b70ee682-5256-42ef-afa7-d904d149e2dd]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -300,6 +298,6 @@ Joins more than one input sources based on the join condition.]]></Field>
 	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
 	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
 </Object>
 </SunopsisExport>

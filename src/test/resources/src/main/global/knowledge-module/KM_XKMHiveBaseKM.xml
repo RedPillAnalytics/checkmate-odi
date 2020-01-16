@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="qUGJbrl29jQ05kuOtq+qyjq4+z4hOou+FsN3iTbzJkI=" keyVect="k41hS5zJHohC4Xr4aCCi2w==" exportKeySalt="2fc2601f-a945-4684-a625-0bf621ed13be" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="j1O4JXERkocVWhcE/8a4S4nmud43nxntOdqJybaDg8Y=" keyVect="REg1C2ltwCsuSuANrBUzeg==" exportKeySalt="8bce2b2b-859a-4c29-b749-f8a17ae7b46e" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTrt#53]]></Include>
 </SmartExportList>
@@ -11,7 +11,7 @@
 	<Field name="DelegateClass" type="java.lang.String"><![CDATA[HiveBaseKM]]></Field>
 	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
         import java.util.regex.Matcher
-    	  
+
     	import oracle.odi.domain.topology.OdiTechnology
     	import oracle.odi.domain.topology.OdiDataServer
     	import oracle.odi.domain.mapping.MappingUtils
@@ -32,22 +32,23 @@
     	import oracle.odi.km.exception.OdiKMException
     	import oracle.odi.domain.mapping.exception.MappingException
     	import oracle.odi.domain.mapping.exception.RMUnconnectedInputException
-    	import oracle.odi.mapping.generation.JoinTable  
-    	import oracle.odi.mapping.generation.SetQuery  	
+    	import oracle.odi.mapping.generation.JoinTable
+    	import oracle.odi.mapping.generation.SetQuery
     	import com.sunopsis.tools.core.SnpsStringTools
-    	
+
     	import oracle.odi.domain.adapter.project.IProcedureLine
-    	import oracle.odi.adapter.OdiLocationAdapter    
-    	import oracle.odi.domain.topology.OdiLogicalSchema	
+    	import oracle.odi.adapter.OdiLocationAdapter
+    	import oracle.odi.domain.topology.OdiLogicalSchema
     	import oracle.odi.domain.mapping.physical.MapPhysicalNode
     	import oracle.odi.domain.mapping.physical.MapPhysicalExpression
     	import oracle.odi.domain.mapping.MapAttribute
-    	import oracle.odi.domain.mapping.expression.MapExpression
+    	import oracle.odi.domain.mapping.expression.MapExpression    
 
-    	import org.codehaus.jackson.JsonNode;
-        import org.codehaus.jackson.JsonParseException;
-        import org.codehaus.jackson.map.JsonMappingException;
-        import org.codehaus.jackson.map.ObjectMapper;
+	import com.fasterxml.jackson.databind.JsonNode;
+	import com.fasterxml.jackson.core.JsonParseException;
+	import com.fasterxml.jackson.databind.ObjectMapper;
+	import com.fasterxml.jackson.databind.JsonMappingException;
+
         import oracle.odi.mapping.generation.NullTarget;
         import oracle.odi.mapping.generation.AbstractSyntaxTree.ASTProducerMethod;
         import oracle.odi.mapping.generation.AbstractSyntaxTree.SubstitutionVariables;
@@ -61,23 +62,23 @@
     	////////////////////////////////////////////
     	// Groovy MOP section
     	////////////////////////////////////////////
-    	
-    	// Define a few extra methods for Class OdiDataStore 
+
+    	// Define a few extra methods for Class OdiDataStore
     	// Refreshing of closures works fine here!
     	    //TODO: Cleanup
-    	    OdiDataStore.metaClass.getJavaEscapedFieldSeparator = 
+    	    OdiDataStore.metaClass.getJavaEscapedFieldSeparator =
     	      { return /*org.apache.commons.lang.StringEscapeUtils.escapeJava(*/ delegate.getFileDescriptor().getFieldSeparator() /*)*/
 /*    	                                                        .replaceAll( java.util.regex.Pattern.quote('\\'), java.util.regex.Matcher.quoteReplacement('\\<$ $>') )
     	                                                        .replaceAll( java.util.regex.Pattern.quote('\\\\  '), java.util.regex.Matcher.quoteReplacement('\\<$ $>') )*/ }
-    	    OdiDataStore.metaClass.getJavaEscapedRowSeparator = 
+    	    OdiDataStore.metaClass.getJavaEscapedRowSeparator =
     	      { return /*org.apache.commons.lang.StringEscapeUtils.escapeJava(*/ delegate.getFileDescriptor().getRowSeparator() /*)*/
     	                                                        .replaceAll( java.util.regex.Pattern.quote("\\u000A"), java.util.regex.Matcher.quoteReplacement("\\n") ) }
-    	    OdiDataStore.metaClass.isDelimited = 
+    	    OdiDataStore.metaClass.isDelimited =
     	      // For some reason the fully qualified class below must stay fully qualified. Otherwise Groovy compilation exception.
     	      { return (delegate.getFileDescriptor().getFormat().equals( oracle.odi.domain.model.OdiDataStore$FileDescriptor$Format.DELIMITED )) }
-    	    OdiDataStore.metaClass.getColList = 
+    	    OdiDataStore.metaClass.getColList =
     	      { String p1, String p2 -> return delegate.getColumns().collect( { col -> col.getName() + ":" + col.getFileFieldDescriptor().getBytes() } ) }
-    	      //< %=odiRef.getSrcColList("", "(.{[BYTES]})", "(.{[BYTES]})", "", "")% >    	      
+    	      //< %=odiRef.getSrcColList("", "(.{[BYTES]})", "(.{[BYTES]})", "", "")% >
 
             //TODO: for some reason metaClasses are only reset after ODI restart. The lines below do NOT solve this issue!
             // Is all of this still true?
@@ -91,14 +92,14 @@
             	def i=0
             	delegate.collect { c(it, i++) }
             }
-        	
+
         	// Add three parameter join method to AbstractList
         	java.util.AbstractList.metaClass.join = { String sBegin, String sSep, String sEnd ->
         	    def s = delegate.join( sSep )
         	    if ( s.isEmpty() ) return ""
         	    return sBegin + s + sEnd
         	}
-        	
+
         	/* Access to DataServer FFs must happen using ?-level code
         	OdiDataServer.metaClass.getFlexFieldValue = { String ffCode ->
                 delegate.initFlexFields( HiveBaseKM.ffFinder )
@@ -111,7 +112,7 @@
 
         	Table.metaClass.initFlexFields = { IOdiFlexFieldFinder ffFinder ->
                 def dataStore = delegate.getModelTable()?.getBoundDataStore()
-                if ( dataStore != null ) 
+                if ( dataStore != null )
                     dataStore.initFlexFields( ffFinder )
         	}
 
@@ -169,7 +170,7 @@
                   def col = delegate
                   return col.isUsedForClustering()
                 }
-                
+
                 OdiColumn.metaClass.isPartition = {
                   def col = delegate
                   return col.isUsedForPartitioning()
@@ -183,7 +184,7 @@
                   else
                     return true;
                 }
-  
+
                 OdiColumn.metaClass.getSortDirection = {
                    def col = delegate
                    return col.getSortByDirection().toString()
@@ -201,9 +202,9 @@
         	IColumn.metaClass.getSortDirection      = { "ASC" }
         	IColumn.metaClass.getSortPosition      = { 0 }
         	IColumn.metaClass.getRefObjectOrPhysColumn = { return (delegate.metaClass.respondsTo( delegate, "getRefObject" ))?delegate.getRefObject():null }
-        	 
-        	// Column object cannot reference a MapPhysicalColumn (like for APs), as 
-        	// refObject must implement IModelObject and MapPhysicalColumn is a non-persistent 
+
+        	// Column object cannot reference a MapPhysicalColumn (like for APs), as
+        	// refObject must implement IModelObject and MapPhysicalColumn is a non-persistent
         	// codegen artifact and therefore cannot be used here.
         	// The metaClass entries below extend the Column class to handle references
         	// both to IModelObject and MapPhysicalColumn. This way KM code can be
@@ -221,7 +222,7 @@
         	    col.setPhysColumn( physCol )
         	    return col
         	}
-        	Column.metaClass.getRefObjectOrPhysColumn = { 
+        	Column.metaClass.getRefObjectOrPhysColumn = {
         	    return (delegate.mRefPhysColumn!=null)?delegate.mRefPhysColumn:delegate.getRefObject()
         	}
         	Column.metaClass.mDdlDataType = null
@@ -236,10 +237,10 @@
         		    col = mapAttr.getBoundColumn()
         		}
         		// If this Column is not bound to any model column, then there is no FlexField defined and thus no value
-        		if (col != null) 
-        		    col.initFlexFields( ffFinder )        	
+        		if (col != null)
+        		    col.initFlexFields( ffFinder )
             }
-        	
+
                 // Convenience method to fetch FlexField information from referenced object
                 Column.metaClass.getFlexFieldValue = { String ffCode ->
                         def col = delegate.getRefObject()
@@ -248,7 +249,7 @@
                             col = mapAttr.getBoundColumn()
                         }
                         // If this Column is not bound to any model column, then there is no FlexField defined and thus no value
-                        if (col == null) 
+                        if (col == null)
                             return null
                 // col.initFlexFields( HiveBaseKM.ffFinder )
                 def ffs = col.getFlexFieldsValues()
@@ -256,7 +257,7 @@
                 return ff?.getValue()
                 }
 
-                Column.metaClass.getOdiColumn = { 
+                Column.metaClass.getOdiColumn = {
                         def col = delegate.getRefObject()
                         if ( !(col instanceof OdiColumn) ) {
                             def mapAttr = delegate.getRefObject()
@@ -273,7 +274,7 @@
                         // Otherwise use the column's FF value
                         odiCol.isUsedForClustering()
                 }
-                
+
                 Column.metaClass.isPartition = {
                 def odiCol = delegate.getOdiColumn()
                 return (odiCol == null)?
@@ -282,7 +283,7 @@
                         // Otherwise use the column's FF value
                         odiCol.isUsedForPartitioning()
                 }
-                
+
                 Column.metaClass.isSort = {
                 def odiCol = delegate.getOdiColumn()
                 return (odiCol == null)?
@@ -291,7 +292,7 @@
                         // Otherwise use the column's FF value
                         odiCol.getSortByPosition() != null
                 }
-	
+
                 Column.metaClass.getSortDirection = {
                 def odiCol = delegate.getOdiColumn()
                 return (odiCol == null)?
@@ -307,27 +308,27 @@
                         // Otherwise use the column's FF value
                         odiCol.getSortByPosition().intValue()
                 }
-                
-            Column.metaClass.isMapped = { 
-            	return (delegate.getRefObjectOrPhysColumn()?.getExpression() != null && 
-                	    (!(delegate.getRefObjectOrPhysColumn()?.getExpression() instanceof UnmappedColumnExpression)) ) 
+
+            Column.metaClass.isMapped = {
+            	return (delegate.getRefObjectOrPhysColumn()?.getExpression() != null &&
+                	    (!(delegate.getRefObjectOrPhysColumn()?.getExpression() instanceof UnmappedColumnExpression)) )
             }
-            Column.metaClass.referencesUpstreamAttribute = { 
-                // Get list of referenced attributes (exclude all variable and sequence references)            	
+            Column.metaClass.referencesUpstreamAttribute = {
+                // Get list of referenced attributes (exclude all variable and sequence references)
             	def refAttrs = delegate.getRefObjectOrPhysColumn()?.getExpression()?.getCrossReferences()?.findAll { MapExpressionXRef xref -> return xref.isAttributeReference() }
-                return (refAttrs != null && !refAttrs.isEmpty()) 
+                return (refAttrs != null && !refAttrs.isEmpty())
             }
-        	
-            Column.metaClass.isConstantTargetExpression = { 
+
+            Column.metaClass.isConstantTargetExpression = {
             	def hasMultipleExpressions = (delegate.getRefObjectOrPhysColumn()?.getExpressions().size() > 0)
                 return !referencesUpstreamAttribute() && !hasMultipleExpressions
             }
-        	
-            MapAttribute.metaClass.isMapped = { 
-            	return (delegate.getExpression() != null && 
-                	    (!(delegate.getExpression() instanceof UnmappedColumnExpression)) ) 
+
+            MapAttribute.metaClass.isMapped = {
+            	return (delegate.getExpression() != null &&
+                	    (!(delegate.getExpression() instanceof UnmappedColumnExpression)) )
             }
-            
+
             /**
              * getSQLAccessName returns an optionally double-quoted identifier.
              * @techno Technology for which the quotation rules should be applied
@@ -340,15 +341,15 @@
                 ILanguage language = techno.getDefaultLanguageImpl();
                 if (language != null) {
                   char[] delimiters = language.getObjectDelimeters();
-                  
-                  String name = techno.getInternalName().equalsIgnoreCase("POSTGRESSQL") ? 
+
+                  String name = techno.getInternalName().equalsIgnoreCase("POSTGRESSQL") ?
                     attrBoundObjName.toLowerCase(Locale.ENGLISH) : attrBoundObjName.toUpperCase(Locale.ENGLISH);
                   boolean isCaseSensitive = language.isObjectNamesCaseSensitive();
                   boolean containWordSep = false;
-                  
+
                   String wordSep = "";
                   char[] wordSepChars = language.getWordSeparators();
-                  if (wordSepChars != null) { 
+                  if (wordSepChars != null) {
                     wordSep = String.valueOf(wordSepChars);
                   }
                   wordSep += " \t\r\n";  // default word separators
@@ -358,44 +359,44 @@
                       break;
                     }
                   }
-                
-                  // Added to handle HBase's key column. 
+
+                  // Added to handle HBase's key column.
                   // Required as there is no double-quoting for reserved words.
                   def isKeyword = ["key"].contains( attrBoundObjName )
-                  
+
                   if (containWordSep || isKeyword || forceDoubleQuoting || (!name.equals(attrBoundObjName) && !isCaseSensitive)) {
                     if (delimiters != null && delimiters.length == 2) {
                       attrBoundObjName = "" + delimiters[0] + attrBoundObjName + delimiters[1];
                     }
                   }
                 }
-                return attrBoundObjName            
+                return attrBoundObjName
             }
-            
+
            /**
-            * Get a SQL or code generation alias name for this source attribute.   This will be the 
-            * attribute name, possibly modified if special characters are found.            
+            * Get a SQL or code generation alias name for this source attribute.   This will be the
+            * attribute name, possibly modified if special characters are found.
             * Copied from MapAttribute.getSQLAliasName
             * @techno Technology to be used for calculating the alias
             * @return A SQL alias name for the source attribute.
             */
-            MapAttribute.metaClass.getSQLAliasName = { OdiTechnology techno ->                  
-                  String result = "";                  
+            MapAttribute.metaClass.getSQLAliasName = { OdiTechnology techno ->
+                  String result = "";
                   String attrName = delegate.getName();
-                  
+
                   // add delimiters to column name if necessary, refer to current implementation in SnpLanguage
                   ILanguage language = techno.getDefaultLanguageImpl();
                   if (language != null) {
                     char[] delimiters = language.getObjectDelimeters();
-                    
-                    String name = techno.getInternalName().equalsIgnoreCase("POSTGRESSQL") ? 
+
+                    String name = techno.getInternalName().equalsIgnoreCase("POSTGRESSQL") ?
                       attrName.toLowerCase(Locale.ENGLISH) : attrName.toUpperCase(Locale.ENGLISH);
               //      boolean isCaseSensitive = language.isObjectNamesCaseSensitive();
-                    boolean containsWordSep = false; 
-                    
+                    boolean containsWordSep = false;
+
                     String wordSep = "";
                     char[] wordSepChars = language.getWordSeparators();
-                    if (wordSepChars != null) { 
+                    if (wordSepChars != null) {
                       wordSep = String.valueOf(wordSepChars);
                     }
                     wordSep += " \t\r\n";  // default word separators
@@ -407,24 +408,24 @@
                         //break;
                       }
                     }
-                    
+
                     if (containsWordSep) {
                       // Ensure uniqueness within set of attribute names, since we have substituted characters in the original unique attribute name.
                       attrName += "_" + delegate.getPosition().toString();
                     }
-                  
+
                   }
-                  
-                  result += attrName;                  
+
+                  result += attrName;
                   return result;
-            }          
-            
-            MapAttribute.metaClass.referencesUpstreamAttribute = { 
+            }
+
+            MapAttribute.metaClass.referencesUpstreamAttribute = {
                 // Get list of referenced attributes (exclude all variable and sequence references)
                 def refAttrs = delegate.getExpression()?.getCrossReferences()?.findAll { MapExpressionXRef xref -> return xref.isAttributeReference() }
-                return (refAttrs != null && !refAttrs.isEmpty()) 
+                return (refAttrs != null && !refAttrs.isEmpty())
             }
-            
+
             // Returns a copy of the input query with columns added for any unmapped or constant expression mappings
             // Takes attribute list from component
             /*
@@ -439,11 +440,11 @@
                     def extendedAliasList  = component.getAttributes().collect { attr -> return new StringExpression( attr.getSQLAliasName() ) }
                     query.setAliasList( extendedAliasList )
                 }
-                query.setSelectList( extendedSelectList )	
+                query.setSelectList( extendedSelectList )
                 return query
             }
             */
-    	
+
             /**
              * This method returns the list of journalized source Datastore nodes for the current node.
              */
@@ -456,12 +457,12 @@
                 List<MapPhysicalNode> result = new ArrayList<MapPhysicalNode>()
                 delegate.getUpstreamJournalizedSources( result, srcExUnit )
                 return result
-            }            
+            }
             MapPhysicalNode.metaClass.getUpstreamJournalizedSources = { List<MapPhysicalNode> result, ExecutionUnit exUnit ->
                 List<MapPhysicalNode> upstreamNodes = delegate.getUpstreamConnectedNodes();
                 for (MapPhysicalNode upstreamNode : upstreamNodes) {
                     if (!exUnit.equals(upstreamNode.getExecutionUnit()))
-                        continue        
+                        continue
                     if (upstreamNode.isSourceNode()) {
                         // Is "Journalized Data Only" set?
                         if ( DatastoreComponent.isJournalizedDatastoreNode( upstreamNode ) )
@@ -486,7 +487,7 @@
              */
             MapPhysicalNode.metaClass.getSortedAllPhysicalExpressions = {
               List<MapPhysicalExpression> result = getAllPhysicalExpressions();
-              
+
               List<MapExpression> logExprs = null;
               MapConnectorPoint cp = delegate.getLogicalConnectorPoint();
               if (cp != null) {
@@ -497,10 +498,10 @@
               	}
               }
               final List<MapExpression> sortedLogicalExpressions = logExprs;
-              
+
               // Sort the physical expression in the order of the owning attributes.
               Collections.sort(result, new Comparator<MapPhysicalExpression>() {
-          
+
           			@Override
                 public int compare(MapPhysicalExpression o1, MapPhysicalExpression o2) {
           				if (sortedLogicalExpressions != null) {
@@ -514,15 +515,15 @@
           				}
           	      return 0;
                 }
-              	
+
               });
-              
+
               return result;
             }
 
-            
+
             /**
-             * The following dump2 methods provide a convenient way to dump out metadata about the respective object 
+             * The following dump2 methods provide a convenient way to dump out metadata about the respective object
              * and its related objects. It is usually used with a println statement:
              *     println ("Debugging: ${physicalNode.dump2()}")
              * It is very handy when trying to find the way through physical/logical columns/attributes and expressions
@@ -599,7 +600,7 @@
                 sb += indent+ "    Name:         ${col.getName()}\n"
                 sb += indent+ "    TableName:    ${col.getTableName()}\n"
                 sb += indent+ "    RefObj:       ${col.getRefObject()}\n"
-                sb += indent+ "    RefObjOrPhys: ${col.getRefObjectOrPhysColumn()}\n"                
+                sb += indent+ "    RefObjOrPhys: ${col.getRefObjectOrPhysColumn()}\n"
                 return sb.toString()
         	}
 
@@ -622,7 +623,7 @@
 //    private List<ArrayExpression> orderByList2 = null;
 
     // Variables inroduced for flatten component
-    private boolean isFlattenCollection    
+    private boolean isFlattenCollection
     public static class FlattenedComplexColumn {
       private boolean isFlattenCollection;
       private String complexAttributeFullName;
@@ -639,7 +640,7 @@
         lvColAlias = pLvColAlias;
         includeNulls = pIncludeNulls;
       }
-      
+
       public boolean isFlattenCollection() {
         return this.isFlattenCollection;
       }
@@ -672,9 +673,9 @@
           return "";
       }
     }
-    
+
     private List<FlattenedComplexColumn> flattenedComplexColList = new ArrayList<FlattenedComplexColumn>();
-    
+
 
     public HiveSqlQuery(SqlQuery otherQuery) {
       super(otherQuery);
@@ -724,11 +725,11 @@
     public boolean isFlattenCollection() {
       return this.isFlattenCollection
     }
-    
+
     protected boolean hasFlattenedCollection() {
       return isFlattenCollection
     }
-    
+
     public void addFlattenedComplexColumn(boolean pIsFlattenCollection, String pComplexAttributeFullName, String pLvTabAlias, String pLvColAlias, boolean pIncludeNulls) {
       FlattenedComplexColumn flattenedCol = new FlattenedComplexColumn(this, pIsFlattenCollection, pComplexAttributeFullName, pLvTabAlias, pLvColAlias, pIncludeNulls);
       flattenedComplexColList.add(flattenedCol);
@@ -738,7 +739,7 @@
     public List<FlattenedComplexColumn> getFlattenedComplexColList() {
       return flattenedComplexColList;
     }
-    
+
     /**
     * Gets the flattened complex columns that would result in a lateral view, basically only those that comprise a collection.
     * This method would be used by the Hive template component FromText.
@@ -751,7 +752,7 @@
     }
       return result;
     }
-    
+
      /**************************************************************
      * Get the various SORT BY/CLUSTER BY/DISTRIBUTE BY/ORDER BY expressions of this query.
      *
@@ -769,7 +770,7 @@
     {
 	return super.getOrderByList() ;
     }
- 
+
     ///////////////////////////////////////////////////////////////////
     //
     public String getOrderByListString()
@@ -794,7 +795,7 @@
         // Multiple elements in the list
         for (i in 1..(resultList.size()-1)) {
           resultStr += ", ";
-  
+
          // Now for every element in the list, find out if there is a '.' in the string.
          resultStr += removeQualifiedName(resultList.get(i));
         } // for
@@ -802,7 +803,7 @@
 
       return resultStr ;
     }
-  
+
     //////////////////////////////////////////////////////////////
     // Need to remove the fully qualified namename
     // Source : CUST.first_name
@@ -833,15 +834,15 @@
     public void setOrderByList (ArrayExpression sorterExp)
     {
     } // setOrderByList()
-    
-  
+
+
   } // End of HiveSqlQuery class
 
-    	        
+
         public class UnmappedColumnExpression extends StringExpression {
         	public UnmappedColumnExpression( String DdlDataType ) { super( "cast (null as ${DdlDataType})" ) }
         }
-        
+
         public class SkipColumnExpression extends StringExpression {
         	public SkipColumnExpression() { super( "<SkipColumnExpression: this should never be seen.>" ) }
         }
@@ -857,7 +858,7 @@
             //public def storage = [:]
             //public propertyMissing(String name, value) { println "propertyMissing: $name $value"; storage[name] = value }
             //public def propertyMissing(String name)    { println "propertyMissing: $name"; storage[name] }
-            
+
             public SmartCustomAST( String componentKMName, String template ) {
                 super( componentKMName, template )
             }
@@ -880,37 +881,37 @@
                 ffFinder = pFfFinder
                 table.initFlexFields( ffFinder )
             }
-        	
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.SqlCreateTableStatement.getTable")
             public Table  getTable()          { return table }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.SqlCreateTableStatement.tableName")
             public String tableName()         { return table.getGeneratedName() }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.SqlCreateTableStatement.tableType")
             public String tableType()         { return tableType }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.SqlCreateTableStatement.tableOptions")
             public String tableOptions()      { return tableOptions }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.SqlCreateTableStatement.colListDdl")
             public String colListDdl()        { return columns.collect { col ->
             	                                                  // Is this a Virtual Column (journalization columns)?
-            	                                              	  if ( col instanceof OdiDataSetRef$VirtualColumn )    
+            	                                              	  if ( col instanceof OdiDataSetRef$VirtualColumn )
             	                                              	      return col.getName() + "\t" + col.getDdlDataType()
             	                                              	  // Has an explicit data type override been set?
             	                                              	  if ( col.mDdlDataType != null )
             	                                              	      return col.getName() + "\t" + col.mDdlDataType
             	                                              	  def refCol = col.getRefObjectOrPhysColumn()
             	                                              	  // Does this column reference a MapAttribute?
-            	                                              	  if ( refCol instanceof MapAttribute || refCol instanceof MapPhysicalColumn )    
+            	                                              	  if ( refCol instanceof MapAttribute || refCol instanceof MapPhysicalColumn )
             	                                              	      //return refCol.getName() + "\t" + refCol.getDdlDataType()
             	                                              	      return col.getName() + "\t" + refCol.getDdlDataType()
             	                                              	  // If this is an OdiColumn, we may need to convert from File datatype to Hive datatype
             	                                              	  def dt = refCol.getDataType()
             	                                              	  // We convert the DT just in case the referenced object is a File DataStore
             	                                              	  def colLen = refCol.getLength()
-            	                                              	  def colScale = refCol.getScale() 
+            	                                              	  def colScale = refCol.getScale()
             	                                              	  def dataType = dt.getConvertedDataType( techno, colLen, colScale )
             	                                              	  //return refCol.getName() + "\t" + MappingUtils.getDdlDataType( dataType, refCol.getLength(), refCol.getScale(), refCol.getName() )
                                                                   // Borrowed code from MappingUtils.getDdlDataType
@@ -925,29 +926,29 @@
             	                                              	  return col.getName() + "\t" + MappingUtils.getDdlDataType( dataType.dataType, colLen, colScale, col.getName() )
             	                                              }
             	                                              .join( ",\n\t" ) }
-            
+
             public setColumns( List<IColumn> pColumns ) { columns = pColumns; columns.each { col -> col.initFlexFields( ffFinder ) } }
         }
-                
+
         @ASTClass(descriptionKey="ASTClass.HiveCreateTableStatement")
         public class HiveCreateTableStatement extends SqlCreateTableStatement {
             //protected HiveTable table
             //protected List<Column> columns
             public Integer buckets
-        	
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.external")
             public String external()          { return (table.external)?"EXTERNAL":"" }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.ifNotExists")
             public String ifNotExists()       { return (table.ifNotExists)?"IF NOT EXISTS":"" }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.colListDdl")
             public String colListDdl()        { return columns.findAll { col -> !col.isPartition() }
 //            	                                              .collect { col -> col.getName() + "\t" + col.getRefObject().getDdlDataType() }
             	                                              .collect { col ->
 
             	                                                  // Is this a Virtual Column (journalization columns)?
-            	                                              	  if ( col instanceof OdiDataSetRef$VirtualColumn )    
+            	                                              	  if ( col instanceof OdiDataSetRef$VirtualColumn )
             	                                              	      return col.getName() + "\t" + col.getDdlDataType()
             	                                              	  // Has an explicit data type override been set?
             	                                              	  if ( col.mDdlDataType != null )
@@ -956,10 +957,10 @@
             	                                              	  def refCol = col.getRefObjectOrPhysColumn()
 
             	                                              	  // Does this column reference a MapAttribute?
-            	                                              	  if ( refCol instanceof MapAttribute ) {   
+            	                                              	  if ( refCol instanceof MapAttribute ) {
             	                                              	   String colName = col.getName();
             	                                              	   def dataFormat  = refCol.getBoundObject().getDataFormat();
-            	                                              	       
+
             	                                              	      if (dataFormat != null){
             	                                              	      String parsedDataFormat = parseDataFormat(colName, dataFormat);
             	                                              	        return col.getName() + "\t" + parsedDataFormat}
@@ -967,7 +968,7 @@
             	                                              	  }
 
             	                                              	  // Does this column reference a MapPhysicalColumn?
-            	                                              	  if ( refCol instanceof MapPhysicalColumn ) {   
+            	                                              	  if ( refCol instanceof MapPhysicalColumn ) {
             	                                              	      return col.getName() + "\t" + refCol.getDdlDataType()
             	                                              	  }
 
@@ -982,39 +983,39 @@
             	                                              	  return col.getName() + "\t" + MappingUtils.getDdlDataType( hiveDataType.dataType, refCol.getLength(), refCol.getScale(), col.getName() )
             	                                              }
             	                                              .join( ",\n\t" ) }
-            	                                              
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.partitionedClause")
             public String partitionedClause() { return columns.findAll { col -> col.isPartition() }
             	                                              .collect { col -> col.getName() + "\t" + col.getRefObject().getDdlDataType() }
             	                                              .join( "PARTITIONED BY (",   ",\n\t",   ")" ) }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.clusteredClause")
             public String clusteredClause()   { return columns.findAll { col -> col.isCluster() }
             	                                              .collect { col -> col.getName() }
             	                                              .join( "CLUSTERED BY (",   ", ",   ")" ) }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.sortByClause")
             public String sortByClause()      { return columns.findAll { col -> col.isSort() }
 							      .sort { col -> col.getSortPosition() }
             	                                              .collect { col -> col.getName()  + " " + col.getSortDirection() }
             	                                              .join( "SORTED BY (",   ", ",   ")" ) }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.intoBucketsClause")
             public String intoBucketsClause() { return (buckets==null || buckets == 0)?"":"INTO " + buckets + " BUCKETS" }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.rowFormatClause")
             public String rowFormatClause() { return table.rowFormatClause }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveCreateTableStatement.tblPropertiesClause")
             public String tblPropertiesClause() { return table.tblPropertiesClause }
-            
+
             public HiveCreateTableStatement( String componentKMName, String template, HiveTable pTable, OdiTechnology pHiveTechno, IOdiFlexFieldFinder ffFinder ) {
                 super( componentKMName, template, pTable, pHiveTechno, ffFinder )
-                buckets = table.getHiveBuckets() 
+                buckets = table.getHiveBuckets()
             }
-            
+
             String parseDataFormat(String colName, String dataFormat) {
-                  org.codehaus.jackson.map.ObjectMapper mapper = new org.codehaus.jackson.map.ObjectMapper();
+                  com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
                   JsonNode rootNode = mapper.readTree(dataFormat);
                   String complexField = processSchema(rootNode);
                   complexField = complexField.replace("integer", "int");
@@ -1023,11 +1024,11 @@
                   complexField = complexField.replace("long", "bigint");
                   return complexField;
         }
-        
+
                 String processSchema(JsonNode node) {
                   String complexField;
                   JsonNode typeNode = node.path("type");
-                  String typeNodeText = typeNode.getTextValue();
+                  String typeNodeText = typeNode.textValue();
                   if (typeNode.isContainerNode()) {
                     complexField = processSchema(typeNode);
                   } else if (typeNodeText != null && typeNodeText.equalsIgnoreCase("array")) {
@@ -1035,26 +1036,26 @@
                     complexField = "array<" + processSchema(itemNode) + ">";
                   }else if (typeNodeText != null && typeNodeText.equalsIgnoreCase("map")) {
                     JsonNode itemNode = node.path("items");
-                    complexField = "map<" + processSchema(itemNode) + ">"; 
+                    complexField = "map<" + processSchema(itemNode) + ">";
                   }else if (typeNodeText != null && typeNodeText.equalsIgnoreCase("union")) {
                     JsonNode itemNode = node.path("items");
-                    complexField = "union<" + processSchema(itemNode) + ">"; 
+                    complexField = "union<" + processSchema(itemNode) + ">";
                   }else if (typeNodeText != null && (typeNodeText.equalsIgnoreCase("record") || typeNodeText.equalsIgnoreCase("object"))) {
                     StringBuffer cf = new StringBuffer();
                     cf.append("struct<");
                     JsonNode fieldsNode = node.path("fields");
-                    Iterator<JsonNode> fields = fieldsNode.getElements();
+                    Iterator<JsonNode> fields = fieldsNode.elements();
                     while (fields.hasNext()) {
                       JsonNode fieldNode = fields.next();
-                      String fieldName = fieldNode.path("name").getTextValue();
+                      String fieldName = fieldNode.path("name").textValue();
                       JsonNode fieldTypeNode = fieldNode.path("type");
                       boolean isContainerNode = fieldTypeNode.isContainerNode();
                       String type = null;
                       if (isContainerNode) {
-                        cf.append(fieldName + "\\:" + processSchema(fieldTypeNode) + ","); 
+                        cf.append(fieldName + "\\:" + processSchema(fieldTypeNode) + ",");
                       } else {
-                        type = fieldTypeNode.getTextValue();
-                        cf.append(fieldName + "\\:" + type + ","); 
+                        type = fieldTypeNode.textValue();
+                        cf.append(fieldName + "\\:" + type + ",");
                       }
                     }
                     cf.deleteCharAt(cf.length()-1);
@@ -1062,13 +1063,13 @@
                     complexField = cf.toString();
                   } else if (typeNodeText != null && (typeNodeText.equalsIgnoreCase("string")|| typeNodeText.equalsIgnoreCase("fixed") || typeNodeText.equalsIgnoreCase("integer") || typeNodeText.equalsIgnoreCase("double") || typeNodeText.equalsIgnoreCase("float") || typeNodeText.equalsIgnoreCase("long") || typeNodeText.equalsIgnoreCase("number")))
                     return typeNodeText;
-                  else 
+                  else
                     return node.toString().replace("\"", "");
 
                   return complexField;
                 }
         }
-        
+
         @ASTClass(descriptionKey="ASTClass.HiveInsertStatement")
         @SubstitutionVariables([
           @SubstitutionVariable(name="INSERT",type=HiveInsertStatement.class)
@@ -1078,33 +1079,33 @@
             public IOdiFlexFieldFinder ffFinder
         	String partitionClause = ""
         	public Boolean overwrite = false
-        	
+
             public HiveInsertStatement() { super() }
             public HiveInsertStatement( SqlInsertStatement otherStatement ) { super( otherStatement ); this.ffFinder = otherStatement.ffFinder;  }
             public HiveInsertStatement (Table table, List<Column> columnList, SqlQuery query, IOdiFlexFieldFinder pFfFinder ) { this( table, columnList, query, true, pFfFinder  ) }
-            public HiveInsertStatement (Table table, List<Column> columnList, SqlQuery query, Boolean recalcColList, IOdiFlexFieldFinder pFfFinder ) { 
+            public HiveInsertStatement (Table table, List<Column> columnList, SqlQuery query, Boolean recalcColList, IOdiFlexFieldFinder pFfFinder ) {
             	super( table, columnList, query )
             	ffFinder = pFfFinder
             	table.initFlexFields( ffFinder )
             	columnList.each { col -> col.initFlexFields( ffFinder ) }
-            	
+
             	// Set a default order of KM task generated from this AST
             	setOrder( 500 )
-            	
+
 
             	// Build the partition clause of the insert statement
                 partitionClause = getTargetColumns().findAll { col -> col.isPartition() }
-                                                    .collect { col -> col.getName() + 
+                                                    .collect { col -> col.getName() +
                                                                // for columns with constant target values, we have to add the value:
                                                                ((col.isMapped() && !col.referencesUpstreamAttribute()) ? "=" + col.getRefObjectOrPhysColumn()?.getExpression()?.getText() : "") }
-                                                    .join( "PARTITION (", ", ", ")" )                
+                                                    .join( "PARTITION (", ", ", ")" )
             	if ( recalcColList ) {
-            	    // Put all non-partition columns first and drop any partition columns with constant value mapping from list. 
+            	    // Put all non-partition columns first and drop any partition columns with constant value mapping from list.
             	    // Constant values in partition columns are covered by the partition clause
                 	def targetCols = columnList
                 	def selectList = query.getSelectList()
-                	def aliasList  = query.getAliasList()      
-                	                	
+                	def aliasList  = query.getAliasList()
+
                 	def reorderedSelectList    = // put all non-partition columns first. Then all other columns. Omit partition columns with constant value. Those are treated in partition clause.
                 	                                 targetCols.collectWithIndex { col,idx -> (!col.isPartition())?selectList.get(idx):null }
                 	                          .plus( targetCols.collectWithIndex { col,idx -> ( col.isPartition() && col.referencesUpstreamAttribute() )?selectList.get(idx):null } )
@@ -1120,7 +1121,7 @@
                                               .findAll { (it!=null) }
                 	}
 
-                	def reorderedQuery = new HiveSqlQuery( query )   
+                	def reorderedQuery = new HiveSqlQuery( query )
                 	reorderedQuery.setSelectList( reorderedSelectList )
                 	reorderedQuery.setAliasList(  reorderedAliasList )
                 	setSelectQuery( reorderedQuery )
@@ -1133,16 +1134,16 @@
             //public String getText(TemplateUtils templateUtils) { return ""; if (text==null) { return super.getText(templateUtils) } else { return text } }
             //TODO: This should define the LineType. But for IKMs this does not work
             public IProcedureLine.LineType getLineType() { return IProcedureLine.LineType.EX_UNIT_MAIN; }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveInsertStatement.tableName")
             public String tableName() { return getTargetTable().getGeneratedName() }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveInsertStatement.partitionClause")
             public String partitionClause() { return partitionClause }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveInsertStatement.overwrite")
             public String overwrite() { return (overwrite)?"OVERWRITE":"INTO" }
-                        
+
             @Override
             public void setTargetTable (Table table) {
             	if ( !(table instanceof HiveTable) ) {
@@ -1151,7 +1152,7 @@
                 }
                 super.setTargetTable( table )
             }
-            
+
         }
 
         @ASTClass(descriptionKey="ASTClass.FileToHiveStatement")
@@ -1164,57 +1165,57 @@
             private ILocation mSourceLocation
             private ITechnology mTargetTechnology;
             private Table sourceFile
-            
+
             private int noPartitionColumns
             private int noUnmappedPartitionColumns
             private String codeForMixingPartitionColumnValues
             private boolean isLocalFile, isOverwrite
-            
+
             public FileToHiveStatement( MapPhysicalNode papNode, Table pTable, List<Column> pColumnList, SqlQuery input, IOdiFlexFieldFinder ffFinder, boolean isLocalFile, boolean isOverwrite ) {
                 super( pTable, pColumnList, input, false, ffFinder )
-                
+
                 this.isLocalFile = isLocalFile
                 this.isOverwrite = isOverwrite
-                
+
                 mTargetLocation = papNode.getExecutionUnit().getLocation()
                 mSourceLocation = papNode.getAPNodeSourceExUnit().getLocation()
-                
+
                 // Collect any source tables (there should only be a single one)
                 def srcLst = input.getFromList().collect { it.getSourceTables().collect { it } }.flatten()
                 if ( srcLst.size() <= 0 && srcLst.size() > 1 )
                 	throw new RuntimeException( "Input query must have exactly one source file." )
                 sourceFile = srcLst[0]
-                
+
                 noPartitionColumns         = getTargetColumns().findAll { col -> col.isPartition() }
                                                                .size()
-                noUnmappedPartitionColumns = getTargetColumns().findAll { col -> (col.isPartition() && (!col.isMapped())) }                              
+                noUnmappedPartitionColumns = getTargetColumns().findAll { col -> (col.isPartition() && (!col.isMapped())) }
                                                                .size()
                 def idx = 1
             	def txt = getTargetColumns()
             	              // get all partition columns, which are unmapped or have a constant value
                               .findAll { col -> col.isPartition() && (!col.isMapped() || !col.referencesUpstreamAttribute()) }
                               .collect { col -> 'part_col_vals.add( ' +
-                                ((col.isMapped())? ("''' " + col.getRefObjectOrPhysColumn()?.getExpression()?.getText() + " '''") : 'part_col_vals_from_fileName[' + idx++ + ']') + 
+                                ((col.isMapped())? ("''' " + col.getRefObjectOrPhysColumn()?.getExpression()?.getText() + " '''") : 'part_col_vals_from_fileName[' + idx++ + ']') +
                             " )\t// " + col.getRefObjectOrPhysColumn().getSQLAccessName() }
                                 .join( "", "\n        ", "\n" )
                 idx = 0
-                txt += getTargetColumns()                
+                txt += getTargetColumns()
             	              // get all partition columns, which are unmapped or have a constant value
                               .findAll { col -> col.isPartition() && (!col.isMapped() || !col.referencesUpstreamAttribute()) }
-                              .collect { col -> 
+                              .collect { col ->
                               	            def delim = ""
                               	            // if the partition value comes from the file name, we have to add a string delimiter if this is a character column
-                              	            if (!col.isMapped() && Column.isCharacterDataType( col.getRefObjectOrPhysColumn().getDataType() ) && (!col.isMapped()) ) 
+                              	            if (!col.isMapped() && Column.isCharacterDataType( col.getRefObjectOrPhysColumn().getDataType() ) && (!col.isMapped()) )
                               	                delim = "'"
-                                            return 'sql += "' + col.getName() + ' = ' + 
-                                                   delim + '" + "${part_col_vals[' + idx++ + ']}" + "' + delim + 
+                                            return 'sql += "' + col.getName() + ' = ' +
+                                                   delim + '" + "${part_col_vals[' + idx++ + ']}" + "' + delim +
                                                    '"\t// ' + col.getRefObjectOrPhysColumn().getSQLAccessName() }
-                              .join( "        sql += 'partition ('\n        ", 
-                                     "\n        sql += ', '\n        ", 
+                              .join( "        sql += 'partition ('\n        ",
+                                     "\n        sql += ', '\n        ",
                                      "\n        sql += ')'\n" )
-        	    codeForMixingPartitionColumnValues = txt                  
+        	    codeForMixingPartitionColumnValues = txt
             }
-            
+
             @Override
             public ILocation getTargetLocation() throws GenerationException { return mTargetLocation }
             @Override
@@ -1226,36 +1227,36 @@
 
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.FileToHiveStatement.isLocalFile")
             public isLocalFile()                { return isLocalFile }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.FileToHiveStatement.isOverwrite")
             public isOverwrite()                { return isOverwrite }
-    
-			public void setOverwrite (boolean overwriteTarget) { isOverwrite = overwriteTarget } 
-    	           
+
+			public void setOverwrite (boolean overwriteTarget) { isOverwrite = overwriteTarget }
+
             //TODO: these methods are only required, because $[] expressions do not support groovy expressions
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.FileToHiveStatement.fileNamePattern")
-            public fileNamePattern()                { return sourceFile.getName() } 
-            
+            public fileNamePattern()                { return sourceFile.getName() }
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.FileToHiveStatement.getSourceFileDataStore")
-            public getSourceFileDataStore()         { return sourceFile.getModelTable().getBoundDataStore() } 
-            
+            public getSourceFileDataStore()         { return sourceFile.getModelTable().getBoundDataStore() }
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.FileToHiveStatement.noPartitionColumns")
             public int noPartitionColumns()         { return noPartitionColumns }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.FileToHiveStatement.noUnmappedPartitionColumns")
             public int noUnmappedPartitionColumns() { return noUnmappedPartitionColumns }
-            
+
             @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.FileToHiveStatement.codeForMixingPartitionColumnValues")
-            public String codeForMixingPartitionColumnValues() { return codeForMixingPartitionColumnValues }  
-            
+            public String codeForMixingPartitionColumnValues() { return codeForMixingPartitionColumnValues }
+
             @Override
             public Map<String,Object> getTemplateSubstitutionMap() {
               Map<String,Object> result = new LinkedHashMap<String,Object>();
               result.put("INSERT", this)
               return result
-            }   	
+            }
         }
-        
+
         @ASTClass(descriptionKey="ASTClass.HiveFileInsert")
         @SubstitutionVariables([
           @SubstitutionVariable(name="HIVE_FILE_INSERT",type=HiveFileInsert.class)
@@ -1264,57 +1265,57 @@
         public class HiveFileInsert extends NullTarget {
           String sourceDir, fieldSeparator, rowSeparator;
           SqlQuery hiveUnloadQuery;
-          
+
           public HiveFileInsert() {
-            super() 
+            super()
             skipGenerateTask();  // Tells the generator not to auto-generate a task for this AST.
           }
-          
+
           void setSourceDir(String sourceDir) {
             this.sourceDir = sourceDir;
           }
-          
+
           void setHiveUnloadQuery(SqlQuery query) {
             this.hiveUnloadQuery = query;
           }
-          
+
           void setFieldSeparator(String fieldSeparator) {
             this.fieldSeparator = fieldSeparator;
           }
-          
+
           void setRowSeparator(String rowSeparator) {
             this.rowSeparator = rowSeparator;
           }
-          
+
           @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveFileInsert.getSourceDir")
           public String getSourceDir() {
             return this.sourceDir;
           }
-          
+
           @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveFileInsert.getHiveUnloadQuery")
           public SqlQuery getHiveUnloadQuery() {
             return this.hiveUnloadQuery;
           }
-          
+
           @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveFileInsert.getFieldSeparator")
           public String getFieldSeparator() {
             return this.fieldSeparator;
           }
-          
+
           @SubstitutionAPIMethod(descKey="SubstitutionAPIMethod.HiveFileInsert.getRowSeparator")
           public String getRowSeparator() {
             return this.rowSeparator;
           }
-          
+
           @Override
           public Map<String,Object> getTemplateSubstitutionMap() {
             Map<String,Object> result = new LinkedHashMap<String,Object>();
             result.put("HIVE_FILE_INSERT", this)
             return result
           }
-          
+
         }
-                
+
         @ASTClass(descriptionKey="ASTClass.HiveTable")
         public class HiveTable extends Table {
             public boolean external    = false;
@@ -1322,20 +1323,20 @@
             public String rowFormatClause = "";
             public String tblPropertiesClause = "";
             public HiveTable (String name, String pQualifier, String customText) { HiveTable( name, pQualifier, customText, false, false ) }
-            public HiveTable (String name, String pQualifier, String customText, boolean pExternal, boolean pIfNotExists) { 
-            	super( name, pQualifier, customText ) 
+            public HiveTable (String name, String pQualifier, String customText, boolean pExternal, boolean pIfNotExists) {
+            	super( name, pQualifier, customText )
             	external    = pExternal
             	ifNotExists = pIfNotExists
             }
             // In case of staging tables the HiveTable holds the information about clustering
             //TODO: to be implemented as part of later story
-            
+
             public boolean isClusterColumn( Column col )   { return false }
             public boolean isPartitionColumn( Column col ) { return false }
             public boolean isSortColumn( Column col )      { return false }
             public getFlexFieldValue( String ffCode )      { return super.getFlexFieldValue( ffCode ) }
         }
-        
+
         /*
         public class HiveColumn extends Column {
             public HiveColumn (Table table, String name, IModelObject refObject) {
@@ -1351,10 +1352,10 @@
 
         @GeneratorDelegateClass(componentType=DatastoreComponent.COMPONENT_TYPE_NAME, descriptionKey="GeneratorDelegateClass.HiveBaseKM")
         public class HiveBaseKM extends GroovyComponentGeneratorDelegateBase {
-    	
+
     	      // class constructor; initialization is done in setBinding method
             public HiveBaseKM() {}
-    	
+
             protected IMapComponent component;
             protected MapConnectorPoint connector;
             protected MapPhysicalNode physicalNode;
@@ -1368,11 +1369,11 @@
             // Should the task PrepareHiveSession be included?
             protected boolean prepareHiveSession = true;
             protected ArrayList hiveProperties;
-                
+
         /////////////////////
         // General KM methods
         /////////////////////
-        
+
         protected mBinding = null;
         public void setBinding(Binding binding) {
             super.setBinding(binding);
@@ -1398,43 +1399,43 @@
             }
             if (variables.containsKey("subtype")) {
               subtype =  mBinding.getVariable("subtype");
-            }             
-        
+            }
+
         	ffFinder = (IOdiFlexFieldFinder) ((OdiAdapter)component.getRootContainer().getAdapter()).getEntityManager().getFinder(OdiFlexField.class)
         }
-        
+
         // Publish any variables back into binding to make them available in templates and variableDefText
-        protected void updateBinding() { 
+        protected void updateBinding() {
         	// expose variables into Binding
         	mBinding.setVariable( "prepareHiveSession", prepareHiveSession )
         	hiveProperties = getHiveSessionProperties()
         	mBinding.setVariable( "hiveProperties", hiveProperties )
         }
-        
+
         // Helper methods
         ITechnology getGroovyTechnology() {
           return (ITechnology) physicalNode.getAdapter().findModelObject(ITechnology.class.getName(), null, "Groovy")
         }
-        
+
         ITechnology getHiveTechnology() {
           return (ITechnology) physicalNode.getAdapter().findModelObject(ITechnology.class.getName(), null, "Hive")
         }
-        
+
         public String getQuotedString( String pString ) {
             def dq = ""+(char)34
             // As getQuotedJavaString does not handle any code gen expression well, we need to put some work-around:
             // if "odiRef" is found inside pString, then we just surround the pString by double-quotes.
-            // Limitation: this only works as long as pString does not require any escaping. E.g. does not contain 
+            // Limitation: this only works as long as pString does not require any escaping. E.g. does not contain
             // double-quotes.
             //TODO: remove work-around
             if ( pString == null )
                 return SnpsStringTools.getQuotedJavaString(new StringBuffer()).toString()
-            if ( pString.contains( "odiRef" ) ) 
+            if ( pString.contains( "odiRef" ) )
                 return dq + pString + dq
             return SnpsStringTools.getQuotedJavaString(new StringBuffer(pString)).toString()
         }
-        
-        // Returns the value of a KM checkbox option 
+
+        // Returns the value of a KM checkbox option
         boolean isOptionTrue( String optionName ) {
             def option = null;
             if ( option == null && physicalNode.isIKMNode() ) {
@@ -1452,9 +1453,9 @@
                 //TODO: We must not use RuntimeException. Use proper exception class instead. How to register message key?
                 throw new RuntimeException( "KM option $optionName not defined" )
             }
-        }     
-        
-        // Returns the value of a KM text option 
+        }
+
+        // Returns the value of a KM text option
         String getOption( String optionName ) {
             def option = null;
             if ( option == null && physicalNode.isIKMNode() ) {
@@ -1472,12 +1473,12 @@
                 //TODO: We must not use RuntimeException. Use proper exception class instead. How to register message key?
                 throw new RuntimeException( "KM option $optionName not defined" )
             }
-        }    
-        
+        }
+
         ///////////////////////////
         // Hive specific KM methods
         ///////////////////////////
-        
+
         List<String> getHiveSessionProperties() {
           def opt = getOption("HIVE_SESSION_PROPERTIES")
           def optList = []
@@ -1486,8 +1487,8 @@
           }
           return optList
         }
-        
-        List<Column> getColumnList( Table tgtTab ) { 
+
+        List<Column> getColumnList( Table tgtTab ) {
             List<Column> result = new ArrayList<Column>()
             def exprs = component.getOutputAttributeExpressions()
             for (expr in exprs) {
@@ -1496,26 +1497,26 @@
             }
             return result
         }
-        
+
         HiveTable getTargetTable() {
         	def node = physicalNode
-            if ( physicalNode.isDirectLoad() ) 
+            if ( physicalNode.isDirectLoad() )
                 // For direct target load we have to use the parent node to construct the target table
                 node = physicalNode.getParentNode()
             def tableName        = node.getBoundObjectName();  // The name of the associated datastore object
-            def tableQualifier   = node.getLocation() == null ? null : node.getLocation().getName();        
+            def tableQualifier   = node.getLocation() == null ? null : node.getLocation().getName();
             def customTgtText    = OdiRef.getOdiGeneratedAccessName("TARG_NAME", node)
             Table table          = new HiveTable( tableName, tableQualifier, customTgtText, false, true )
             def tableCmp         = node.getLogicalComponent();
             table.setModelTable( tableCmp );
             return table
         }
-        
+
         /*
         HiveTable getErrorTable() {
         	def node = physicalNode
             def tableName        = node.getBoundObjectName();  // The name of the associated datastore object
-            def tableQualifier   = node.getLocation() == null ? null : node.getLocation().getName();        
+            def tableQualifier   = node.getLocation() == null ? null : node.getLocation().getName();
             def customTgtText    = OdiRef.getOdiGeneratedAccessName("ERR_NAME", node, "W")
             Table table          = new HiveTable( tableName, tableQualifier, customTgtText, false, true )
             def tableCmp         = node.getLogicalComponent();
@@ -1523,7 +1524,7 @@
             return table
         }
         */
-        
+
         HiveTable getStagingTable() {
         	def node = physicalNode
             def tableName      = physicalNode.getStageTableName();
@@ -1533,7 +1534,7 @@
             def customTgtText
             if ( node.isLKMNode() )
                 customTgtText = generatorContext.getAPNodeCollTableAccessName( physicalNode )
-            else if ( node.isIKMNode() ) 
+            else if ( node.isIKMNode() )
                 customTgtText = OdiRef.getOdiGeneratedAccessName("INT_NAME", node, "W")
             else
                 customTgtText = "<This Node type is not supported in getStagingTable()>"
@@ -1541,17 +1542,17 @@
             table.setModelTable( null );
             return table
         }
- 
+
         protected setDDLTargetTable(OdiDataStore sourceDataStore, OdiDataStore targetDataStore, HiveTable targetTable, String sourceSchemaName, boolean isDirectLoad) {
           boolean isExternal;
           Object hiveLocation;
           Object tblProperties;
           Object serdevalue;
           Object serdeProperties;
-          Object inputfvalue;  
+          Object inputfvalue;
           Object outFvalue;
           Object fileFormat;
-          Object fieldSep;  
+          Object fieldSep;
           Object recSep;
           Object storageRowFormat;
           Object escpChar;
@@ -1561,17 +1562,17 @@
           Object storageHandler;
           Object storageHandlerProperties;
 
-          if (targetDataStore.getHadoopStorageDescriptor() == null) 
+          if (targetDataStore.getHadoopStorageDescriptor() == null)
             return;
 
           isExternal = !targetDataStore.getHadoopStorageDescriptor().isHiveManaged()
           hiveLocation = targetDataStore.getHadoopStorageDescriptor().getHiveLocation();
           tblProperties = targetDataStore.getHadoopStorageDescriptor().getTableProperties();
           if (targetDataStore.getHadoopStorageDescriptor().isHiveNative()) {
-            serdevalue = targetDataStore.getHadoopStorageDescriptor().getSerde(); 
+            serdevalue = targetDataStore.getHadoopStorageDescriptor().getSerde();
             serdeProperties = targetDataStore.getHadoopStorageDescriptor().getSerdeProperties();
-            inputfvalue = targetDataStore.getHadoopStorageDescriptor().getInputFormat(); 
-            outFvalue = targetDataStore.getHadoopStorageDescriptor().getOutputFormat();   
+            inputfvalue = targetDataStore.getHadoopStorageDescriptor().getInputFormat();
+            outFvalue = targetDataStore.getHadoopStorageDescriptor().getOutputFormat();
             fileFormat = targetDataStore.getHadoopStorageDescriptor().getFormatType();
             if (!SnpsStringTools.replaceNVL(targetDataStore.getHadoopStorageDescriptor().getFieldSeparator()).trim().equals(""))
               fieldSep = SnpsStringTools.replaceNVL(SnpsStringTools.escapeUnicode(targetDataStore.getHadoopStorageDescriptor().getFieldSeparator(), false))
@@ -1615,29 +1616,29 @@
           if (targetDataStore.getHadoopStorageDescriptor().isHiveNative()) {
             if (storageRowFormat != null && storageRowFormat == oracle.odi.domain.model.OdiDataStore.HadoopStorageDescriptor.HiveRowFormat.DELIMITED) {
               rowFormatClause  += """ROW FORMAT DELIMITED\n"""
-              rowFormatClause  +=  """FIELDS TERMINATED BY '""" + fieldSep.toString() + """' \n""" 
+              rowFormatClause  +=  """FIELDS TERMINATED BY '""" + fieldSep.toString() + """' \n"""
               if ( escpChar != null) {rowFormatClause  += """ESCAPED BY '""" + escpChar.toString() + """' \n"""}
               if (collecSep != null) {rowFormatClause  += """COLLECTION ITEMS TERMINATED BY '""" + collecSep.toString() + """' \n"""}
               if (  mapKeytSep != null) {rowFormatClause  +=  """MAP KEYS TERMINATED BY '""" + mapKeytSep.toString() + """' \n"""}
-              if ( recSep != null) {rowFormatClause  +=  """LINES TERMINATED BY '""" +  recSep.toString() + """' \n"""} 
-              if ( nullDefinedAs != null) {rowFormatClause  += """NULL DEFINED AS '""" + nullDefinedAs.toString() + """' \n"""} 
-              rowFormatClause  += """STORED AS """ 
-            } else if (storageRowFormat != null && storageRowFormat == oracle.odi.domain.model.OdiDataStore.HadoopStorageDescriptor.HiveRowFormat.SERDE) {  
+              if ( recSep != null) {rowFormatClause  +=  """LINES TERMINATED BY '""" +  recSep.toString() + """' \n"""}
+              if ( nullDefinedAs != null) {rowFormatClause  += """NULL DEFINED AS '""" + nullDefinedAs.toString() + """' \n"""}
+              rowFormatClause  += """STORED AS """
+            } else if (storageRowFormat != null && storageRowFormat == oracle.odi.domain.model.OdiDataStore.HadoopStorageDescriptor.HiveRowFormat.SERDE) {
               rowFormatClause  = """ROW FORMAT SERDE '""" + serde + """' \n""";
               if (serdeProperties != null) {
                 String serdePropertiesValue = checkForQuotes(serdeProperties.toString());
-                rowFormatClause += """WITH SERDEPROPERTIES (""" + serdePropertiesValue + """) \n"""; 
+                rowFormatClause += """WITH SERDEPROPERTIES (""" + serdePropertiesValue + """) \n""";
               }
-              rowFormatClause += """STORED AS """; 
-            } else if (storageRowFormat != null && storageRowFormat == oracle.odi.domain.model.OdiDataStore.HadoopStorageDescriptor.HiveRowFormat.BUILT_IN) {  
+              rowFormatClause += """STORED AS """;
+            } else if (storageRowFormat != null && storageRowFormat == oracle.odi.domain.model.OdiDataStore.HadoopStorageDescriptor.HiveRowFormat.BUILT_IN) {
               if("JSON".equalsIgnoreCase(fileFormatName)){
                 rowFormatClause  = """ROW FORMAT SERDE '""" + "org.apache.hive.hcatalog.data.JsonSerDe"  + """' \n""" + """STORED AS """
               }else {
                 rowFormatClause  = """STORED AS """
-              }                 
+              }
             }
             if (inputformat.trim().length() > 0 && outputformat.trim().length() > 0 && "INPUTFORMAT".equalsIgnoreCase(fileFormatName)) {
-              rowFormatClause += """\nINPUTFORMAT '""" + inputformat + """' \n""" + """OUTPUTFORMAT '""" + outputformat + """' \n""" 
+              rowFormatClause += """\nINPUTFORMAT '""" + inputformat + """' \n""" + """OUTPUTFORMAT '""" + outputformat + """' \n"""
               if ( isExternal )
                 rowFormatClause += """\nLOCATION '""" + hiveloc + """' \n"""
               if (("avro".contains(inputformat) || "avro".contains(outputformat)) && isDirectLoad)
@@ -1667,7 +1668,7 @@
           if (tblProperties != null || avroSchema != null) {
             tblPropertiesClause += """TBLPROPERTIES (""";
             if (avroSchema != null)
-              tblPropertiesClause += """'avro.schema.url'='""" + avroSchema + """'"""; 
+              tblPropertiesClause += """'avro.schema.url'='""" + avroSchema + """'""";
             if (tblProperties != null) {
               def tblPropertiesVal = checkForQuotes(tblProperties.toString());
               if (avroSchema != null)
@@ -1689,7 +1690,7 @@
             String storageFormat = sourceDataStore.getHadoopStorageDescriptor().getFormatType().getName();
             if ("AVRO".equals(storageFormat)) {
               String schemaFile = sourceDataStore.getHadoopStorageDescriptor().getSchemaFile();
-              if(schemaFile != null)   
+              if(schemaFile != null)
                 return sourceSchemaName + (schemaFile.substring(schemaFile.lastIndexOf('/')));
             }
           }
@@ -1708,7 +1709,7 @@
           while (pos >= 0 || inProperties.length() > 0) {
             if (pos >= 0)
               nextToken = inProperties.substring(1, pos);
-            else 
+            else
               nextToken = inProperties.substring(1, inProperties.length()-1);
             nextToken = nextToken.replaceAll("\"=\"", "=");
             if (nextToken.indexOf("\"") >= 0) {
@@ -1743,14 +1744,14 @@
          * @param selectList list of columns for the SELECT part of the sql statement
          * @param tgtCols list of columns for the INSERT part of the statement
          */
-        protected SqlQuery getSourceAndTargetExpressionsAndQuery(Table tgtTab, SqlQuery inputQuery, List<ISelectItem> pSelectList, List<Column> pTgtCols, Closure forEachAttribute )  
+        protected SqlQuery getSourceAndTargetExpressionsAndQuery(Table tgtTab, SqlQuery inputQuery, List<ISelectItem> pSelectList, List<Column> pTgtCols, Closure forEachAttribute )
         throws AdapterException, MappingException, GenerationException {
             def tgtCols    = new ArrayList<Column>();
-            def selectList = new ArrayList<ISelectItem>();    	
+            def selectList = new ArrayList<ISelectItem>();
             List<MapPhysicalExpression> exprs = physicalNode.getSortedTargetPhysicalExpressions();
 
             def newQuery = inputQuery.getTargetQuery( exprs );  // normally, just returns the input query itself if an inline view is not needed
-	
+
             Set<MapAttribute> processed = new HashSet<MapAttribute>();
             for (MapPhysicalExpression expr : exprs) {
                 MapAttribute attr = (MapAttribute) expr.getRefLogicalExpression().getOwner();
@@ -1771,28 +1772,28 @@
                 }
             }
             newQuery.setSelectList( selectList )
-            
+
             // Now we may have to extend the list of columns to cover any unmapped columns...
-            def attributes 
+            def attributes
             if ( physicalNode.isIKMNode() ) {
                 // for IKMs we have to iterate over all node attributes
                 attributes = component.getAttributes()
-            } else 
+            } else
             // for direct LKMs we have to iterate over all *target* node attributes
             if ( physicalNode.isDirectLoad() ) {
                 attributes = physicalNode.getParentNode().getNodeAttributes()
             // for standard LKMs we have to iterate over all physical Columns
-            } else {  
+            } else {
                 attributes = physicalNode.getPhysicalColumns()
             }
 
             def extendedAliasList = []
                 tgtCols           = []
-            def extendedSelectList = attributes.collect { attr -> def expr = forEachAttribute( attr )       	  
-                                                                  // Skip this column? 
-                                                                  if ( expr instanceof SkipColumnExpression ) 
+            def extendedSelectList = attributes.collect { attr -> def expr = forEachAttribute( attr )
+                                                                  // Skip this column?
+                                                                  if ( expr instanceof SkipColumnExpression )
                                                                       return null
-                                                                  // Copy existing selItem?                                                                 
+                                                                  // Copy existing selItem?
                                                                   if ( expr instanceof CopyColumnExpression )
                                                                       expr = selectList.find { selItem -> (selItem.getTargetColumnName().equals( attr.getName() )) }
                                                                   // Append to target colList
@@ -1813,30 +1814,30 @@
                                                                   return expr }
                                                // Remove any skipped columns
             	                               .findAll { it!=null }
-            newQuery.setSelectList( extendedSelectList )	
-            newQuery.setAliasList( extendedAliasList )            
-            
-            // Add selectItems and target columns to return parameters    
+            newQuery.setSelectList( extendedSelectList )
+            newQuery.setAliasList( extendedAliasList )
+
+            // Add selectItems and target columns to return parameters
             pSelectList.addAll( extendedSelectList )
             pTgtCols.addAll( tgtCols )
-            //TODO:                
-            // Put all non-partition columns first and drop any partition columns with constant value mapping from list. 
+            //TODO:
+            // Put all non-partition columns first and drop any partition columns with constant value mapping from list.
             // Constant values in partition columns are covered by the partition clause
-                      	
+
             return newQuery
         }
-                                
+
         /**
          * Create properties that reflect the component KM option values for the physical target node
          * @param insertStmt The insertStatement to copy all KM options to
          */
         void initTargetAST ( SqlInsertStatement insertStmt ) {
-            // 
+            //
             def optValues = physicalNode.getOptionValues("TARGET")
             for (optValue in optValues) {
                 insertStmt.setPropertyValue(optValue.getName(), optValue.getValue());
             }
-        } 
+        }
 
 
         /**
@@ -1848,20 +1849,20 @@
         protected AbstractSyntaxTree getHiveHBaseSerDeTable( HiveTable hiveTable, String hBaseTableName, MapPhysicalNode physicalNode ) {
             StringBuffer hBaseColumnsMapping = new StringBuffer()
             Closure appendCol = { String colName, OdiColumn hBaseCol ->
-                                                                     
+
                                   // Append column to hBase column mapping
                                   hBaseCol.initFlexFields( ffFinder )
                                   if (colName.equalsIgnoreCase("key")) {
                                       hBaseColumnsMapping.append( ":key" )
                                   } else {
                                       hBaseColumnsMapping.append( hBaseCol.getName() )
-                                      // Append column storage type                                                                                   
+                                      // Append column storage type
                                       if ( hBaseCol.getFlexFieldValue("HBASE_STORAGE_TYPE").equals("STRING") ) {
                                           hBaseColumnsMapping.append( "#s" )
                                       } else {
                                           hBaseColumnsMapping.append( "#b" )
                                       }
-                                  }                                                                              
+                                  }
                                   // Append comma
                                   hBaseColumnsMapping.append( "," )
                                   def c = new Column( hiveTable, colName, hBaseCol )
@@ -1869,22 +1870,22 @@
                                  }
             def colList
             if ( physicalNode.isDirectLoad() ) {
-                colList = physicalNode.getParentNode().getSortedAllPhysicalExpressions().collect { expr -> 
+                colList = physicalNode.getParentNode().getSortedAllPhysicalExpressions().collect { expr ->
                                   def colName = expr.getRefObject().getSQLAliasName( getHiveTechnology() )
-                                  def hBaseCol = expr.getRefObject().getBoundObject() 
-                                  return appendCol( colName, hBaseCol )                                          
+                                  def hBaseCol = expr.getRefObject().getBoundObject()
+                                  return appendCol( colName, hBaseCol )
                                   }
             } else {
-                colList = physicalNode.getPhysicalColumns().collect { col -> 
-                                  def colName = col.getName()                                                                              
+                colList = physicalNode.getPhysicalColumns().collect { col ->
+                                  def colName = col.getName()
                                   def hBaseCol = col.getRefObject().getBoundObject()
-                                  return appendCol( colName, hBaseCol )                                          
-                                  }                             
+                                  return appendCol( colName, hBaseCol )
+                                  }
             }
-              
+
             if ( hBaseColumnsMapping.length() > 0 )
                 hBaseColumnsMapping.setLength( hBaseColumnsMapping.length()-1 )
-                                                                            
+
             def rowFormat = "STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'\n" +
                             "WITH SERDEPROPERTIES (\n" +
                             """    "hbase.columns.mapping" = "${hBaseColumnsMapping}"\n""" +
@@ -1893,32 +1894,32 @@
             hiveTable.rowFormatClause = rowFormat
             hiveTable.external = true
             hiveTable.ifNotExists = false
-             
+
             def stgTableAST = new HiveCreateTableStatement( "abc", "def", hiveTable, getHiveTechnology(), ffFinder )
-            stgTableAST.setColumns( colList )                            
+            stgTableAST.setColumns( colList )
             return stgTableAST
         }
-       
+
         }
     ]]></Field>
 	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
 	<Field name="ExtVersion" type="java.lang.String">null</Field>
-	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:11.0]]></Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:25:53.0]]></Field>
 	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[423bbc73-54a3-4f85-9553-62ac65a21751]]></Field>
 	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
-	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[198]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
@@ -1929,7 +1930,7 @@
 	<Field name="IScTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
 	<Field name="ITxtDelTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[162]]></Field>
+	<Field name="ITxtTrtTxt" type="com.sunopsis.sql.DbInt"><![CDATA[161]]></Field>
 	<Field name="KimMultiDserver" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KmDefault" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KmLang" type="java.lang.String"><![CDATA[SQL]]></Field>
@@ -1937,8 +1938,8 @@
 	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[HIVE]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:41.0]]></Field>
-	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:27:24.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="LCode" type="java.lang.String">null</Field>
@@ -1957,28 +1958,13 @@
 	<Field name="VLastDate" type="java.sql.Timestamp">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[97c0eb01-1361-42ca-948b-1f98db1060b3]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[37]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[870bd800-fc36-4b47-87e8-7c90cbb8e00e]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[30]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
 		<Field name="GlobalId" type="java.lang.String"><![CDATA[9ba5f082-8b53-40fc-a824-0f47f46d73d6]]></Field>
 	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[39c71597-fc4f-4399-94dd-e762562bc4f1]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
-	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[abfc77ae-f313-4198-8ef0-7892b1491df3]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[201]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[def9d821-0944-4356-8b3a-9a4d67528e43]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
@@ -1987,16 +1973,31 @@
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[def9d821-0944-4356-8b3a-9a4d67528e43]]></Field>
-	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[9]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[870bd800-fc36-4b47-87e8-7c90cbb8e00e]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[30]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[97c0eb01-1361-42ca-948b-1f98db1060b3]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[37]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[39c71597-fc4f-4399-94dd-e762562bc4f1]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[202]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[abfc77ae-f313-4198-8ef0-7892b1491df3]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[203]]></Field>
 	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[a9f0e6e0-b856-4b07-bf09-a5e7c66cc6ed]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[162]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[f0bc1d46-7039-44ed-8314-162b5017426f]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[161]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[Internal - Base KM for all Hive KMs]]></Field>
@@ -2014,7 +2015,7 @@
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[91550d5f-6262-4f4a-85ab-af8e334cd8c1]]></Field>
 	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
-	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[164]]></Field>
+	<Field name="ITxtUeHelp" type="com.sunopsis.sql.DbInt"><![CDATA[163]]></Field>
 	<Field name="ITxtValue" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[33]]></Field>
 	<Field name="IUserExitGroup" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
@@ -2029,8 +2030,8 @@
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[b72e3dd9-c5f1-489c-ab74-46610542c7de]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[164]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[3739e260-0a1b-4856-98e5-d725e8cee9d1]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[163]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[111]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[
@@ -2068,7 +2069,7 @@ mapreduce.job.name=MY_JOB
 	<Field name="DefContextCode" type="java.lang.String">null</Field>
 	<Field name="DefIndCommit" type="java.lang.String">null</Field>
 	<Field name="DefIsolLevel" type="java.lang.String"><![CDATA[D]]></Field>
-	<Field name="DefITxt" type="com.sunopsis.sql.DbInt"><![CDATA[163]]></Field>
+	<Field name="DefITxt" type="com.sunopsis.sql.DbInt"><![CDATA[162]]></Field>
 	<Field name="DefLanguage" type="java.lang.String"><![CDATA[GROOVY]]></Field>
 	<Field name="DefLschemaName" type="java.lang.String">null</Field>
 	<Field name="DefTechno" type="java.lang.String"><![CDATA[GROOVY]]></Field>
@@ -2109,7 +2110,7 @@ mapreduce.job.name=MY_JOB
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 19:07:15.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:38:54.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -2128,8 +2129,8 @@ mapreduce.job.name=MY_JOB
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[74365020-2618-4cf6-82bc-25ff72887dcc]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[163]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[6d9560c4-109b-4085-8f23-79b7b7113441]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[162]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[102]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[2]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[{# INCLUDE = 'PrepareHiveSessionTarget' #}]]></Field>
@@ -2142,8 +2143,8 @@ mapreduce.job.name=MY_JOB
 	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_LINE_TRT]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.162]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[a9f0e6e0-b856-4b07-bf09-a5e7c66cc6ed]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.161]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[f0bc1d46-7039-44ed-8314-162b5017426f]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -2156,46 +2157,11 @@ mapreduce.job.name=MY_JOB
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[10]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.37]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46d8e4-2d00-11e6-93c8-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[TableFunctionReference]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.30]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[c4633cfe-e55c-4fc2-8556-c2a8de93b01c]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SourceMapAttribute]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.1]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46d13c-2d00-11e6-93ac-00163e1ffd72]]></Field>
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SqlQuery]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[8]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.200]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f0ae-2d00-11e6-9443-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PrepareHiveSessionTarget]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[24]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.201]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f0d6-2d00-11e6-9444-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PrepareHiveSession]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.10]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f3a6-2d00-11e6-9457-00163e1ffd72]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[Table]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[5]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.9]]></Field>
@@ -2205,15 +2171,50 @@ mapreduce.job.name=MY_JOB
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[9]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.164]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[b72e3dd9-c5f1-489c-ab74-46610542c7de]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.10]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f3a6-2d00-11e6-9457-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[Table]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[5]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.30]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[c4633cfe-e55c-4fc2-8556-c2a8de93b01c]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SourceMapAttribute]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.37]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46d8e4-2d00-11e6-93c8-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[TableFunctionReference]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.202]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f0ae-2d00-11e6-9443-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PrepareHiveSessionTarget]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[24]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.203]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f0d6-2d00-11e6-9444-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[PrepareHiveSession]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.163]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3739e260-0a1b-4856-98e5-d725e8cee9d1]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.163]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[74365020-2618-4cf6-82bc-25ff72887dcc]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.162]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[6d9560c4-109b-4085-8f23-79b7b7113441]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -2239,6 +2240,6 @@ mapreduce.job.name=MY_JOB
 	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
 	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
 </Object>
 </SunopsisExport>
