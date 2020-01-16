@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" IsLegacyIdCompatible="false" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="cyGS7fpwFsYAE/WwylbVGOxpyICao8UjKfVLN2p08jc=" keyVect="Lw663HyjA6U4DMRcQ5jSUw==" exportKeySalt="a9f1a8ac-1b96-4591-b7c6-c4fb8c37feed" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.09" IsLegacyIdCompatible="false" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="VABbBqfmJBDV3EoAOGc2WyQqVMS+CGymcAJXIRF3lrU=" keyVect="YNhSvZlUHixRM6HwwlXHMA==" exportKeySalt="75c83d99-5491-4692-969b-24856bdcef5d" containsCipherText="false"/>
 <Object class="com.sunopsis.dwg.dbobj.SnpVar">
 		<Field name="DefDate" type="java.sql.Timestamp">null</Field>
 	<Field name="DefN" type="com.sunopsis.sql.DbInt"><![CDATA[7]]></Field>
 	<Field name="DefV" type="java.lang.String">null</Field>
 	<Field name="ExtVersion" type="java.lang.String">null</Field>
-	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-07-22 17:21:34.0]]></Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:33:31.0]]></Field>
 	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[d1a2e8a3-3ada-48c9-a151-dea0643bb40c]]></Field>
 	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
 	<Field name="IndStore" type="java.lang.String"><![CDATA[L]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[74]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="IProject" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="ITxtVar" type="com.sunopsis.sql.DbInt"><![CDATA[3653]]></Field>
-	<Field name="ITxtVarIn" type="com.sunopsis.sql.DbInt"><![CDATA[3654]]></Field>
+	<Field name="ITxtVar" type="com.sunopsis.sql.DbInt"><![CDATA[1613]]></Field>
+	<Field name="ITxtVarIn" type="com.sunopsis.sql.DbInt"><![CDATA[1614]]></Field>
 	<Field name="ITxtVarValTxt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IVar" type="com.sunopsis.sql.DbInt"><![CDATA[39]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:36:36.0]]></Field>
+	<Field name="IVar" type="com.sunopsis.sql.DbInt"><![CDATA[18]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:33:31.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LschemaName" type="java.lang.String"><![CDATA[OBIEE]]></Field>
 	<Field name="VarDatatype" type="java.lang.String"><![CDATA[N]]></Field>
@@ -31,7 +31,7 @@
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[0bf48105-a74c-464a-89bd-6d6dbec99414]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[3653]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[1613]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[108]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[Number of days subtracted from the last updated date on incremental loads.  This will help ensure that record updates are not missed.]]></Field>
@@ -48,7 +48,7 @@
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[6e150b81-2f8a-4f8d-a8a3-d5a8e3b7dc12]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[3654]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[1614]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[128]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[2]]></Field>
  <Field name="Txt" type="java.lang.String"><![CDATA[select CASE WHEN TO_CHAR(CURRENT_TIMESTAMP, 'HH24') = '00' THEN 7 ELSE 0 END from dual]]></Field>
@@ -61,14 +61,14 @@
 	<Field name="SnpsTable" type="java.lang.String"><![CDATA[SNP_VAR]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.3654]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.1614]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[6e150b81-2f8a-4f8d-a8a3-d5a8e3b7dc12]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.3653]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.1613]]></Field>
 	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[0bf48105-a74c-464a-89bd-6d6dbec99414]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
@@ -95,6 +95,6 @@
 	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
 	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
 </Object>
 </SunopsisExport>

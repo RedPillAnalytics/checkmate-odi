@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <SunopsisExport>
-<Admin RepositoryVersion="05.02.02.08" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
-<Encryption algorithm="AES" keyLength="128" exportKeyHash="OahGmTkEPjL3XdMv0Lbvzs+dXNnziMLr6010HBZPv0E=" keyVect="6IJMz+D+qA99gOUWmFBpnQ==" exportKeySalt="4ec6e55c-c3e1-47a0-950d-e6052a1e84bf" containsCipherText="false"/>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="q8z+frcOpc7Vy4PVNgvX8EfJy4bR6sKpi7xsv/rAaOs=" keyVect="qhqVGzgpuLFZqYVLpafEUg==" exportKeySalt="9a069420-5d40-4a8d-a949-cfdf82cd9175" containsCipherText="false"/>
 <SmartExportList materializeShortcut="false" >
    <Include><![CDATA[SnpTrt#51]]></Include>
 </SmartExportList>
@@ -10,7 +10,6 @@
 	<Field name="CompType" type="java.lang.String"><![CDATA[DATASTORE]]></Field>
 	<Field name="DelegateClass" type="java.lang.String"><![CDATA[XKM_Oracle_External_Table]]></Field>
 	<Field name="DelegateScript" type="java.lang.String"><![CDATA[
-
 import oracle.odi.domain.mapping.component.km.*
 @GeneratorDelegateClass(componentType=DatastoreComponent.COMPONENT_TYPE_NAME, descriptionKey="GeneratorDelegateClass.OracleExternalTableCompKM")
 public class XKM_Oracle_External_Table extends SQLDatastoreCompKM {
@@ -43,26 +42,25 @@ public class XKM_Oracle_External_Table extends SQLDatastoreCompKM {
   }
 	
 }
-
 ]]></Field>
 	<Field name="ExpectedAstClass" type="java.lang.String">null</Field>
 	<Field name="ExtVersion" type="java.lang.String">null</Field>
-	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2019-05-17 22:11:09.0]]></Field>
+	<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:25:51.0]]></Field>
 	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="GlobalId" type="java.lang.String"><![CDATA[b227f5b7-34b3-4c60-a997-41a4f24097d3]]></Field>
-	<Field name="IndChange" type="java.lang.String"><![CDATA[U]]></Field>
-	<Field name="IndExcludeExUnitBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitEnd" type="java.lang.String">null</Field>
-	<Field name="IndExcludeExUnitMain" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapBegin" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapCleanup" type="java.lang.String">null</Field>
-	<Field name="IndExcludeMapEnd" type="java.lang.String">null</Field>
+	<Field name="IndChange" type="java.lang.String">null</Field>
+	<Field name="IndExcludeExUnitBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitEnd" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeExUnitMain" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapBegin" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapCleanup" type="java.lang.String"><![CDATA[0]]></Field>
+	<Field name="IndExcludeMapEnd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndGenerateLoad" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndIsHidden" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndJrnMethod" type="java.lang.String">null</Field>
 	<Field name="IndSuppSetBased" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IntgType" type="java.lang.String"><![CDATA[SELECT]]></Field>
-	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[81]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
 	<Field name="IsConcurrent" type="java.lang.String">null</Field>
 	<Field name="IsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IBaseCompKm" type="com.sunopsis.sql.DbInt"><![CDATA[24]]></Field>
@@ -81,8 +79,8 @@ public class XKM_Oracle_External_Table extends SQLDatastoreCompKM {
 	<Field name="KmSrcTechno" type="java.lang.String">null</Field>
 	<Field name="KmTechno" type="java.lang.String"><![CDATA[ORACLE]]></Field>
 	<Field name="KmVersion" type="java.lang.String">null</Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:35:53.0]]></Field>
-	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:25:51.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
 	<Field name="LkmType" type="java.lang.String"><![CDATA[N]]></Field>
 	<Field name="LChecksum" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="LCode" type="java.lang.String">null</Field>
@@ -111,7 +109,7 @@ public class XKM_Oracle_External_Table extends SQLDatastoreCompKM {
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[10a07d38-66f5-40da-84d7-07cb363f925a]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[2476d252-6dda-4936-b4be-9bf02d211cdc]]></Field>
 	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[132]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[107]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[0]]></Field>
@@ -273,18 +271,18 @@ Each access driver has its own syntax for access parameters. Please refer to dat
 	<Field name="DefContextCode" type="java.lang.String"><![CDATA[GLOBAL]]></Field>
 	<Field name="DefIndCommit" type="java.lang.String">null</Field>
 	<Field name="DefIsolLevel" type="java.lang.String"><![CDATA[2]]></Field>
-	<Field name="DefITxt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+	<Field name="DefITxt" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
 	<Field name="DefLanguage" type="java.lang.String"><![CDATA[SQL]]></Field>
 	<Field name="DefLschemaName" type="java.lang.String">null</Field>
 	<Field name="DefTechno" type="java.lang.String"><![CDATA[ORACLE]]></Field>
 	<Field name="ExeChannel" type="java.lang.String">null</Field>
 	<Field name="FirstDate" type="java.sql.Timestamp">null</Field>
 	<Field name="FirstUser" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[3b326a7f-3939-40db-8e9b-eccba2f1707b]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[da655848-416d-4eb1-8c0b-946a106c65ef]]></Field>
 	<Field name="IndErr" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndLogFinalCmd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndLogNb" type="java.lang.String">null</Field>
-	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[54]]></Field>
+	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
 	<Field name="IRefLineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IRefTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[51]]></Field>
@@ -314,29 +312,35 @@ Each access driver has its own syntax for access parameters. Please refer to dat
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:35:53.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:32:24.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
 	<Field name="MapTaskType" type="java.lang.String"><![CDATA[MB]]></Field>
-	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[50]]></Field>
-	<Field name="SqlName" type="java.lang.String"><![CDATA[Drop external table (XKM Oracle External Table)]]></Field>
+	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[40]]></Field>
+	<Field name="SqlName" type="java.lang.String"><![CDATA[Create Directories (XKM Oracle External Table)]]></Field>
 	<Field name="SupportedSubtypes" type="java.lang.String"><![CDATA[SELECT]]></Field>
 	<Field name="VariableDefs" type="java.lang.String"><![CDATA[
-			odiRuntimeAccessName = OdiRef.getOdiGeneratedAccessName("TARG_NAME", physicalNode, "A");
+		    sqlCreateDirs = "" ;
+			sqlDirs = rawExpr( physicalNode.getKMOptionValueString("SQL_DIRECTORIES"));			
+			if (sqlDirs != null ){
+			    for ( dir in sqlDirs.split("\\,") ) {
+			        pair = dir.split("\\:");
+			        sqlCreateDirs += "\n    EXECUTE IMMEDIATE 'CREATE OR REPLACE DIRECTORY " + pair[0] + " AS ''" + pair[1] + "'' ' ; " ;
+			    }
+                sqlCreateDirs = "BEGIN " + sqlCreateDirs + "\nEND;" ;
+			}
         ]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[deb284be-7fd0-4d4d-831e-48863b29c649]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[543a15b7-3d6f-40b1-96ce-6f22d5fd4d06]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[102]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[2]]></Field>
- <Field name="Txt" type="java.lang.String"><![CDATA[
-                drop table $[odiRuntimeAccessName]
-            ]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[$[sqlCreateDirs]]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpOrigTxt">
 		<Field name="GlobalId" type="java.lang.String">null</Field>
@@ -401,7 +405,7 @@ Each access driver has its own syntax for access parameters. Please refer to dat
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:35:53.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:32:24.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
@@ -441,7 +445,7 @@ Each access driver has its own syntax for access parameters. Please refer to dat
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[be1b7732-b45b-4ccf-90e6-75596cb7d9e9]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[db102da7-be63-438d-9030-5f4f81fc75cf]]></Field>
 	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[137]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[102]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[2]]></Field>
@@ -473,18 +477,18 @@ Each access driver has its own syntax for access parameters. Please refer to dat
 	<Field name="DefContextCode" type="java.lang.String"><![CDATA[GLOBAL]]></Field>
 	<Field name="DefIndCommit" type="java.lang.String">null</Field>
 	<Field name="DefIsolLevel" type="java.lang.String"><![CDATA[2]]></Field>
-	<Field name="DefITxt" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
+	<Field name="DefITxt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
 	<Field name="DefLanguage" type="java.lang.String"><![CDATA[SQL]]></Field>
 	<Field name="DefLschemaName" type="java.lang.String">null</Field>
 	<Field name="DefTechno" type="java.lang.String"><![CDATA[ORACLE]]></Field>
 	<Field name="ExeChannel" type="java.lang.String">null</Field>
 	<Field name="FirstDate" type="java.sql.Timestamp">null</Field>
 	<Field name="FirstUser" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[da655848-416d-4eb1-8c0b-946a106c65ef]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[3b326a7f-3939-40db-8e9b-eccba2f1707b]]></Field>
 	<Field name="IndErr" type="java.lang.String"><![CDATA[1]]></Field>
 	<Field name="IndLogFinalCmd" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="IndLogNb" type="java.lang.String">null</Field>
-	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
+	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[54]]></Field>
 	<Field name="IRefLineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IRefTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[51]]></Field>
@@ -514,60 +518,54 @@ Each access driver has its own syntax for access parameters. Please refer to dat
 	<Field name="KlmAfterInt" type="java.lang.String">null</Field>
 	<Field name="KlmIdx" type="java.lang.String"><![CDATA[0]]></Field>
 	<Field name="KlmJrn" type="java.lang.String"><![CDATA[0]]></Field>
-	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2019-11-05 18:35:53.0]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-01-16 14:32:24.0]]></Field>
 	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
 	<Field name="LineType" type="java.lang.String"><![CDATA[X]]></Field>
 	<Field name="LogLevDet" type="java.lang.String"><![CDATA[3]]></Field>
 	<Field name="MapTaskType" type="java.lang.String"><![CDATA[MB]]></Field>
-	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[40]]></Field>
-	<Field name="SqlName" type="java.lang.String"><![CDATA[Create Directories (XKM Oracle External Table)]]></Field>
+	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[50]]></Field>
+	<Field name="SqlName" type="java.lang.String"><![CDATA[Drop external table (XKM Oracle External Table)]]></Field>
 	<Field name="SupportedSubtypes" type="java.lang.String"><![CDATA[SELECT]]></Field>
 	<Field name="VariableDefs" type="java.lang.String"><![CDATA[
-		    sqlCreateDirs = "" ;
-			sqlDirs = rawExpr( physicalNode.getKMOptionValueString("SQL_DIRECTORIES"));			
-			if (sqlDirs != null ){
-			    for ( dir in sqlDirs.split("\\,") ) {
-			        pair = dir.split("\\:");
-			        sqlCreateDirs += "\n    EXECUTE IMMEDIATE 'CREATE OR REPLACE DIRECTORY " + pair[0] + " AS ''" + pair[1] + "'' ' ; " ;
-			    }
-                sqlCreateDirs = "BEGIN " + sqlCreateDirs + "\nEND;" ;
-			}
+			odiRuntimeAccessName = OdiRef.getOdiGeneratedAccessName("TARG_NAME", physicalNode, "A");
         ]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpTxtHeader">
 		<Field name="Enc" type="java.lang.String">null</Field>
 	<Field name="EncKey" type="java.lang.String">null</Field>
  <Field name="EncKeyVect" type="java.lang.String">null</Field>
-	<Field name="GlobalId" type="java.lang.String"><![CDATA[83adf4c6-b194-4148-83c5-3c03ffa6288d]]></Field>
-	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[133]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[032556fd-059f-439f-bac2-0de947af528e]]></Field>
+	<Field name="ITxt" type="com.sunopsis.sql.DbInt"><![CDATA[135]]></Field>
 	<Field name="ITxtOrig" type="com.sunopsis.sql.DbInt"><![CDATA[102]]></Field>
 	<Field name="SqlIndGrp" type="java.lang.String"><![CDATA[2]]></Field>
- <Field name="Txt" type="java.lang.String"><![CDATA[$[sqlCreateDirs]]]></Field>
+ <Field name="Txt" type="java.lang.String"><![CDATA[
+                drop table $[odiRuntimeAccessName]
+            ]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[c8b12d9a-fac2-4551-9e65-eca43a7339fc]]></Field>
-	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[54]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[95fb93e8-377e-464d-b584-42fb8350a1e1]]></Field>
+	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[25]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[24]]></Field>
 	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[24c625df-d5ee-4ee1-9b2f-79fb74cad776]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[21f9f0f9-d85f-4e8f-8e87-53d48da456c0]]></Field>
 	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[55]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[25]]></Field>
 	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpLineTrtUe">
-		<Field name="GlobalId" type="java.lang.String"><![CDATA[a19ba88c-36fb-4f52-90e9-fcff56918b52]]></Field>
-	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[53]]></Field>
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[220247a4-c70d-404d-9fe7-0d640907b059]]></Field>
+	<Field name="ILineTrt" type="com.sunopsis.sql.DbInt"><![CDATA[54]]></Field>
 	<Field name="ITrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
-	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[24]]></Field>
+	<Field name="IUserExit" type="com.sunopsis.sql.DbInt"><![CDATA[25]]></Field>
 	<Field name="OrdTrt" type="com.sunopsis.sql.DbInt"><![CDATA[null]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.132]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[10a07d38-66f5-40da-84d7-07cb363f925a]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[2476d252-6dda-4936-b4be-9bf02d211cdc]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -587,15 +585,15 @@ Each access driver has its own syntax for access parameters. Please refer to dat
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.135]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[deb284be-7fd0-4d4d-831e-48863b29c649]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.133]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[543a15b7-3d6f-40b1-96ce-6f22d5fd4d06]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.137]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[be1b7732-b45b-4ccf-90e6-75596cb7d9e9]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[db102da7-be63-438d-9030-5f4f81fc75cf]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
@@ -608,32 +606,11 @@ Each access driver has its own syntax for access parameters. Please refer to dat
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.133]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[83adf4c6-b194-4148-83c5-3c03ffa6288d]]></Field>
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TXTHEADER.135]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[032556fd-059f-439f-bac2-0de947af528e]]></Field>
  <Field name="RefObjFQName" type="java.lang.String">null</Field>
  <Field name="RefObjFQType" type="java.lang.String">null</Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String">null</Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXIT.25]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[566296cc-61cc-4ea3-848c-9b94dc133680]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Oracle External Table.CREATE_EXT_TAB]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_USEREXIT]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25.14]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.54]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3b326a7f-3939-40db-8e9b-eccba2f1707b]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Oracle External Table.Drop external table (XKM Oracle External Table)]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25.47]]></Field>
-</Object>
-<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
-		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.55]]></Field>
-	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[4dba0537-eda5-4cb9-af7f-f7fb3abc8d2e]]></Field>
- <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Oracle External Table.Create external table (XKM Oracle External Table)]]></Field>
- <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
- <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25.49]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
 		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXIT.24]]></Field>
@@ -648,6 +625,27 @@ Each access driver has its own syntax for access parameters. Please refer to dat
  <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Oracle External Table.Create Directories (XKM Oracle External Table)]]></Field>
  <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
  <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25.46]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_USEREXIT.25]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[566296cc-61cc-4ea3-848c-9b94dc133680]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Oracle External Table.CREATE_EXT_TAB]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_USEREXIT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25.14]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.55]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[4dba0537-eda5-4cb9-af7f-f7fb3abc8d2e]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Oracle External Table.Create external table (XKM Oracle External Table)]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25.49]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_LINETRT.54]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3b326a7f-3939-40db-8e9b-eccba2f1707b]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Oracle External Table.Drop external table (XKM Oracle External Table)]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT.SNP_LINETRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[25.47]]></Field>
 </Object>
 <Object class="com.sunopsis.dwg.DwgExportSummary">
 		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
@@ -670,6 +668,6 @@ Each access driver has its own syntax for access parameters. Please refer to dat
 	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
 	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
 	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
-	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.08]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
 </Object>
 </SunopsisExport>
