@@ -11,6 +11,7 @@ plugins {
    id "com.redpillanalytics.gradle-analytics" version "1.3.0"
    id 'com.adarshr.test-logger' version '2.0.0'
    id 'build-dashboard'
+   id "com.google.cloud.artifactregistry.gradle-plugin" version "2.0.0"
 }
 
 // send analytics
@@ -87,10 +88,119 @@ dependencies {
    // It also has the Common library in it, thus the dependency here
    compile "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.5"
 
-   compile fileTree(dir: 'libs', include: '*.jar')
+   // XML Unit for compare xml changes
    compile 'org.xmlunit:xmlunit-core:2.6.3'
+
    // testing
    testCompile 'org.spockframework:spock-core:1.3-RC1-groovy-2.5'
+
+   // ODI SDK
+   compile group: 'com.odi-sdk', name: 'jdev-eclipselinkjaxb', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-activation', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-aopalliance', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-beanutils', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-bsf', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-codec', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-connector', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-core', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-cpld', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-discovery', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-edq', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-ftm-api', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-guava', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-happ-common', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-happ-essbase', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-happ-planning', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-hk2-api', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-hk2-locator', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-hk2-utils', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-hsqldb', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-javassist', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-javax-annotation', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-javax-inject', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-javax-rs', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-javolution', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jaxrsri', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jersey-client', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jersey-common', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jersey-guava', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jgit', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jms', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jse', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jsr', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-jython', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-logging', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-low-core', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-net', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-oci-java-full', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-oci-java-shaded', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-ogg-jmx', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-oro', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-osgi-locator', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-pig', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-pop', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-sap', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-sapjco', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-sapjco3', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-slf4j', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-aop', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-beans', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-context', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-context-support', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-core', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-expression', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-instrument', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-jdbc', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-jms', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-orm', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-oxm', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-test', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-tx', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-web', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-spring-webmvc', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-svnkit', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-tsb', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-validation-api', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-vfs', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-wls-template', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'odi-xml-schema', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-activation', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-bsh', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-bsh-vb', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-bshb6', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-collections', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-commons-codec', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-dbwsutils', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-eclipselink', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-identitystore', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jackson-core', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jackson-databind', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jaxws-eclipselink-plugin', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jpa-modelgen', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jpa-source', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jpql', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jpql-source', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-jps-api', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-lang', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-lang3', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-nosql', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-nosql-source', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-ojdbc', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-ojdl-core', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-onosql', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-onosql-source', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-oracleddl', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-oracledll-source', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-persistence', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-sdo-eclipselink-plugin', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-ucp', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-common-vfs', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'oracle-persistance', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'ucp-core', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'wls-integration', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'wls-persistence-core', version: '12.2.1.4'
+   compile group: 'com.odi-sdk', name: 'wls-rac-ucp', version: '12.2.1.4'
+
 }
 
 // Default artifact naming.
@@ -108,6 +218,9 @@ repositories {
    jcenter()
    maven {
       url "https://plugins.gradle.org/m2/"
+   }
+   maven {
+      url "artifactregistry://us-maven.pkg.dev/rpa-devops/redpillanalytics"
    }
 }
 
