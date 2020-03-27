@@ -48,8 +48,6 @@ class ImportProjectFileTask extends ImportTask {
    @TaskAction
    def importObjectXML() {
 
-      System.setProperty('javax.xml.parsers.SAXParserFactory', 'oracle.xml.jaxp.JXSAXParserFactory')
-
       //Make the Connection
       instance.connect()
       instance.beginTxn()

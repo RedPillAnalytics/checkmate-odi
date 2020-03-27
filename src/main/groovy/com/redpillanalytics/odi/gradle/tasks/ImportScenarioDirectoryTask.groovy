@@ -40,8 +40,6 @@ class ImportScenarioDirectoryTask extends ImportDirectoryTask {
     @TaskAction
     def taskAction() {
 
-        System.setProperty('javax.xml.parsers.SAXParserFactory', 'oracle.xml.jaxp.JXSAXParserFactory')
-
         //Make the Connection
         instance.connect()
 
