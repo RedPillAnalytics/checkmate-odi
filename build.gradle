@@ -136,7 +136,6 @@ dependencies {
    api 'com.odi-sdk:oracle-common-dms:12.2.1.4'
    api 'com.odi-sdk:oracle-common-ojdbc8-dms:12.2.1.4'
    api 'com.odi-sdk:oracle-common-ojdbc8-dms-g:12.2.1.4'
-   api 'com.odi-sdk:oracle-common-ojdbc8:12.2.1.4'
    api 'com.odi-sdk:oracle-common-ojdbc8-g:12.2.1.4'
    api 'com.odi-sdk:oracle-common-aqapi:12.2.1.4'
    api 'com.odi-sdk:oracle-common-javax-management-j2ee:12.2.1.4'
@@ -225,7 +224,6 @@ dependencies {
    api 'com.odi-sdk:oracle-common-jpa-source:12.2.1.4'
    api 'com.odi-sdk:oracle-common-jpql:12.2.1.4'
    api 'com.odi-sdk:oracle-common-jpql-source:12.2.1.4'
-   api 'com.odi-sdk:oracle-common-jps-api:12.2.1.4'
    api 'com.odi-sdk:oracle-common-lang:12.2.1.4'
    api 'com.odi-sdk:oracle-common-lang3:12.2.1.4'
    api 'com.odi-sdk:oracle-common-nosql:12.2.1.4'
@@ -253,7 +251,7 @@ repositories {
       url "https://plugins.gradle.org/m2/"
    }
    maven {
-      url "gcs://maven.redpillanalytics.io/checkmate"
+      url "gcs://maven.redpillanalytics.io/checkmate/"
    }
    jcenter()
 }
