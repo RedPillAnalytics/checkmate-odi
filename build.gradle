@@ -1,7 +1,6 @@
 plugins {
    id 'groovy'
    id 'java-gradle-plugin'
-   id 'maven-publish'
    id "com.gradle.plugin-publish" version "0.11.0"
    id "pl.allegro.tech.build.axion-release" version "1.11.0"
    id "com.github.breadmoirai.github-release" version "2.2.12"
@@ -11,7 +10,6 @@ plugins {
    id "com.redpillanalytics.gradle-analytics" version "1.3.0"
    id 'com.adarshr.test-logger' version '2.0.0'
    id 'build-dashboard'
-   id "com.google.cloud.artifactregistry.gradle-plugin" version "2.0.1"
 }
 
 // send analytics
@@ -138,7 +136,6 @@ dependencies {
    api 'com.odi-sdk:oracle-common-dms:12.2.1.4'
    api 'com.odi-sdk:oracle-common-ojdbc8-dms:12.2.1.4'
    api 'com.odi-sdk:oracle-common-ojdbc8-dms-g:12.2.1.4'
-   api 'com.odi-sdk:oracle-common-ojdbc8:12.2.1.4'
    api 'com.odi-sdk:oracle-common-ojdbc8-g:12.2.1.4'
    api 'com.odi-sdk:oracle-common-aqapi:12.2.1.4'
    api 'com.odi-sdk:oracle-common-javax-management-j2ee:12.2.1.4'
@@ -227,7 +224,6 @@ dependencies {
    api 'com.odi-sdk:oracle-common-jpa-source:12.2.1.4'
    api 'com.odi-sdk:oracle-common-jpql:12.2.1.4'
    api 'com.odi-sdk:oracle-common-jpql-source:12.2.1.4'
-   api 'com.odi-sdk:oracle-common-jps-api:12.2.1.4'
    api 'com.odi-sdk:oracle-common-lang:12.2.1.4'
    api 'com.odi-sdk:oracle-common-lang3:12.2.1.4'
    api 'com.odi-sdk:oracle-common-nosql:12.2.1.4'
@@ -252,10 +248,10 @@ dependencies {
 
 repositories {
    maven {
-      url "artifactregistry://us-maven.pkg.dev/rpa-devops/redpillanalytics"
+      url "https://plugins.gradle.org/m2/"
    }
    maven {
-      url "https://plugins.gradle.org/m2/"
+      url "gcs://maven.redpillanalytics.io/checkmate/"
    }
    jcenter()
 }
@@ -320,14 +316,11 @@ tasks.onlineExportTest.mustRunAfter tasks.onlineImportTest
 tasks.onlineImportTest.mustRunAfter tasks.onlineWaitTest
 tasks.onlineExportTest.mustRunAfter tasks.onlineWaitTest
 
-publishing {
-   repositories {
-      maven {
-         url "artifactregistry://us-maven.pkg.dev/rpa-devops/redpillanalytics"
-      }
-   }
+// create a publish task
+task publish {
+   description 'Custom publish task.'
+   group 'publishing'
+   dependsOn tasks.publishPlugins, tasks.publishVersionDocs, tasks.publishLatestDocs, tasks.githubRelease, tasks.build
 }
-
-tasks.publish.dependsOn tasks.publishPlugins, tasks.publishVersionDocs, tasks.publishLatestDocs, tasks.githubRelease, tasks.build
 
 tasks.githubRelease.mustRunAfter tasks.publishPlugins, tasks.build
