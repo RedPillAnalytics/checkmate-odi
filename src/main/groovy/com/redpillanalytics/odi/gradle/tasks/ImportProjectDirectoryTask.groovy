@@ -66,7 +66,7 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       def folderFilePrefix = ['TRT','REUMAP','MAP','PACK']
 
       // Import the Project Object
-      importXmlFiles(importProjectFiles, importService.IMPORT_MODE_SYNONYM_INSERT_UPDATE)
+      importXmlFiles(importProjectFiles)
 
       // Import the Project KM
       smartImportXmlFiles(importKMFiles)
@@ -81,7 +81,7 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
 
       // Import the Project Folder Objects
       folderFilePrefix.each {
-         importXmlFiles(getImportFiles(it), importService.IMPORT_MODE_SYNONYM_INSERT)
+         importXmlFiles(getImportFiles(it))
       }
 
       // Close the Connection
