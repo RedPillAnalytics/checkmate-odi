@@ -45,9 +45,10 @@ class ImportTask extends InstanceTask {
 
    }
 
-   def importTopology(String folderPath) {
+   def importTopology(String folderPath, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE)  {
 
-      importService.importTopologyFromFolder(ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+      importService.importTopologyFromFolder(
+              importMode,
               folderPath,
               true,
               'checkmate-odi12c+' as char[],

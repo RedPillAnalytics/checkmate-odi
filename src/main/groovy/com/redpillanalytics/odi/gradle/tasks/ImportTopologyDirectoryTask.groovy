@@ -10,32 +10,17 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
     @Input
     String category = 'topology'
 
-    /**
-     * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
-     *
-     * @return The List of export files.
-     */
-    List getImportFiles(String filePrefix) {
-        def result = new LinkedList()
-        result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
-        return result
-    }
-
     @TaskAction
     def taskAction() {
 
-        //Make the Connection
+        // Make the connection
         instance.connect()
 
-        def filePrefix = ['TECH', 'DT', 'CONVDT' , 'ACT' , 'CONN', 'PSC', 'AGENT', 'LAGENT', 'CONT', 'LSC']
+        // Import the topology directory
+        importTopologyDir()
 
-        // Import the Topology Objects
-        filePrefix.each {
-            // Get the import files by prefix
-            importXmlFiles(getImportFiles(it))
-        }
-
-        // Close the Connection
+        // Close the connection
         instance.close()
     }
+
 }

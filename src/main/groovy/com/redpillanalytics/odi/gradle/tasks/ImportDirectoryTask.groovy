@@ -66,4 +66,18 @@ class ImportDirectoryTask extends ImportTask {
 
    }
 
+   /**
+    * Import Topology from Folder.
+    */
+   def importTopologyDir() {
+
+      instance.beginTxn()
+
+      // Import the topology directory
+      importTopology(importDir.canonicalPath)
+
+      instance.endTxn()
+
+   }
+
 }
