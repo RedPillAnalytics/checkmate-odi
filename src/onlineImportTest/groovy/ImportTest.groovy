@@ -128,14 +128,14 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :importGlobalDir task with defaults"() {
-      given:
-      taskName = 'importGlobalDir'
-      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
-
-      expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
-   }
+//   def "Execute :importGlobalDir task with defaults"() {
+//      given:
+//      taskName = 'importGlobalDir'
+//      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
+//
+//      expect:
+//      result.task(":${taskName}").outcome.name() != 'FAILED'
+//   }
 
    def "Execute :importTopologyDir task with defaults"() {
       given:
