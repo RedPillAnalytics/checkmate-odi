@@ -1,6 +1,7 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import oracle.odi.impexp.EncodingOptions
 import oracle.odi.impexp.OdiImportException
 import oracle.odi.impexp.smartie.OdiSmartImportException
 import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
@@ -43,4 +44,15 @@ class ImportTask extends InstanceTask {
       )
 
    }
+
+   def importTopology(String folderPath) {
+
+      importService.importTopologyFromFolder(ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE,
+              folderPath,
+              true,
+              'checkmate-odi12c+' as char[],
+              false)
+
+   }
+
 }

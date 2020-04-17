@@ -164,30 +164,4 @@ class ImportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   //      def "Execute :deleteProject task"() {
-//      given:
-//      taskName = 'deleteProject'
-//      result = executeSingleTask(taskName, ['-Si'])
-//
-//      expect:
-//      result.task(":${taskName}").outcome.name() != 'FAILED'
-//   }
-
-//      def "Execute :deleteModels task with defaults."() {
-//      given:
-//      taskName = 'deleteModels'
-//      result = executeSingleTask(taskName, ['-Si'])
-//
-//      expect:
-//      result.task(":${taskName}").outcome.name() != 'FAILED'
-//   }
-
-//   def "Execute :createProject task"() {
-//      given:
-//      taskName = 'createProject'
-//      result = executeSingleTask(taskName, ['clean', '-Si'])
-//
-//      expect:
-//      result.task(":${taskName}").outcome.name() != 'FAILED'
-//   }
 }
