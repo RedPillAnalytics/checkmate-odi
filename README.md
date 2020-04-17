@@ -11,14 +11,14 @@ Supported ODI versions:
 Getting started with Checkmate for ODI
 =========
 
-###Checkmate Studio**
+**Checkmate Studio**
 
 A front-end desktop class application that works as Checkmate CLI’s interface designed to mostly import and export BI development artifacts.
 Checkmate enables Continuous Delivery for products or platforms that don't naturally support it. This tool is also used on real multi-user development with git for source control management (SCM).
 
 More: [Download Checkmate Studio](https://redpillanalytics.com/checkmate-studio-download)
 
-###Checkmate ODI CLI
+**Checkmate ODI CLI**
 
 To use checkmate-odi gradle plugin create a `build.gradle` and `settings.gradle` in your source base folder with the following content:
 
