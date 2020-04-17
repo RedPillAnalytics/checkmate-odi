@@ -38,9 +38,6 @@ class OdiPlugin implements Plugin<Project> {
          extensions.create('odi', OdiPluginExtension)
       }
 
-      // create configuration for JDBC
-      //project.configurations { jdbc }
-
       // create the extension for the build group container
       // this facilitates creating multiple build groups
       // build groups are groups of similar tasks with slight configuration modifications
@@ -48,12 +45,6 @@ class OdiPlugin implements Plugin<Project> {
 
       // we'll start with only a single build group
       project.extensions.odi.buildGroups.add(new BuildGroupContainer('default'))
-
-      // add ODI API plugin
-//      if (project.plugins.findPlugin('com.redpillanalytics.checkmate.odi.api')) {
-//         // add libsDir dependency
-//         project.buildscript.dependencies.add('classpath', project.fileTree(dir: project.file(project.extensions.odiApi.libsDir), include: '*.jar'))
-//      }
 
       project.afterEvaluate {
 
@@ -98,7 +89,6 @@ class OdiPlugin implements Plugin<Project> {
          def odiUser = project.extensions.odi.odiUser
          log.debug "odiUser: $odiUser"
          def odiPassword = project.extensions.odi.odiPassword
-         log.debug "odiPassword: $odiPassword"
 
          // What's our content policy... multiple objects, or a single file
          def contentPolicy = project.extensions.odi.contentPolicy
@@ -241,42 +231,6 @@ class OdiPlugin implements Plugin<Project> {
                   instance odiInstance
                   outputs.upToDateWhen { false }
                }
-
-//               // Task that exports the Model Folders by Name in the Repository
-//               project.task(bg.getTaskName('exportWorkRepo'), type: ExportWorkRepoTask) {
-//
-//                  group taskGroup
-//                  description = "Traditional export of all items in the ODI repository work repository."
-//                  instance odiInstance
-//                  //sourceDir projectSource
-//               }
-
-               // Task that deletes a model
-//               project.task(bg.getTaskName('deleteModels'), type: DeleteModelsTask) {
-//
-//                  group taskGroup
-//                  description = "Delete one or more models from the ODI repository."
-//                  instance odiInstance
-//               }
-
-//               // Task that creates a project
-//               project.task(bg.getTaskName('createProject'), type: CreateProjectTask) {
-//
-//                  group taskGroup
-//                  projectCode defaultProjectCode
-//                  projectName defaultProjectName
-//                  instance odiInstance
-//                  description = "Create project name '${defaultProjectName}' with project code '${defaultProjectCode}' in the ODI repositorty."
-//               }
-//
-//               // Task that deletes a project
-//               project.task(bg.getTaskName('deleteProject'), type: DeleteProjectTask) {
-//
-//                  group taskGroup
-//                  description = "Delete project code '${defaultProjectCode}' from the ODI repositorty."
-//                  projectCode defaultProjectCode
-//                  instance odiInstance
-//               }
 
                project.task(bg.getTaskName('export')) {
                   group taskGroup

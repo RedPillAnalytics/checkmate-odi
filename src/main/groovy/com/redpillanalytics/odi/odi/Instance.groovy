@@ -97,10 +97,6 @@ class Instance {
       this.odiUser = odiUser
       this.odiPassword = odiPassword
 
-      // testing making the connection later, only when it's used
-      // similar to what I did with MBeans in the Checkmate OBI plugin
-      //connect()
-
    }
 
    static def getMasterRepo(String url, String driver, String user, String password, PoolingAttributes pooling = new PoolingAttributes()) {
