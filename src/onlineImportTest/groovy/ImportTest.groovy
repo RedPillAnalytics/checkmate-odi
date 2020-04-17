@@ -77,7 +77,7 @@ class ImportTest extends Specification {
    def "Execute :import task with defaults"() {
       given:
       taskName = 'import'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -86,7 +86,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectDir task with defaults"() {
       given:
       taskName = 'importProjectDir'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -95,7 +95,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectDir task with --source-dir option"() {
       given:
       taskName = 'importProjectDir'
-      result = executeSingleTask(taskName, ['--source-dir=EDW Loads', '-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '--source-dir=EDW Loads', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -104,7 +104,7 @@ class ImportTest extends Specification {
    def "Execute :importModelDir task with defaults"() {
       given:
       taskName = 'importModelDir'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -113,7 +113,7 @@ class ImportTest extends Specification {
    def "Execute :importLoadPlanDir task with defaults"() {
       given:
       taskName = 'importLoadPlanDir'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -122,7 +122,7 @@ class ImportTest extends Specification {
    def "Execute :importScenarioDir task with defaults"() {
       given:
       taskName = 'importScenarioDir'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -131,7 +131,7 @@ class ImportTest extends Specification {
    def "Execute :importGlobalDir task with defaults"() {
       given:
       taskName = 'importGlobalDir'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -140,7 +140,7 @@ class ImportTest extends Specification {
    def "Execute :importTopologyDir task with defaults"() {
       given:
       taskName = 'importTopologyDir'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -149,7 +149,7 @@ class ImportTest extends Specification {
    def "Execute :importProjectFile task with defaults"() {
       given:
       taskName = 'importProjectFile'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -158,36 +158,10 @@ class ImportTest extends Specification {
    def "Execute :importProjectFile task with --source-file option"() {
       given:
       taskName = 'importProjectFile'
-      result = executeSingleTask(taskName, ['--source-file=src/main/file/FILE_JUMP.xml', '-Si'])
+      result = executeSingleTask(taskName, ['-Djavax.xml.parsers.SAXParserFactory=oracle.xml.jaxp.JXSAXParserFactory', '--source-file=src/main/file/FILE_JUMP.xml', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   //      def "Execute :deleteProject task"() {
-//      given:
-//      taskName = 'deleteProject'
-//      result = executeSingleTask(taskName, ['-Si'])
-//
-//      expect:
-//      result.task(":${taskName}").outcome.name() != 'FAILED'
-//   }
-
-//      def "Execute :deleteModels task with defaults."() {
-//      given:
-//      taskName = 'deleteModels'
-//      result = executeSingleTask(taskName, ['-Si'])
-//
-//      expect:
-//      result.task(":${taskName}").outcome.name() != 'FAILED'
-//   }
-
-//   def "Execute :createProject task"() {
-//      given:
-//      taskName = 'createProject'
-//      result = executeSingleTask(taskName, ['clean', '-Si'])
-//
-//      expect:
-//      result.task(":${taskName}").outcome.name() != 'FAILED'
-//   }
 }

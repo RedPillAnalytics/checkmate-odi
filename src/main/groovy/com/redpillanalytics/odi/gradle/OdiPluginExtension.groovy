@@ -74,7 +74,7 @@ class OdiPluginExtension {
    /**
     * The version of ODI that Checkmate will maintain compatibility with.
     */
-   String compatibility = '12.2.1.3.2'
+   String compatibility = '12.2.1.4'
 
    /**
     * The type of Work Repository: 'development' or 'execution'.
