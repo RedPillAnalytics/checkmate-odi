@@ -25,7 +25,7 @@ To use checkmate-odi gradle plugin create a `build.gradle` and `settings.gradle`
 **build.gradle**
 ```
 plugins {
-  id "com.redpillanalytics.checkmate.odi" version "1.0.22"
+  id "com.redpillanalytics.checkmate.odi" version "1.0.23"
 }
 ```
 
