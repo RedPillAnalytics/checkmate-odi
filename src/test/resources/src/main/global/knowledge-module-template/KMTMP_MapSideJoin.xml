@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="FGpz2QL5oM+kAR+3Q0djqS0fcrrCalbEoKf8CbLQPio=" keyVect="8dOtYaj+GWthc2Sn+2FYyw==" exportKeySalt="eef19e90-c800-489b-bb00-7717f77716c3" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#125]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:20.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[2e6ea97d-5490-498a-a44b-1704dc83e2e0]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[125]]></Field>
+	<Field name="LangName" type="java.lang.String"><![CDATA[PYTHON]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 21:01:12.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[MapSideJoin]]></Field>
+	<Field name="TechnoName" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[
+{# FOR ($[SRC_ALIASES], $[JOIN_BY_KEYBY], $[SRC_RDD_SHAPE]) IN ($[SRC_ALIAS], $[KEY_BY], $[SRC_RDD]) SEP = '' #}
+{# IF ($[IS_EQUAL_JOIN]) #}
+$[JOIN_PREFIX]_$[SRC_ALIAS] = $[SRC_ALIAS]{# IF ($[WINDOWING] == 'true') #}.window($[WINDOW_DURATION],$[SLIDE_DURATION]){#ENDIF #}.map(lambda $[SRC_RDD]:($[KEY_BY], $[SRC_RDD])){# NL #}
+{# ELSE #}
+$[JOIN_PREFIX]_$[SRC_ALIAS] = $[SRC_ALIAS]
+{# ENDIF #}
+{# ENDFOR #}
+joinVariable$[JOIN_ID]  = sc.broadcast({# IF ($[JOIN_TYPE] == 'RIGHT_OUTER') #}$[JOIN_PREFIX]_$[SRC_ALIASES.get(0)]{# ELSE #}$[JOIN_PREFIX]_$[SRC_ALIASES.get(1)]{# ENDIF #}.{# IF ($[IS_EQUAL_JOIN] == 'true') #}groupByKey().collectAsMap(){# ELSE #}collect(){# ENDIF #})
+def joinFunc$[JOIN_ID](iterator):
+  joinMap = joinVariable$[JOIN_ID].value
+  for elem in iterator:
+{# IF ($[JOIN_TYPE] == 'INNER') #}
+{# IF ($[IS_EQUAL_JOIN] == 'true') #}
+    if joinMap.has_key(elem[0]) :
+      yield (elem[1], joinMap.get(elem[0]).data)
+{# ELSE #}
+    $[SRC_RDD_SHAPE.get(0)] = elem
+    matchedLines = filter(lambda $[SRC_RDD_SHAPE.get(1)] : safeExpr(lambda : $[JOIN_COND] , False), joinMap)
+    if len(matchedLines) > 0 :
+      yield (elem, matchedLines)
+{# ENDIF #}
+{# ELSIF $[JOIN_TYPE] == 'CROSS' #}
+    yield (elem, joinMap)
+{# ELSIF ($[JOIN_TYPE] == 'LEFT_OUTER' OR $[JOIN_TYPE] == 'RIGHT_OUTER' OR $[JOIN_TYPE] == 'FULL_OUTER') #}
+{# IF ($[IS_EQUAL_JOIN] == 'true') #}
+    yield (elem[1], joinMap.get(elem[0]).data if joinMap.has_key(elem[0]) else [NoneRddElement()])
+{# ELSE #}
+    {# IF ($[JOIN_TYPE] == 'RIGHT_OUTER') #}$[SRC_RDD_SHAPE.get(1)]{# ELSE #}$[SRC_RDD_SHAPE.get(0)]{# ENDIF #} = elem
+    matchedLines = filter(lambda {# IF ($[JOIN_TYPE] == 'RIGHT_OUTER') #}$[SRC_RDD_SHAPE.get(0)]{# ELSE #}$[SRC_RDD_SHAPE.get(1)]{# ENDIF #} : safeExpr(lambda :$[JOIN_COND] , False), joinMap)
+    yield (elem, matchedLines if len(matchedLines) > 0 else [NoneRddElement()])
+{# ENDIF #}
+{# ENDIF #}
+$[TGT_ALIAS] = {# IF ($[JOIN_TYPE] == 'RIGHT_OUTER') #}$[JOIN_PREFIX]_$[SRC_ALIASES.get(1)]{# ELSE #}$[JOIN_PREFIX]_$[SRC_ALIASES.get(0)]{# ENDIF #}.mapPartitions(joinFunc$[JOIN_ID]).flatMapValues(lambda l : l){# IF ($[JOIN_TYPE] == 'RIGHT_OUTER') #}.map(lambda (r, l) : (l, r)){# ENDIF#}
+]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[723abd91-85f8-475d-9748-002b4403fa9a]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[122]]></Field>
+	<Field name="IKmTemplateRef" type="com.sunopsis.sql.DbInt"><![CDATA[125]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.122]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46eda2-2d00-11e6-9432-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkJoinCmd]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[12]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.125]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[2e6ea97d-5490-498a-a44b-1704dc83e2e0]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[MapSideJoin]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[11]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>

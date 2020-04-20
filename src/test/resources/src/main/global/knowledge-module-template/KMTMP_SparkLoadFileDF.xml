@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="LHo5WBF7NcQMZvmSZdHBv4hTBU9oJ0U3okRSgfMH9j4=" keyVect="X7CCE0RNrTiKQnGNbp266Q==" exportKeySalt="27d54e08-1d4b-49b0-8f56-da99b45745e8" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#158]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:19.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[7c05aef0-32bf-4ad9-aa25-53bdef3d0c83]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[4]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[158]]></Field>
+	<Field name="LangName" type="java.lang.String"><![CDATA[PYTHON]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 21:01:13.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[SparkLoadFileDF]]></Field>
+	<Field name="TechnoName" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[
+
+{# IF ($[LOAD_FUNCTION] == 'textFile') #}
+{# IF ($[INFER_SOURCE_SCHEMA_DF] == 'false') #}
+read_schema = StructType([{# FOR ($[INPUT_STRUCT_TYPE_SCHEMA_DEF]) IN ($[SRC_SCHEMA_TYPE]) SEP = ',
+' #}
+  StructField($[SRC_SCHEMA_TYPE], True) {# ENDFOR #}])
+{# ENDIF #}
+if sparkVersion > 200:
+  $[TGT_ALIAS] = sqlContext.read.format("org.apache.spark.sql.execution.datasources.csv.CSVFileFormat"){# IF ($[FILE_LOAD_OPTIONS] != 'null') #}.$[FILE_LOAD_OPTIONS]{# ENDIF #}{# IF ($[INFER_SOURCE_SCHEMA_DF] == 'false') #}.schema(read_schema){# ENDIF #}.load(protocol+strLoc)
+else:
+  $[TGT_ALIAS] = sqlContext.read.format("com.databricks.spark.csv"){# IF ($[FILE_LOAD_OPTIONS] != 'null') #}.$[FILE_LOAD_OPTIONS]{# ENDIF #}{# IF ($[INFER_SOURCE_SCHEMA_DF] == 'false') #}.schema(read_schema){# ENDIF #}.load(protocol+strLoc)
+
+{# ELSIF ($[LOAD_FUNCTION] == 'jsonFile') #}
+{# IF ($[INFER_SOURCE_SCHEMA_DF] == 'false') #}
+read_schema = StructType([{# FOR ($[INPUT_STRUCT_TYPE_SCHEMA_DEF]) IN ($[SRC_SCHEMA_TYPE]) SEP = ',
+' #}
+  StructField($[SRC_SCHEMA_TYPE], True) {# ENDFOR #}])
+{# ENDIF #}
+$[TGT_ALIAS] = sqlContext.read.format("json"){# IF ($[FILE_LOAD_OPTIONS] != 'null') #}.$[FILE_LOAD_OPTIONS]{# ENDIF #}{# IF ($[INFER_SOURCE_SCHEMA_DF] == 'false') #}.schema(read_schema){# ENDIF #}.load(protocol+strLoc)
+
+{# ELSE #}
+
+$[TGT_ALIAS] =  sc.$[LOAD_FUNCTION]({# IF ($[LOAD_FILE] == 'true') #}protocol+strLoc{# ENDIF #}{# IF ($[LOAD_FILE] == 'true' AND $[LOAD_FUNC_ARGS] != 'null') #},{# ENDIF #}{# IF ($[LOAD_FUNC_ARGS] != 'null') #}$[LOAD_FUNC_ARGS]{# ENDIF #});
+$[TGT_ALIAS] = $[TGT_ALIAS].filter(lambda x: x != None and len(x) > 0 )
+{# IF ($[FIELD_SEP] != 'null') #}
+$[TGT_ALIAS] =  $[TGT_ALIAS].map(lambda {# IF ($[KEY_SUPPORT] == 'true') #}(key,strLine): (key,strLine.split("$[FIELD_SEP]"))){# ELSE #}strLine: strLine.split("$[FIELD_SEP]")){# ENDIF #}{# IF ($[GENERATE_INPUT_SCHEMA_DEF] == 'true') #}.map(lambda {# IF ($[KEY_SUPPORT] == 'true') #}(key,data):Row($[INPUT_SCHEMA_DEF])){# ELSE #}data:Row($[INPUT_SCHEMA_DEF])){# ENDIF #}{# ENDIF #}
+{# ENDIF #}
+
+{# IF ($[SPARK_STREAMING_DEBUG] == 'true') #}
+print("========= %s   : $[TGT_ALIAS] =========" % type($[TGT_ALIAS]).__name__)
+for line in $[TGT_ALIAS].collect():
+    print line
+{# ENDIF #}
+
+{# IF ($[INFER_SOURCE_SCHEMA_DF] == 'false') #}
+
+$[TGT_ALIAS]_RDEF = Row($[OUTPUT_SCHEMA_DEF])
+$[TGT_ALIAS] = $[TGT_ALIAS].map(lambda row : $[TGT_ALIAS]_RDEF ({# FOR ($[SRC_COLUMN_NAMES]) IN ($[SRC_COLUMN_NAME]) SEP = ','#} row['$[SRC_COLUMN_NAME]'] {# ENDFOR #} ))
+
+{# IF ($[SPARK_STREAMING_DEBUG] == 'true') #}
+print("========= %s   : $[TGT_ALIAS]  reorder columns =========" % type($[TGT_ALIAS]).__name__)
+for line in $[TGT_ALIAS].collect():
+    print line
+{# ENDIF #}
+
+read_schema = StructType([{# FOR ($[INPUT_STRUCT_TYPE_SCHEMA_DEF_DF]) IN ($[SRC_SCHEMA_TYPE]) SEP = ',
+' #}
+  StructField($[SRC_SCHEMA_TYPE], True) {# ENDFOR #}])
+{# ENDIF #}
+$[TGT_ALIAS] = sqlContext.createDataFrame($[TGT_ALIAS]{# IF ($[INFER_SOURCE_SCHEMA_DF] == 'false') #}, read_schema{# ENDIF #})
+{# ENDIF #}
+
+{# INCLUDE = 'FormatSourceDF' #}
+{# INCLUDE = 'SparkPartitionRedistributeAndSortDF' #}
+    ]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[ae7363d6-2c15-43d2-b121-2257bbb60ffe]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[158]]></Field>
+	<Field name="IKmTemplateRef" type="com.sunopsis.sql.DbInt"><![CDATA[160]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[f6c81241-e3e8-4e82-acf5-83277e0ae465]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[158]]></Field>
+	<Field name="IKmTemplateRef" type="com.sunopsis.sql.DbInt"><![CDATA[176]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[1826d41b-b657-41cd-84b1-97b7c4806a85]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[108]]></Field>
+	<Field name="IKmTemplateRef" type="com.sunopsis.sql.DbInt"><![CDATA[158]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[b62b31e9-f20a-4f7d-bb29-13d73309a1d8]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[157]]></Field>
+	<Field name="IKmTemplateRef" type="com.sunopsis.sql.DbInt"><![CDATA[158]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.158]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[7c05aef0-32bf-4ad9-aa25-53bdef3d0c83]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkLoadFileDF]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[15]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.160]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3b70b165-2bf7-4ddc-9a86-723509d1cb52]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[FormatSourceDF]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[14]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.176]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[0519558e-4d77-490a-bacb-69b2a2b2fad5]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPartitionRedistributeAndSortDF]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[35]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.108]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e24e-2d00-11e6-9407-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkLoadCmd]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[12]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.157]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[644216eb-18b4-42c6-ba70-04cf3bc11482]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkLoadCmdDF]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[14]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[5]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>

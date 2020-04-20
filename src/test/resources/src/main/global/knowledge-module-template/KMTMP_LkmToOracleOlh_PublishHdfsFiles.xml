@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="HVoikKs+FJy2m67ZLPEjoVNsVvrvHlL8h0KFtM3bcUY=" keyVect="MpOC/jh4x1YqzXM62x1HtA==" exportKeySalt="d21e4b75-7cef-4091-9f87-3cc3e43001dd" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#218]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:19.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[fa46f2c0-2d00-11e6-9451-00163e1ffd72]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[218]]></Field>
+	<Field name="LangName" type="java.lang.String"><![CDATA[GROOVY]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:19.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[LkmToOracleOlh_PublishHdfsFiles]]></Field>
+	<Field name="TechnoName" type="java.lang.String">null</Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[
+import oracle.hadoop.hdfs.exttab.ExternalTable
+import java.io.OutputStream
+import java.io.ByteArrayOutputStream
+import org.apache.hadoop.conf.Configuration
+
+out = new ByteArrayOutputStream()
+lSchemaName = '''$[oracleLSchemaName]'''
+con = odiRef.getJDBCConnectionFromLSchema( lSchemaName )
+
+// define the command in the arg list
+//String[] args = {'''-publish''' '''--noexecute'''}
+String[] args = new String[1]
+args[0] = '-publish'
+
+Configuration conf = new Configuration()
+
+// Pass target table name
+targetTableName = '''$[oracleExtTableName]'''
+//For trouble-shooting ClassLoader issues
+//System.setProperty("jaxb.debug", "true")
+conf.set('''oracle.hadoop.hdfs.exttab.tableName''', targetTableName )
+// Enable full stacktrace in case of errors
+conf.set('''oracle.hadoop.exttab.printStackTrace''', '''true''' )
+
+
+// Pass input file dir
+{# IF ( $[isOutputModeDP_OSCH] == 'true' ) #}
+dataSetPaths = '''<?=mapredOutputDir?>/*.dat'''
+{# ENDIF #}
+{# IF ( $[isOutputModeOSCH] == 'true' ) #}
+dataSetPaths = '''$[srcJavaUrl]$[mapredInputDir]'''
+{# ENDIF #}
+conf.set('''oracle.hadoop.hdfs.exttab.datasetPaths''', dataSetPaths )
+
+logHeader = 	"Invocation parameters: \n\t"+
+	"JDBC Connection to ODI logical schema: " + lSchemaName + "\n\t"+
+	"oracle.hadoop.hdfs.exttab.tableName: " + targetTableName +  "\n\t"+
+	"oracle.hadoop.hdfs.exttab.datasetPaths: " + dataSetPaths +  "\n\n"
+
+// Invoke OSCH Publishing tool
+try {
+    exTable = new ExternalTable()
+    exTable.setConf( conf )
+    rc = exTable.run( args, con, out )
+} catch ( Exception e ) {
+    out.flush()
+    throw new OdiKMException(e,"ODIKM-HIVE-10007", "ODIKM-HIVE-10007: OCDH publishing tool has thrown Exception: {0} \n {1} Execution log:\n\n{2}", [ e.getMessage(), logHeader, out.toString()].toArray());
+}
+out.flush()
+
+// Check return code
+if (rc != 0) {
+   throw new OdiKMException("ODIKM-HIVE-10008", "ODIKM-HIVE-10008: OCDH publishing tool has returned RC<>0.\n {0} Execution log:\n\n{1}", [logHeader, out.toString()].toArray());
+}
+
+// Report log of OSCH Publish call
+// Report ext tab definition
+def newMsg = "Execution log of OSCH Publish Call:\n\n" + logHeader + "\n" + out.toString()
+odiRef.setSummaryMessage( newMsg )
+    ]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>

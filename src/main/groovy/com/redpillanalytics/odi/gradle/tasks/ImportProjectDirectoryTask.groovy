@@ -25,36 +25,6 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       return result
    }
 
-   @Internal
-   List getImportProjectFiles() {
-
-      def result = new LinkedList()
-
-      result.addAll(project.fileTree(dir: importDir, include: "**/PROJ_*.xml").toList())
-
-      return result
-   }
-
-   @Internal
-   List getImportFolderFiles() {
-
-      def result = new LinkedList()
-
-      result.addAll(project.fileTree(dir: importDir, include: "**/FOLD_*.xml").toList())
-
-      return result
-   }
-
-   @Internal
-   List getImportKMFiles() {
-
-      def result = new LinkedList()
-
-      result.addAll(project.fileTree(dir: importDir, include: "**/KM_*.xml").toList())
-
-      return result
-   }
-
    @TaskAction
    def taskAction() {
 
@@ -66,18 +36,18 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       def folderFilePrefix = ['TRT','REUMAP','MAP','PACK']
 
       // Import the Project Object
-      importXmlFiles(importProjectFiles)
+      importXmlFiles(getImportFiles('PROJ'))
 
-      // Import the Project KM
-      smartImportXmlFiles(importKMFiles)
+      // Smart Import the Project KMs
+      smartImportXmlFiles(getImportFiles('KM'))
 
       // Import the Project Objects
       projectFilePrefix.each {
          importXmlFiles(getImportFiles(it))
       }
 
-      // Import the Project Folders
-      smartImportXmlFiles(importFolderFiles)
+      // Smart Import the Project Folders
+      smartImportXmlFiles(getImportFiles('FOLD'))
 
       // Import the Project Folder Objects
       folderFilePrefix.each {

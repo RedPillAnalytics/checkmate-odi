@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="vw0CEA3ns0fwSG4boB37VwxFcs6LD9VGsC8rZc3dkeg=" keyVect="VD2sH0DP1jgP6i0sFIfnfw==" exportKeySalt="98a43ee0-52e2-4cb8-b96b-498f000dfeba" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#39]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:19.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[038a3a3b-3d27-46b8-adb1-0009643be07c]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[39]]></Field>
+	<Field name="LangName" type="java.lang.String"><![CDATA[SQL]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 21:01:15.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[DataPumpExport]]></Field>
+	<Field name="TechnoName" type="java.lang.String">null</Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[
+declare
+  h1 number;
+  j_status varchar2(200);
+
+begin
+  dbms_output.enable();
+{# IF ($[statement.useSourceView()] == 'true') #}
+  h1 := dbms_datapump.open('EXPORT','TABLE',NULL,'ODI_EXPORT','LATEST');
+{# ELSE #}
+  h1 := dbms_datapump.open('EXPORT','SCHEMA',NULL,'ODI_EXPORT','LATEST');
+{# ENDIF #}
+  dbms_datapump.add_file(
+    handle => h1,
+    filename => '$[statement.getExportFileName()]%U.dmp',
+    directory => '$[statement.getOracleDirectory()]',
+    filetype => dbms_datapump.KU$_FILE_TYPE_DUMP_FILE,
+{# IF ($[statement.getFileSize()] != 'null' AND $[statement.getFileSize()] != '') #}
+    filesize => '$[statement.getFileSize()]',
+{# ENDIF #}
+    reusefile => 1);
+
+  dbms_datapump.add_file(
+    handle => h1,
+    filename => '$[statement.getExportFileName()]_exp.log',
+    directory => '$[statement.getOracleDirectory()]',
+    filetype => dbms_datapump.KU$_FILE_TYPE_LOG_FILE);
+
+{# IF ($[statement.useSourceView()] == 'true') #}
+  dbms_datapump.metadata_filter( h1, 'NAME_LIST', q'|'$[statement.getStagingTableName()]_V'|');
+  dbms_datapump.metadata_filter( h1, 'VIEWS_AS_TABLES', '{# IF ($[statement.isSourceViewInTempSchema()] == 'true') #}$[statement.getSourceWorkSchema()].{# ENDIF #}$[statement.getStagingTableName()]_V');
+{# ELSE #}
+  dbms_datapump.metadata_filter( h1, 'SCHEMA_LIST', q'|'$[statement.getSourceSchema()]'|' );
+  dbms_datapump.metadata_filter( h1, 'NAME_LIST', q'|'$[statement.getSourceResourceName()]'|', 'TABLE' );
+  dbms_datapump.metadata_filter( h1, 'INCLUDE_PATH_LIST', q'|'TABLE'|' );
+{# IF ($[statement.getFilter()] != 'null' AND $[statement.getFilter().size()] > '0') #}
+  dbms_datapump.data_filter( h1, 'SUBQUERY', q'|WHERE {# LIST #}$[statement.getFilter()]{# SEP #} AND {# ENDLIST #}|' );
+{# ENDIF #}
+{# ENDIF #}
+  dbms_datapump.set_parameter(h1, 'COMPRESSION', '$[statement.getCompressionType()]');
+{# IF ($[statement.getCompressionType()]  != 'NONE') #}
+  dbms_datapump.set_parameter(h1, 'COMPRESSION_ALGORITHM', '$[statement.getCompressionAlgorithm()]');
+{# ENDIF #}
+{# IF ($[statement.useGroupPartitionTableData()] == 'true') #}
+  dbms_datapump.set_parameter(h1, 'DATA_OPTIONS', dbms_datapump.KU$_DATAOPT_GRP_PART_TAB);
+{# ENDIF #}
+  dbms_datapump.set_parallel(h1, $[statement.getParallelExport()]);
+
+  dbms_datapump.start_job(h1);
+  dbms_datapump.wait_for_job(h1, j_status);
+
+  exception
+    when others then
+      declare
+        job_state varchar2(4000);
+        status ku$_Status;
+        all_errors varchar2(32767);
+      begin
+        all_errors := 'dbms_datapump failed with the following errors :' || chr(10) || 'Job state: ' || job_state || chr(10);
+        dbms_datapump.get_status(
+          handle    => h1,
+          mask      => dbms_datapump.KU$_STATUS_JOB_ERROR,
+          timeout   => null,
+          job_state => job_state,
+          status    => status);
+
+        for i in 1..status.error.count loop
+          all_errors := concat(all_errors, status.error(i).logLineNumber || ' : ' || status.error(i).errornumber || ' : ' || status.error(i).logtext ||chr(10));
+        end loop;
+        if job_state is not null then
+           dbms_datapump.stop_job(h1);
+        else
+           begin
+             execute immediate 'drop table ODI_EXPORT';
+           exception
+             when others then
+               null;
+           end;
+        end if;
+        raise_application_error (-20458, all_errors);
+      end;
+end;
+  ]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[c6cfafa6-e30a-41a7-80a4-859ceb276c78]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[39]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[98]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.98]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d32f525b-a1ee-4d39-a62b-7a36355bdd8c]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Oracle to ADWC Datapump]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[27]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.39]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[038a3a3b-3d27-46b8-adb1-0009643be07c]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[DataPumpExport]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[14]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>

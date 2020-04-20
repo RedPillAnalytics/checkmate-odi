@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="tEDvjUT31RBBEW41Fke2cqUPm4lY09QGIeguJwpVsik=" keyVect="FdTIsGWyzC4eWdyvGu/0VA==" exportKeySalt="b5428d05-136b-440e-8665-e8a3137e419a" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#207]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:19.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[fa46f16c-2d00-11e6-9448-00163e1ffd72]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[207]]></Field>
+	<Field name="LangName" type="java.lang.String">null</Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 21:01:14.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[LkmSqlToHive_CreateSqoopOptionFile_Export]]></Field>
+	<Field name="TechnoName" type="java.lang.String"><![CDATA[SUNOPSIS_API]]></Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[OdiOutFile "-FILE=<$=sqoopOptionFile$>" "-CHARSET_ENCODING=UTF-8"
+# 
+# SQOOP Option file for export
+#
+export
+
+
+#############################################################
+# Hadoop generic options
+#############################################################
+
+{# IF ($[isToTeradata] == 'true' AND ($[useGeneric] == 'true')) #}<?
+//==========================================================
+//===================== to Teradata ========================
+//==========================================================
+?>
+-Dsqoop.export.records.per.statement=1
+{# ENDIF #}
+
+<?if (useCredStore) {?>
+-D
+hadoop.security.credential.provider.path=<?=credentialProviderPath?>
+<?}?> 
+
+<$=odiSqoopJars$>
+
+$[option_EXTRA_HADOOP_CONF_PROPERTIES]
+
+
+#############################################################
+# SQOOP options
+#############################################################
+
+{# IF ($[useGeneric] == 'true') #}
+--driver
+$[destJavaDriver]
+{# ENDIF #}
+
+--connect
+$[destJavaUrl]
+
+--username
+$[destUserName]
+
+<?if (useCredStore) {?>
+--password-alias
+<?=passwordAlias?>
+<?} else {?>
+--password
+$[destPassword]
+<?}?>
+
+--num-mappers
+$[option_SQOOP_PARALLELISM]
+
+--table
+$[sqoopTargetTable]
+
+
+{# IF ($[isFromFile] == 'true') #}<?
+//==========================================================
+//===================== from File ==========================
+//==========================================================
+?>
+
+--export-dir
+<$=sourceDir$>
+--input-fields-terminated-by
+'$[fieldSeparator]'
+--input-lines-terminated-by
+'$[rowSeparator]'
+#--input-enclosed-by
+#--input-escaped-by
+#--input-optionally-enclosed-by
+{# ENDIF #}
+
+{# IF ($[isFromHive] == 'true' OR $[isFromHBase] == 'true' ) #}<?
+//==========================================================
+//===================== from Hive/HBase ====================
+//==========================================================
+?>
+--export-dir
+<$=sourceDir$>
+--input-fields-terminated-by
+'\01'
+--input-lines-terminated-by
+'\n'
+#--input-enclosed-by
+#--input-escaped-by
+#--input-optionally-enclosed-by
+--input-null-string
+'\\N'
+--input-null-non-string
+'\\N'
+
+{# ENDIF #}
+
+$[option_EXTRA_SQOOP_CONF_PROPERTIES]
+
+#############################################################
+# Extra connector specific options
+#############################################################
+--
+
+{# IF ($[isToTeradata] == 'true' AND ($[useGeneric] == 'false') #}<?
+//==========================================================
+//===================== to Teradata ========================
+//==========================================================
+?>
+--staging-database
+$[destWorkSchemaName]
+--staging-table
+$[teradataStageTableShortName]
+--output-method
+$[option_TERADATA_OUTPUT_METHOD]
+{# ENDIF #}
+
+{# IF ($[isToMsSql] == 'true' AND ($[useGeneric] == 'false') #}<?
+//==========================================================
+//===================== to MSSQL ===========================
+//==========================================================
+?>
+--schema
+<$=sqoopTargetSchema$>
+{# ENDIF #}
+
+
+$[option_EXTRA_SQOOP_CONNECTOR_CONF_PROPERTIES]
+]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[7ace6f71-079e-40cc-b415-a3e8b3eadfbe]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[207]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[72]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[115e722f-2eae-44f9-97ee-b8971d52e0cc]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[207]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[73]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[634e8eb3-8c9d-4bd2-b83e-4f193fb63ed4]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[207]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[74]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[a9d9aff1-afbf-402c-9b45-e40d188d5df2]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[207]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[75]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.72]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[FD9B1AAF5D04780FE04311C1E40A5D9E]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[HiveSqoopExportBaseLKM]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.207]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f16c-2d00-11e6-9448-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LkmSqlToHive_CreateSqoopOptionFile_Export]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[41]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.73]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[FD9B1AAF5D0B780FE04311C1E40A5D9E]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM File to SQL SQOOP]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[21]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.74]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[FD9B1AAF5D09780FE04311C1E40A5D9E]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Hive to SQL SQOOP]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[21]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.75]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[FEAF67D094E32760E04311C1E40A3D29]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM HBase to SQL SQOOP]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[5]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>

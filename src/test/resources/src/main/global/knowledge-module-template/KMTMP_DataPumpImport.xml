@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="ZHMYmP0vSXtWL/GCqON6XSVHRmDbOyZXmwdKiQavCi0=" keyVect="ZoUkYlJzOAnbRz/3qeCSsg==" exportKeySalt="14924520-c148-43c4-a16d-8871f93a7be8" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#40]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:20.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[38a51814-a0b9-44f4-9f4e-4379e366d570]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[40]]></Field>
+	<Field name="LangName" type="java.lang.String"><![CDATA[SQL]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 21:01:15.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[DataPumpImport]]></Field>
+	<Field name="TechnoName" type="java.lang.String">null</Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[
+declare
+  h1 number;
+  j_status varchar2(200);
+
+begin
+
+  h1 := dbms_datapump.open('IMPORT','FULL',NULL,'ODI_IMPORT','LATEST');
+
+  dbms_datapump.add_file(
+    handle => h1,
+    filename => '$[statement.getObjectStorageURL()]/$[statement.getExportFileName()]%U.dmp',
+    directory => '$[statement.getCredentialName()]',
+    filetype => dbms_datapump.KU$_FILE_TYPE_URIDUMP_FILE);
+
+  dbms_datapump.add_file(
+    handle => h1,
+    filename => '$[statement.getExportFileName()]_imp.log',
+    directory => 'DATA_PUMP_DIR',
+    filetype => dbms_datapump.KU$_FILE_TYPE_LOG_FILE);
+
+{# IF ($[statement.useSourceView()] == 'true') #}
+{# IF ($[statement.isSourceViewInTempSchema()] == 'true') #}
+  dbms_datapump.metadata_remap( h1, 'REMAP_SCHEMA', '$[statement.getSourceWorkSchema()]', '$[statement.getStagingSchema()]');
+{# ELSE #}
+  dbms_datapump.metadata_remap( h1, 'REMAP_SCHEMA', '$[statement.getSourceUser()]', '$[statement.getStagingSchema()]');
+{# ENDIF #}
+  dbms_datapump.metadata_remap( h1, 'REMAP_TABLE', '$[statement.getStagingTableName()]_V', '$[statement.getStagingTableName()]');
+{# ELSE #}
+  dbms_datapump.metadata_remap( h1, 'REMAP_SCHEMA', '$[statement.getSourceSchema()]', '$[statement.getStagingSchema()]');
+  dbms_datapump.metadata_remap( h1, 'REMAP_TABLE', '$[statement.getSourceResourceName()]', '$[statement.getStagingTableName()]');
+{# ENDIF #}
+  dbms_datapump.set_parameter(h1,'TABLE_EXISTS_ACTION','SKIP');
+  dbms_datapump.set_parameter(h1,'PARTITION_OPTIONS','MERGE');
+  dbms_datapump.metadata_transform( h1, 'SEGMENT_ATTRIBUTES', 0);
+  dbms_datapump.set_parallel(h1, $[statement.getParallelImport()]);
+
+  dbms_datapump.start_job(h1);
+  dbms_datapump.wait_for_job(h1, j_status);
+
+  dbms_cloud.put_object(
+    credential_name => '$[statement.getCredentialName()]',
+    object_uri => '$[statement.getObjectStorageURL()]/$[statement.getExportFileName()]_imp.log',
+    directory_name  => 'DATA_PUMP_DIR',
+    file_name => '$[statement.getExportFileName()]_imp.log');
+  exception
+    when others then
+      declare
+        job_state varchar2(4000);
+        status ku$_Status;
+        all_errors varchar2(32767);
+        log_exists boolean;
+        log_size number;
+        log_block_size binary_integer;
+        log_exists_string varchar2(10);
+      begin
+        all_errors := 'dbms_datapump failed with the following errors :' || chr(10) || 'Job state: ' || job_state || chr(10);
+        dbms_datapump.get_status(
+          handle    => h1,
+          mask      => dbms_datapump.KU$_STATUS_JOB_ERROR,
+          timeout   => null,
+          job_state => job_state,
+          status    => status);
+
+        for i in 1..status.error.count loop
+          all_errors := concat(all_errors, status.error(i).logLineNumber || ' : ' || status.error(i).errornumber || ' : ' || status.error(i).logtext ||chr(10));
+        end loop;
+
+        utl_file.fgetattr(
+          location => 'DATA_PUMP_DIR',
+          filename => '$[statement.getExportFileName()]_imp.log',
+          fexists  => log_exists,
+          file_length => log_size,
+          block_size => log_block_size);
+
+        log_exists_string := case when log_exists then 'True' when not log_exists then 'False' end;
+
+        all_errors := concat(all_errors, 'Log exists : ' || log_exists_string || ', Size : ' || to_char(log_size));
+
+        if log_exists and log_size > 0 then
+          dbms_cloud.put_object(
+            credential_name => '$[statement.getCredentialName()]',
+            object_uri => '$[statement.getObjectStorageURL()]/$[statement.getExportFileName()]_imp.log',
+            directory_name  => 'DATA_PUMP_DIR',
+            file_name => '$[statement.getExportFileName()]_imp.log');
+        end if;
+
+        if job_state is not null then
+           dbms_datapump.stop_job(h1);
+        else
+           begin
+             execute immediate 'drop table ODI_IMPORT';
+           exception
+             when others then
+               null;
+           end;
+        end if;
+        raise_application_error (-20458, all_errors);
+      end;
+end;
+  ]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[41d7743a-5b47-4482-b545-9499107dbd40]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[40]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[98]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.98]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[d32f525b-a1ee-4d39-a62b-7a36355bdd8c]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Oracle to ADWC Datapump]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[27]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.40]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[38a51814-a0b9-44f4-9f4e-4379e366d570]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[DataPumpImport]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[14]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[2]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>
