@@ -1,0 +1,975 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="Xtq/ENDb+NplCiUX+Ay/vk/xyb58IzS5SRjnkQdpV2g=" keyVect="HBsNGPZfvHjdanz2AQZ52A==" exportKeySalt="96deb92d-0d5d-4e8c-8fd6-d9184f6ed294" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#151]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:20.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[bcb3a042-a6d7-11e6-ac06-23e5aaa09e30]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="LangName" type="java.lang.String"><![CDATA[PYTHON]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 21:01:10.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[SparkPythonSubmitCommon]]></Field>
+	<Field name="TechnoName" type="java.lang.String"><![CDATA[SPARK_PYTHON]]></Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[
+import com.sunopsis.core.InvalidArgumentException;
+import com.sunopsis.dwg.snpreference.SnpReference;
+import com.sunopsis.dwg.tools.WaitForSparkJob;
+import com.sunopsis.tools.core.exception.SnpsSimpleMessageException;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Vector;
+
+import oracle.odi.agent.logging.AgentLogger;
+import oracle.odi.core.OdiInstance;
+import oracle.odi.core.persistence.transaction.ITransactionStatus;
+import oracle.odi.core.persistence.transaction.support.ITransactionCallback;
+import oracle.odi.core.persistence.transaction.support.TransactionTemplate;
+import oracle.odi.domain.runtime.common.SessionRestartType;
+import oracle.odi.domain.runtime.session.OdiSession;
+import oracle.odi.domain.runtime.session.OdiSessionParameter;
+import oracle.odi.domain.runtime.session.finder.IOdiSessionFinder;
+import oracle.odi.runtime.execution.OdiCommandStreamProcessor;
+
+import oracle.odi.km.exception.OdiKMException;
+import com.sunopsis.core.InvalidArgumentException;
+import com.sunopsis.dwg.snpreference.SnpReference;
+import com.sunopsis.dwg.tools.OSCommand;
+import com.sunopsis.dwg.tools.WaitForSparkJob;
+import com.sunopsis.tools.core.exception.SnpsSimpleMessageException;
+
+import oracle.odi.core.OdiInstance;
+import oracle.odi.domain.runtime.common.SessionRestartType;
+import oracle.odi.km.exception.OdiKMException;
+import oracle.odi.runtime.agent.instrumentation.ISessionInstrumenter.SessionInstrumentType;
+
+	final String SPARK_SUBMIT_SHUTDOWN_POLLING_PERSIST_INTERVAL = "spark-submit-shutdown-polling-persist-interval";
+	final String SPARK_WEBUI_STARTUP_POLLING_PERSIST_INTERVAL = "spark-webui-startup-polling-persist-interval";
+	final String SPARK_WEBUI_POLLING_PERSIST_INTERVAL = "spark-webui-polling-persist-interval";
+
+	// this will create a string array in both java and groovy
+	public static String[] array(Object... elements) {
+		String[] arr = new String[elements.length];
+		for (int i = 0; i < elements.length; i++)
+			arr[i] = elements[i].toString();
+		return arr;
+	}
+
+	// this will create a string in both java and groovy
+	public static String concat(Object... elements) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < elements.length; i++)
+			sb.append(elements[i]); // String.valueOf()?
+		return sb.toString();
+	}
+	
+	public static void severe(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.SEVERE))
+			AgentLogger.getLogger().log(Level.SEVERE, concat(s));
+	}
+
+	public static void warn(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.WARNING))
+			AgentLogger.getLogger().log(Level.WARNING, concat(s));
+	}
+
+	public static void info(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.INFO))
+			AgentLogger.getLogger().log(Level.INFO, concat(s));
+	}
+
+	public static void fine(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.FINE))
+			AgentLogger.getLogger().log(Level.FINE, concat(s));
+	}
+
+	public static void finest(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.FINEST))
+			AgentLogger.getLogger().log(Level.FINEST, concat(s));
+	}
+
+	class SparkJobInfo {
+	int mSparkJobId = -1;
+	String mSparkWebUIUrl = null;
+	String mLiveUrlBase = null;
+	Integer mReturnCode;
+	String mStatus = null;
+	String mAppId = null;
+	String mAppName = null;
+	String mCompletionMarkerReceived = null;
+	String mHistSrv = null;
+	String mYarnTrackingUrl;
+	String mYarnAppId;
+	
+	public SparkJobInfo() {
+	}
+
+	int getSparkJobId() {
+		return mSparkJobId;
+	}
+
+	void setSparkJobId(int id) {
+		this.mSparkJobId = id;
+	}
+
+	public String getSparkWebUIUrl() {
+		return mSparkWebUIUrl;
+	}
+
+	void setSparkWebUIUrl(String s) {
+		this.mSparkWebUIUrl = s;
+	}
+
+	public String getLiveUrlBase() {
+		return mLiveUrlBase;
+	}
+
+	public void setLiveUrlBase(String s) {
+		this.mLiveUrlBase = s;
+	}
+
+	public Integer getReturnCode() {
+		return mReturnCode;
+	}
+
+	void setReturnCode(Integer i) {
+		this.mReturnCode = i;
+	}
+
+	String getStatus() {
+		return mStatus;
+	}
+
+	void setStatus(String s) {
+		this.mStatus = s;
+	}
+
+	public String getAppId() {
+		return mAppId;
+	}
+
+	public void setAppId(String s) {
+		this.mAppId = s;
+	}
+
+	public String getAppName() {
+		return mAppName;
+	}
+
+	public void setAppName(String s) {
+		this.mAppName = s;
+	}
+
+	public String getHistoryServerUrl() {
+		return mHistSrv;
+	}
+
+	public void setHistoryServerUrl(String s) {
+		this.mHistSrv = s;
+	}
+
+	public String getCompletionMarkerReceived() {
+		return mCompletionMarkerReceived;
+	}
+
+	void setCompletionMarkerReceived(String b) {
+		this.mCompletionMarkerReceived = b;
+	}
+
+} // end class
+
+
+ class RingBuffer {
+	private static final String ON_ERROR = "ON_ERROR";
+	private static final Object NONE_VALUE = "NONE";
+	private static final Object ALL_VALUE = "ALL";
+	LinkedList<String> startLines = new LinkedList<String>();
+	LinkedList<String> endLines = new LinkedList<String>();
+	int m_startLen = 0;
+	int m_endLen = 0;
+	private int m_startIteratorPos;
+	private int m_endIteratorPos;
+	private int m_lineNo;
+
+	public RingBuffer(int startLen, int endLen) {
+		this.m_startLen = startLen;
+		this.m_endLen = endLen;
+	}
+	
+	public RingBuffer(String directive){
+		this((int)parseDirective(directive)[0], (int)parseDirective(directive)[1]);
+	}
+	
+	public void add(char[] chars, int offset, int len) {
+
+		StringBuilder sb = null;
+		if (offset + len > chars.length)
+			throw new RuntimeException("offset+length > chars.length");
+		int pos = 0;
+		if (!startLines.isEmpty()) {
+			String lastLine = startLines.getLast();
+			if (!lastLine.endsWith("\n")) { // continue from last line if not
+				// complete
+				sb=new StringBuilder();
+				sb.append(lastLine);
+				startLines.removeLast();
+			}
+		}
+		if (m_startLen == 0 || startLines.size() < m_startLen ) {
+
+			for (; offset + pos < len && ( m_startLen == 0 || startLines.size() < m_startLen); pos++) {
+				char c = chars[offset + pos];
+				 if (sb == null ){
+					sb=new StringBuilder();
+					sb.append(++m_lineNo);
+					sb.append(" ");
+				}
+				sb.append(c);
+				if (c == '\n' || c == '\r') {
+					startLines.add(sb.toString());
+					sb = null;
+				}
+			}
+			if (sb != null) {
+				startLines.add(sb.toString());
+				sb = null;
+			}
+		} 
+		
+		if (!endLines.isEmpty()) {
+			String lastLine = endLines.getLast();
+			if (!lastLine.endsWith("\n")) { // continue from last line if
+				// not complete
+				sb=new StringBuilder();
+				sb.append(lastLine);
+				endLines.removeLast();
+			}
+		} 
+			
+		if (m_endLen != -1) {
+			for (; offset + pos < len; pos++) {
+				char c = chars[offset + pos];
+				 if (sb == null ){
+					sb=new StringBuilder();
+					sb.append(++m_lineNo);
+					sb.append(" ");
+				}
+				sb.append(c);
+				if (c == '\n' || c == '\r') {
+					if (m_endLen != 0 && endLines.size() >= m_endLen) {
+						endLines.removeFirst();
+					}
+					endLines.add(sb.toString());
+					sb = null;
+				}
+			}
+			if (sb != null) {
+				if (m_endLen != 0 && endLines.size() >= m_endLen)
+					endLines.removeFirst();
+				endLines.add(sb.toString());
+				sb = null;
+			}
+		}
+
+	}
+
+	static Object[] parseDirective(String directive){
+		String text=null;
+		int nStart = 0;
+		int nEnd = 0;
+
+		if (directive.contains(ON_ERROR)) {
+			// remove the ON_ERROR and optional ","
+			text=ON_ERROR;
+			directive = directive.replaceAll(ON_ERROR + "[,]", "");
+		}
+
+		if (NONE_VALUE.equals(directive) || directive.equals("")){
+			nStart = -1;
+			nEnd = -1;
+		}else if (ALL_VALUE.equals(directive)) {
+			nStart = 0;
+			nEnd = 0;
+		} else {
+			String[] indexes = directive.split(",");
+
+			try {
+				nStart = Integer.parseInt(indexes[0]);
+			} catch (NumberFormatException nfe) {
+			}
+
+			try {
+				if (indexes.length == 2)
+					nEnd = Integer.parseInt(indexes[1]);
+			} catch (NumberFormatException nfe) {
+			}
+			
+
+		}
+		return [nStart, nEnd, text ];
+	}
+
+		public String toString(){
+			StringBuilder sb=new StringBuilder();
+			for (String s : startLines) {
+				sb.append(s);
+			}
+			for (String s : endLines) {
+				sb.append(s);
+			}
+			return sb.toString();
+		}
+		
+		public static void main(String[] args) {
+
+			String directive = args[0];
+
+			
+			RingBuffer rb = new RingBuffer(directive);
+
+			for (int i = 1; i < args.length; i++) {
+				char[] chars = args[i].toCharArray();
+				rb.add(chars, 0, chars.length);
+			}
+			System.out.println("+++++++");
+			System.out.print(rb.toString());
+			System.out.println("+++++++");
+			System.out.print(rb.toString());
+			System.out.println("+++++++");
+
+		}
+	} // end class RingBuffer
+
+
+	public abstract class SparkStreamProcessor extends OdiCommandStreamProcessor {
+		SparkStreamProcessor stdOutProcessor;
+		SparkStreamProcessor stdErrProcessor;
+		SparkJobInfo jobInfo;
+		SnpReference odiRef;
+		RingBuffer rb=null;
+		Thread parentThread = Thread.currentThread();
+		boolean mHasFinished = false;
+		long nextPersistTime = System.currentTimeMillis();
+		long persistInterval = 0;
+		private boolean mIsParentInterruptible = false;
+
+		String TRACKING_URL = "tracking URL: ";
+		String STARTED_SPARKUI = "SparkUI: Started SparkUI at ";
+		String SUCCEEDED = "SUCCEEDED";
+		String KILLED = "KILLED";
+		String FAILED = "FAILED";
+		String SHUTTING_DOWN = "RemotingTerminator: Shutting down remote daemon";
+		String SHUTDOWN_HOOK = "util.ShutdownHookManager: Shutdown hook called";
+		static final String TRACEBACK_MOST_RECENT_CALL_LAST = "Traceback (most recent call last)";
+		static final String EXCEPTION_IN_THREAD="Exception in thread";
+		
+		List<String> completionMarkers = Arrays.asList(array(SUCCEEDED, KILLED,
+				FAILED, SHUTTING_DOWN, SHUTDOWN_HOOK));
+
+		public boolean hasFinished() {
+			return mHasFinished;
+		}
+
+		public void init(SparkStreamProcessor stdOutProcessor,
+				SparkStreamProcessor stdErrProcessor, SnpReference odiRef,
+				SparkJobInfo info, String outputDirective) {
+			this.odiRef = odiRef;
+			this.stdOutProcessor = stdOutProcessor;
+			this.stdErrProcessor = stdErrProcessor;
+			this.jobInfo = info;
+			rb=new RingBuffer(outputDirective);
+		}
+
+		public RingBuffer getRingBuffer(){
+			return rb;
+		}
+		
+		SparkJobInfo getJobInfo(){
+			return jobInfo;
+		}
+			
+		@Override
+		public int processBuffer(byte[] b, int off, int len) throws IOException {
+
+			
+			String fragment = new String(b, off, len);
+			char[] chArray=fragment.toCharArray();
+			rb.add(chArray,0,chArray.length);
+			tryToPersistCurrentTaskInfo();
+			if (AgentLogger.getLogger().isLoggable(Level.FINE))
+				fine("Spark KM: " + this.getClass() + ">>>>>> ", fragment); // debugging
+			// Example line: 15/11/02 04:38:50 INFO SparkUI: Started SparkUI at
+			// http://xxx.xxx.xxx.xxx:4040
+			// tracking URL:
+			// http://den00tuy.us.oracle.com:8088/proxy/application_1467745423158_0008/
+
+			String val;
+			val = parseFor(fragment, "ODI-SPARK-SCRIPTENDED:");
+			if (val != null)
+				jobInfo.setStatus(val);
+
+			val = parseFor(fragment, "ODI-SPARK-APPID:");
+			if (val != null)
+				jobInfo.setAppId(val);
+
+			val = parseFor(fragment, "ODI-SPARK-APPNAME:");
+			if (val != null)
+				jobInfo.setAppName(val);
+
+			String trackingUrl = parseFor(fragment, TRACKING_URL);
+
+			// This doesn't have the appId
+			if (trackingUrl == null)
+				trackingUrl = parseFor(fragment, STARTED_SPARKUI);
+
+			if (trackingUrl != null) {
+				fine("Spark KM: " + this.getClass() + ">>>>>> TRACKING URL",
+						fragment); // debugging
+				URL url = null;
+				try {
+					url = new URL(trackingUrl);
+				} catch (MalformedURLException e) {
+					warn(e.toString());
+				}
+
+				if (url != null) {
+					String previousAppId = jobInfo.getAppId();
+					if (jobInfo.getAppId() == null) {
+						String appId = new File(url.getPath()).getName();
+						if (appId != null && appId.length() > 0) {
+							jobInfo.setAppName(appId); // use for appName
+							jobInfo.setAppId(appId);
+						}
+					}
+
+					String previousSparkWebUIUrl = jobInfo.getSparkWebUIUrl();
+					jobInfo.setSparkWebUIUrl(trackingUrl);
+					jobInfo.setLiveUrlBase(url.getProtocol()+"://"+	url.getAuthority()+ "/");
+					// Have we received the WebUI or appId in this very call?
+					if (((previousSparkWebUIUrl == null || previousAppId == null)
+							&& jobInfo.getSparkWebUIUrl() != null && jobInfo
+							.getAppId() != null) && isParentInterruptible()) {
+						fine("Spark KM: " + this.getClass()
+								+ ">>>>>> jobInfo '"
+								+ jobInfo.getSparkWebUIUrl() + "' '"
+								+ jobInfo.getAppId() + "'");
+						setParentInterruptible(false);
+						parentThread.interrupt();
+					}
+				}
+			}
+
+			if (jobInfo.getCompletionMarkerReceived() == null) {
+				val = parseFor(fragment, "final status: ");
+				if (val == null)
+					if (parseFor(fragment, SHUTTING_DOWN) != null)
+						val = SHUTTING_DOWN;
+				if (val == null)
+					if (parseFor(fragment, SHUTDOWN_HOOK) != null)
+						val = SHUTDOWN_HOOK;
+				if (completionMarkers.contains(val)) {
+					jobInfo.setCompletionMarkerReceived(val);
+					info("CompletionMarkerReceived ", val, " ", parentThread);
+					if (isParentInterruptible()) {
+						setParentInterruptible(false);
+						parentThread.interrupt();
+					}
+				}
+			}
+
+			return super.processBuffer(b, off, len);
+		}
+
+		protected String parseFor(String fragment, String marker) {
+			String value = null;
+			// Line contains marker?
+			if (fragment.contains(marker)) {
+				value = fragment.substring(fragment.indexOf(marker)
+						+ marker.length());
+				// Make sure there is a line-break
+				if (value.indexOf("\n") > 0) {
+					// Cut off any remaining fragment after linebreak
+					value = value.substring(0, value.indexOf("\n"));
+					fine("Spark KM: Detected \"", marker,
+							"\" - value retrieved: \"", value, "\"");
+				}
+			}
+			return value;
+		}
+
+		protected void processFinished() {
+
+			int retries = 6;
+			while (getProcess().isAlive() && retries-- > 0) {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException ie) {
+				}
+			}
+			try {
+				jobInfo.setReturnCode(getProcess().exitValue());
+			} catch (Exception e) {
+				warn("ProcessFinished ", parentThread, " ", e);
+			}
+			if(jobInfo.getReturnCode() != 0) {
+				String outputText=rb.toString();
+				int idx;
+				idx = outputText.indexOf(TRACEBACK_MOST_RECENT_CALL_LAST);
+				if (idx >= 0) {
+					setExceptionCaught(new Exception(outputText.substring(idx))); 
+				}
+				idx = outputText.indexOf(EXCEPTION_IN_THREAD);
+				if (idx >= 0) {
+					setExceptionCaught(new Exception(outputText.substring(idx))); 
+				}
+				if (getExceptionCaught() == null){
+					setExceptionCaught(new Exception("see Details and URL for more information. Rerunning as standalone or yarn-client may also provide more information"));
+				}
+			}
+			info("ProcessFinished "+getClass().getName().toString()+"      ", parentThread, jobInfo.getReturnCode());
+			
+			mHasFinished = true;
+			if ((stdErrProcessor.hasFinished() || 
+				stdOutProcessor.hasFinished()) &&
+				isParentInterruptible()) {
+				setParentInterruptible(false);
+				parentThread.interrupt();
+			}
+		}
+		
+		public void setPersistInterval(int interval) {
+			persistInterval = interval;
+		}
+
+		public void persistCurrentTaskInfoWhenNeeded() {
+			if (persistInterval == 0 || 
+					System.currentTimeMillis() > nextPersistTime) {
+				nextPersistTime = System.currentTimeMillis() + persistInterval;
+				tryToPersistCurrentTaskInfo();
+			}
+		}
+
+		protected void tryToPersistCurrentTaskInfo() {
+			tryToPersistCurrentTaskInfo(false, "ON_ERROR,ALL", "ON_ERROR,ALL");
+		}
+
+		protected void tryToPersistCurrentTaskInfo(boolean success,
+				String stdOutDirective, String stdErrDirective) {
+			try {
+				odiRef.setSummaryMessage(
+					stdOutProcessor.getRingBuffer().toString()+
+					"--------------------------------------------------------------------\n"+
+					stdErrProcessor.getRingBuffer().toString(), true);
+				odiRef.persistCurrentTaskInfo();
+			} catch (Exception e) {
+				// There will be an NPE if the task has already finished
+				// Ignore any exception during persisting
+				// We do not want to stop the Spark execution because of
+				// some overlapping repo task update.
+				fine(e);
+				if (AgentLogger.getLogger().isLoggable(Level.FINEST))
+					e.printStackTrace(); 
+			}
+
+		}
+
+		boolean isParentInterruptible() {
+			return mIsParentInterruptible;
+		}
+
+		public void setParentInterruptible(boolean interruptible) {
+			mIsParentInterruptible = interruptible;
+		}
+
+	public static String[] array(Object... elements) {
+		String[] arr = new String[elements.length];
+		for (int i = 0; i < elements.length; i++)
+			arr[i] = elements[i].toString();
+		return arr;
+	}
+	
+	// this will create a string in both java and groovy
+	public static String concat(Object... elements) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < elements.length; i++)
+			sb.append(elements[i]); // String.valueOf()?
+		return sb.toString();
+	}
+	
+	public static void severe(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.SEVERE))
+			AgentLogger.getLogger().log(Level.SEVERE, concat(s));
+	}
+
+	public static void warn(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.WARNING))
+			AgentLogger.getLogger().log(Level.WARNING, concat(s));
+	}
+
+	public static void info(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.INFO))
+			AgentLogger.getLogger().log(Level.INFO, concat(s));
+	}
+
+	public static void fine(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.FINE))
+			AgentLogger.getLogger().log(Level.FINE, concat(s));
+	}
+
+	public static void finest(Object... s) {
+		if (AgentLogger.getLogger().isLoggable(Level.FINEST))
+			AgentLogger.getLogger().log(Level.FINEST, concat(s));
+	}
+	
+	} // end class
+
+	class SparkStdErrStreamProcessor extends SparkStreamProcessor {}
+
+	class SparkStdOutStreamProcessor extends SparkStreamProcessor {	}
+    
+	public static Integer getDataServerProperty(SnpReference odiRef, String propertyName,
+			Integer propertyDefault) throws SnpsSimpleMessageException {
+		String o = odiRef.getDataServerProperty(propertyName, "SRC");
+		if (o != null && o.length() > 0) {
+			return Integer.valueOf(o);
+		} else {
+			return propertyDefault;
+		}
+	}
+
+	public static String getDataServerProperty(SnpReference odiRef, String propertyName,
+			String propertyDefault) throws SnpsSimpleMessageException {
+		String o = odiRef.getDataServerProperty(propertyName, "SRC");
+		if (o != null && o.length() > 0) {
+			return o;
+		} else {
+			return propertyDefault;
+		}
+	}
+
+	public static boolean minParamsAvailable(
+	String webUIUrl, String appId, String appName, String historyServerUrl) {
+		return (webUIUrl != null && appId != null && appName != null && historyServerUrl != null);
+	}
+
+	public static WaitForSparkJob buildWaitForSparkJobCommand(String url,
+			String stopUrl, Integer timeOut, Integer pollInt,
+			Integer httpConnectTimeOut, Integer httpReadTimeOut,
+			Integer maxConsecutiveFailures, String wfName, String wfValue,
+			String wfCond) throws InvalidArgumentException, Exception {
+		WaitForSparkJob waitCommand = new WaitForSparkJob();
+		Vector<String[]> waitParams = new Vector<String[]>();
+		waitParams.add(array("-URL", url));
+		waitParams.add(array("-TIMEOUT", timeOut.toString()));
+		waitParams.add(array("-POLLINT", pollInt.toString()));
+		waitParams.add(array("-HTTPCONNECTTIMEOUT",
+				httpConnectTimeOut.toString()));
+		waitParams.add(array("-HTTPREADTIMEOUT", httpReadTimeOut.toString()));
+		waitParams.add(array("-MAXCONSECUTIVEFAILURES",
+				maxConsecutiveFailures.toString()));
+		if (stopUrl != null)
+			waitParams.add(array("-STOP_URL", stopUrl));
+		if (wfName != null)
+			waitParams.add(array("-WAITFOR_NAME", wfName));
+		if (wfValue != null)
+			waitParams.add(array("-WAITFOR_VALUE", wfValue));
+		if (wfCond != null)
+			waitParams.add(array("-WAITFOR_CONDITION", wfCond));
+		waitCommand.setParameters(waitParams);
+		return waitCommand;
+	}
+
+	public static WaitForSparkJob buildWaitForSparkJobCommand(String url,
+			String stopUrl, Integer timeOut, Integer pollInt,
+			Integer httpConnectTimeOut, Integer httpReadTimeOut,
+			Integer maxConsecutiveFailures) throws InvalidArgumentException,
+			Exception {
+		return buildWaitForSparkJobCommand(url, stopUrl, timeOut, pollInt,
+				httpConnectTimeOut, httpReadTimeOut, maxConsecutiveFailures,
+				null, null, null);
+	}
+	
+	public static void saveInvocationParams(OdiInstance pOdiInstance,
+			String pSessionId, HashMap<String, String> map) {
+		new TransactionTemplate(pOdiInstance.getTransactionManager())
+				.execute(new ITransactionCallback() {
+					public Object doInTransaction(ITransactionStatus pStatus) {
+						IOdiSessionFinder f = ((IOdiSessionFinder) pOdiInstance
+								.getTransactionalEntityManager().getFinder(
+										OdiSession.class));
+						OdiSession session = (OdiSession) f.findById(new Long(
+								pSessionId));
+						Collection<OdiSessionParameter> params = session
+								.getSessionParameters();
+						for (Map.Entry<String, String> e : map.entrySet()) {
+							OdiSessionParameter param = null;
+							for (OdiSessionParameter p : params) {
+								if (p.getName().equals(e.getKey()))
+									param = p;
+							}
+							if (param != null
+									&& (!Objects.equals(param.getValue(),
+											e.getValue()))) {
+								param.setValue(e.getValue());
+							} else {
+								new OdiSessionParameter(session, e.getKey(), e
+										.getValue());
+							}
+						}
+
+						pOdiInstance.getTransactionalEntityManager().persist(
+								session);
+						return null;
+					}
+				});
+	} // end method
+
+	public static SessionRestartType updateSessionRestartType(
+			OdiInstance pOdiInstance, String pSessionId,
+			SessionRestartType restartType) {
+		SessionRestartType srt = (SessionRestartType) new TransactionTemplate(
+				pOdiInstance.getTransactionManager())
+				.execute(new ITransactionCallback() {
+					public Object doInTransaction(ITransactionStatus pStatus) {
+						try {
+							IOdiSessionFinder f = ((IOdiSessionFinder) pOdiInstance
+									.getTransactionalEntityManager().getFinder(
+											OdiSession.class));
+							OdiSession session = (OdiSession) f
+									.findById(new Long(pSessionId));
+							SessionRestartType oldSessionRestartType = session
+									.getRestartType();
+							session.setRestartType(restartType);
+							pOdiInstance.getTransactionalEntityManager()
+									.persist(session);
+							return oldSessionRestartType;
+						} catch (Throwable t) {
+							t.printStackTrace();
+						}
+						return null;
+					}
+				});
+		return srt;
+	} // end method
+
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, String> getInvocationParams(
+			OdiInstance pOdiInstance, String pSessionId) {
+		return (HashMap<String, String>) new TransactionTemplate(
+				pOdiInstance.getTransactionManager())
+				.execute(new ITransactionCallback() {
+					public Object doInTransaction(ITransactionStatus pStatus) {
+						IOdiSessionFinder f = ((IOdiSessionFinder) pOdiInstance
+								.getTransactionalEntityManager().getFinder(
+										OdiSession.class));
+						OdiSession session = (OdiSession) f.findById(new Long(
+								pSessionId));
+						HashMap<String, String> map = new HashMap<String, String>();
+						for (OdiSessionParameter p : session
+								.getSessionParameters()) {
+							map.put(p.getName(), p.getValue());
+						}
+						return map;
+					}
+				});
+	} // end method
+	
+    ]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[29bc4510-1047-4ca5-9b86-da51bc12af9d]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[94]]></Field>
+	<Field name="IKmTemplateRef" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[c4ad5509-f3cf-430e-bd9e-ffa3ef928021]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[142]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[39ca5308-6282-4595-8f95-e7e4a194ffca]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[146]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[f6b6c23f-6821-42f2-ab37-1397de3665d1]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[150]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[03d736d5-745c-4161-b680-04a9cf4d9120]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[152]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[4d472d8e-f30a-461d-b3ff-1f3f9cc2962a]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[141]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[c54e7e7a-4c47-489e-bd28-1f637e7397a1]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[139]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[07c7b1f0-07f1-4c32-a0e6-6ad15a9de337]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[138]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[a73b3316-315f-4605-8072-c5b800d52bc7]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[154]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[81ca8a54-6442-4dfd-9881-16d41c147795]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[155]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[2cc5ae2c-cf8b-48ab-ad64-35ef57f73169]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[169]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[8ab86120-0ed1-442b-9953-36dc6da07592]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[151]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[168]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.94]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46e05a-2d00-11e6-93fa-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmit]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[17]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.151]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[bcb3a042-a6d7-11e6-ac06-23e5aaa09e30]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[SparkPythonSubmitCommon]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[23]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.142]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[33920E0F49656934E053E603C40A3C0A]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKMSparkHDFS]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[12]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.146]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[2B7D95B0B8A32C45E053E603C40A5DCB]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Spark to HDFS]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[17]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.150]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[c2f113d5-e22b-4237-b25c-545872875536]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Spark to Hive]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[17]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.152]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[dabbcab5-caeb-423c-b6f2-bfb106747464]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Spark to Kafka]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[18]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.141]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[1986feab-eca2-4f5a-96a8-ecf827ac7cda]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Spark to File]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[17]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.139]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[a7c7dc44-16fc-4b90-9c67-fc41cb76446d]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKMSparkFile]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[12]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.138]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[80aa8be2-d68d-40fe-bc1e-0b0b3ee0105e]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKMSpark]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[8]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.154]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[1FD1D82B9F005A53E053CCC0E40AC733]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Spark to SQL]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[16]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.155]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[28C4768839C04BAEE053CCC0E40AAAF7]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM Spark to Cassandra]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[22]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.169]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[310d86cf-27e0-48c0-ae73-82685449bcce]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[IKM Spark Table Function]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[24]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.168]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[2614CF93-4394-408B-82F5-A7F586F627AE]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[XKM Spark Table Function]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[24]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[13]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>

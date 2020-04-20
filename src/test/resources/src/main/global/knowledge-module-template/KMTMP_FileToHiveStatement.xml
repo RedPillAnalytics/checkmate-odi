@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SunopsisExport>
+<Admin RepositoryVersion="05.02.02.09" OdiVersion="12.2.1" IsLegacyIdCompatible="false" IsExportWithParents="true" />
+<Encryption algorithm="AES" keyLength="128" exportKeyHash="agPs+gCsihjNBXahtHd0PQgEeANQwuioGnDMNh1upaA=" keyVect="aaF/f5fSy+bjCG9CYtMMqg==" exportKeySalt="6bb13da1-5693-42c4-9b1a-68785e198b08" containsCipherText="false"/>
+<SmartExportList materializeShortcut="false" >
+   <Include><![CDATA[SnpKmTemplate#200]]></Include>
+</SmartExportList>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplate">
+		<Field name="FirstDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 19:45:20.0]]></Field>
+	<Field name="FirstUser" type="java.lang.String"><![CDATA[SUNOPSIS_INSTALL]]></Field>
+	<Field name="GlobalId" type="java.lang.String"><![CDATA[fa46f086-2d00-11e6-9442-00163e1ffd72]]></Field>
+	<Field name="IndChange" type="java.lang.String"><![CDATA[I]]></Field>
+	<Field name="IndIsSeeded" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndLangTrans" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IndReplNl" type="java.lang.String"><![CDATA[1]]></Field>
+	<Field name="IntVersion" type="com.sunopsis.sql.DbInt"><![CDATA[3]]></Field>
+	<Field name="IKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
+	<Field name="LangName" type="java.lang.String"><![CDATA[GROOVY]]></Field>
+	<Field name="LastDate" type="java.sql.Timestamp"><![CDATA[2020-04-17 21:01:13.0]]></Field>
+	<Field name="LastUser" type="java.lang.String"><![CDATA[SUPERVISOR]]></Field>
+	<Field name="Name" type="java.lang.String"><![CDATA[FileToHiveStatement]]></Field>
+	<Field name="TechnoName" type="java.lang.String"><![CDATA[GROOVY]]></Field>
+	<Field name="TemplateText" type="java.lang.String"><![CDATA[{# IF ( $[option_EXTERNAL_TABLE] == 'true' ) #}
+// Skipped, as KM option EXTERNAL_TABLE is set to 1. (All files in the [SRC_SCHEMA] directory are automatically loaded)
+{# ELSE #}
+
+
+import org.apache.hadoop.fs.FileSystem
+import org.apache.hadoop.fs.Path
+import org.apache.hadoop.conf.Configuration
+import org.apache.commons.io.filefilter.WildcardFilter
+import java.net.URI
+
+bs = ""+(char)92
+
+// Verify that the filename pattern contains as many wildcards as we have unmapped partitioning columns in the target
+fileNamePattern = '''$[INSERT.fileNamePattern()]'''
+nWildCards = fileNamePattern.count( "*" ) + fileNamePattern.findAll( "["+bs+"?]+" ).size()
+nPartitionColumns = $[INSERT.noPartitionColumns()]
+nPartitionColumnsUnmapped = $[INSERT.noUnmappedPartitionColumns()]
+if ( nWildCards < nPartitionColumnsUnmapped ) 
+     
+throw new OdiKMException("ODIKM-FILE-10005", "ODIKM-FILE-10005: Error: File name pattern \"{0}\" contains {1} wildcard(s), but target table contains {2} partition column(s) of which {3} are unmapped. For all unmapped paritioning columns there must be one and only one file name wild card.",["${fileNamePattern}","${nWildCards}","${nPartitionColumns}","${nPartitionColumnsUnmapped}"].toArray())
+
+
+def glob_to_regex( s ) {
+// Escape the backslashes, dots, stars
+fileNameRegEx = s
+fileNameRegEx = fileNameRegEx.replaceAll( bs+bs, bs+bs+bs+bs )
+fileNameRegEx = fileNameRegEx.replaceAll( bs+".", bs+bs+"." )
+// Insert capturing group for question mark
+fileNameRegEx = fileNameRegEx.replaceAll( "(["+bs+"?]+)", '($1)' )
+// Replace questions marks by dots
+fileNameRegEx = fileNameRegEx.replaceAll( "["+bs+"?]", '.' )
+fileNameRegEx = fileNameRegEx.replaceAll( bs+"*", "(.*?)" )
+return fileNameRegEx
+}
+
+
+// Collect all matching input file names
+hdfsUrl = '''<?=odiRef.getInfo("SRC_HADOOP_NAME_NODE_URI")?>'''
+
+// Is this an HDFS File source?
+def isHDFS = ( hdfsUrl.length() > 0 )
+
+path    = <$=odiRef.getQuotedString("<%=odiRef.getSrcTablesList("", "[SCHEMA]", "", "")%>")$>
+
+// Are the file(s) in HDFS?
+if ( isHDFS ) {
+    // The file(s) are in HDFS
+    fullFileNamePattern = hdfsUrl + path + "/" + fileNamePattern
+    fileNameRegEx = glob_to_regex( fullFileNamePattern )
+
+    // No wild cards in the file name?
+    if ( nWildCards == 0 ) {
+        // The "list" of files to process is just this file name:
+        lstFileNames = [ fullFileNamePattern ]
+
+    } else {
+        // Otherwise we need to collect the matching file names
+
+        fs = FileSystem.get( new URI( fullFileNamePattern ),  new Configuration() )
+        pt = new Path( fullFileNamePattern )
+        // Get list of matching elements
+        lst = fs.globStatus( pt )
+        if ( lst == null ) lst = []
+        lstFileNames = lst.collect { it.getPath().toString() }
+    }
+
+} else {
+    // The file(s) are from local FS
+    fullFileNamePattern = path + "/" + fileNamePattern
+    fileNameRegEx = glob_to_regex( fileNamePattern )
+
+    // No wild cards in the file name?
+    if ( nWildCards == 0 ) {
+        // The "list" of files to process is just this file name:
+        lstFileNames = [ fullFileNamePattern ]
+
+    } else {
+        // Otherwise we need to collect the matching file names
+
+        dir = new File( path ).getAbsoluteFile();
+        matchingName = { it.name =~ fileNameRegEx }
+        isFile = { it.isFile() }
+        lstFiles = dir.listFiles().findAll( matchingName ).findAll( isFile )
+        lstFileNames = lstFiles.collect { it.getPath().toString() }
+    }
+}
+
+
+{# IF ( $[option_STOP_ON_FILE_NOT_FOUND] == 'true' ) #}
+// Stop, if no files found
+if ( lstFileNames.size() == 0) {
+    throw new OdiKMException("ODIKM-FILE-10006", "ODIKM-FILE-10006: No input files matching \"{0}\"!",["${fullFileNamePattern}"].toArray() );
+}
+{# ENDIF #}
+
+
+// Load data for all files
+allSqls = ""
+allStmts = []
+lstFileNames.sort()
+fileNameRegEx = glob_to_regex( fullFileNamePattern )
+sLocal     = '''{# IF ( $[INSERT.isLocalFile()] == 'true' ) #}local{# ENDIF #}'''
+sOverwrite = '''{# IF ( $[INSERT.isOverwrite()] == 'true' ) #}overwrite{# ENDIF #}'''
+
+tableName = '''$[INSERT.tableName()]'''
+
+for (sFile in lstFileNames) {
+    sql = """load data ${sLocal} inpath '${sFile}' ${sOverwrite}""" + "\n" + 
+             """into table ${tableName}""" + "\n"
+    if ( nPartitionColumns > 0 ) {
+        if ( nWildCards > 0 ) {
+            matcher = ( sFile =~ fileNameRegEx )
+            part_col_vals_from_fileName = matcher[0]
+        }
+
+        // Mix partition column values from filename and from target-side mapping expressions
+        def part_col_vals = []
+        $[INSERT.codeForMixingPartitionColumnValues()]
+    }
+    
+
+    // Gather SQLs for report in next step
+    allSqls += sql + ";\n\n"
+    allStmts.add(sql)
+
+}
+
+// Report generated SQL statements
+odiRef.setSummaryMessage("ODIKM-STDKM-IKM-10031: Load data commands: \n" + [allSqls].join("\n") );
+
+// Submit generated SQL statements
+con = odiRef.getJDBCConnection( "DEST" )
+stmt = con.createStatement()
+allStmts.each {
+    stmt.execute( it )
+}
+stmt = null
+con.close()
+con = null
+{# ENDIF #}]]></Field>
+	<Field name="TemplateVersion" type="java.lang.String">null</Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[536597ca-2d00-486c-aba2-deb2a282b56f]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[65]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[7521418a-d1c5-4af9-bed2-4f78ba558d95]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[66]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[df2dfe68-5eb4-4a66-b381-203a503e7763]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[58]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpKmTemplateJoin">
+		<Field name="GlobalId" type="java.lang.String"><![CDATA[4d8d4655-41a9-4193-8bca-ea6316bb2f6e]]></Field>
+	<Field name="ISnpKmTemplate" type="com.sunopsis.sql.DbInt"><![CDATA[200]]></Field>
+	<Field name="ISnpTrt" type="com.sunopsis.sql.DbInt"><![CDATA[59]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.65]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[22A410B67D1906F5E0537076E50A986E]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM HDFS File to Hive LOAD DATA]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[31]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE.200]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[fa46f086-2d00-11e6-9442-00163e1ffd72]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[FileToHiveStatement]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_KMTEMPLATE]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[19]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.66]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[3AE632E7E93B0D00E053E603C40ABD25]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM HDFS File to Hive LOAD DATA Direct]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[38]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.58]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[f5a07b3d-e76f-425e-a851-59ebaaaf5855]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM File to Hive LOAD DATA]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[26]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.dbobj.SnpFKXRef">
+		<Field name="RefKey" type="java.lang.String"><![CDATA[SNP_TRT.59]]></Field>
+	<Field name="RefObjGlobalId" type="java.lang.String"><![CDATA[f5a07b3d-e76f-425e-a851-59ebaaaf5856]]></Field>
+ <Field name="RefObjFQName" type="java.lang.String"><![CDATA[LKM File to Hive LOAD DATA Direct]]></Field>
+ <Field name="RefObjFQType" type="java.lang.String"><![CDATA[SNP_TRT]]></Field>
+ <Field name="RefObjFQNameLengths" type="java.lang.String"><![CDATA[33]]></Field>
+</Object>
+<Object class="com.sunopsis.dwg.DwgExportSummary">
+		<Field name="ExpTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="InstObjNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="JoinNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyColNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="KeyNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="LinkDiagNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MorigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="MtxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OrigTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OtherObjectsNb" type="com.sunopsis.sql.DbInt"><![CDATA[5]]></Field>
+	<Field name="PlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="StepNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="TxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeOrigNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="UeUsedNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="VarPlanAgentNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="ScenTxtNb" type="com.sunopsis.sql.DbInt"><![CDATA[0]]></Field>
+	<Field name="OdiVersion" type="java.lang.String"><![CDATA[12.2.1]]></Field>
+	<Field name="OriginRepositoryID" type="com.sunopsis.sql.DbInt"><![CDATA[1]]></Field>
+	<Field name="RepositoryVersion" type="java.lang.String"><![CDATA[05.02.02.09]]></Field>
+</Object>
+</SunopsisExport>
