@@ -23,6 +23,7 @@ import oracle.odi.domain.project.OdiFolder
 import oracle.odi.domain.project.OdiIKM
 import oracle.odi.domain.project.OdiJKM
 import oracle.odi.domain.project.OdiKM
+import oracle.odi.domain.project.OdiKMTemplate
 import oracle.odi.domain.project.OdiLKM
 import oracle.odi.domain.project.OdiPackage
 import oracle.odi.domain.project.OdiProject
@@ -38,6 +39,7 @@ import oracle.odi.domain.project.finder.IOdiFolderFinder
 import oracle.odi.domain.project.finder.IOdiIKMFinder
 import oracle.odi.domain.project.finder.IOdiJKMFinder
 import oracle.odi.domain.project.finder.IOdiKMFinder
+import oracle.odi.domain.project.finder.IOdiKMTemplateFinder
 import oracle.odi.domain.project.finder.IOdiLKMFinder
 import oracle.odi.domain.project.finder.IOdiPackageFinder
 import oracle.odi.domain.project.finder.IOdiProjectFinder
@@ -348,7 +350,7 @@ class Instance {
       return list
    }
 
-   // KnowledgeModule Finder
+   // Knowledge Module Finder
    // IOdiCKMFinder, IOdiIKMFinder, IOdiJKMFinder, IOdiLKMFinder, IOdiRKMFinder
 
    def getKnowledgeModuleFinder() {
@@ -442,6 +444,19 @@ class Instance {
    def findKnowledgeModule(String projectCode) {
       def list = getKnowledgeModuleFinder().findByProject(projectCode)
       log.info "KnowledgeModuleFinder list: $list"
+      return list
+   }
+
+   // KMTMP Knowledge Module Template Finder
+
+   def getKnowledgeModuleTemplateFinder() {
+      def finder = (IOdiKMTemplateFinder) odi.getTransactionalEntityManager().getFinder(OdiKMTemplate.class)
+      return finder
+   }
+
+   def findAllGlobalKnowledgeModuleTemplate() {
+      def list = getKnowledgeModuleTemplateFinder().findAll()
+      log.info "Global KnowledgeModuleTemplate list: $list"
       return list
    }
 

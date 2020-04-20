@@ -23,22 +23,32 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
 
         instance.beginTxn()
 
+        // Export the Reusable Mappings
         instance.findAllGlobalReusableMappings().each {
             exportObject(it, "${exportDir.canonicalPath}/reusable-mapping")
         }
 
+        // Export the user Functions
         instance.findAllGlobalUserFunctions().each {
             exportObject(it, "${exportDir.canonicalPath}/user-function")
         }
 
+        // Export the Sequences
         instance.findAllGlobalSequences().each {
             exportObject(it, "${exportDir.canonicalPath}/sequence")
         }
 
+        // Export the Variables
         instance.findAllGlobalVariables().each {
             exportObject(it, "${exportDir.canonicalPath}/variable")
         }
 
+        // Export the KM Templates
+        instance.findAllGlobalKnowledgeModuleTemplate().each {
+            exportObject(it, "${exportDir.canonicalPath}/knowledge-module-template", true)
+        }
+
+        // Export the KM
         instance.findAllGlobalCKM().each {
             exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
         }
@@ -71,7 +81,7 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
 
         instance.close()
 
-        // execute the export stage process
+        // Execute the export stage process
         exportStageDir()
 
     }

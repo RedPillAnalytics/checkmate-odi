@@ -1,6 +1,7 @@
 package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
+import oracle.odi.domain.impexp.IExportable
 import oracle.odi.domain.project.OdiFolder
 import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Input
@@ -101,9 +102,9 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   count++
                   logger.debug "object name: ${object.name}"
                   if(!['knowledge-module'].contains(objectType)) {
-                     exportObject(object, "${exportDir.canonicalPath}/${objectType}")
+                     exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}")
                   } else {
-                     smartExportObject(object, "${exportDir.canonicalPath}/${objectType}", "KM", object.name)
+                     exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}", true)
                   }
                }
             }
@@ -119,7 +120,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   if (!nameList || nameList.contains(object.name)) {
                      count++
                      logger.debug "object name: ${object.name}"
-                     exportObject(object, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}")
+                     exportObject(object as IExportable, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}")
                   }
                }
             }
