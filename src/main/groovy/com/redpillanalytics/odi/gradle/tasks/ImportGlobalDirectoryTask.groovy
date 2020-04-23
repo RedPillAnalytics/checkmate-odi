@@ -31,7 +31,8 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
         //Make the Connection
         instance.connect()
 
-        def smartImportFilePrefix = ['KMTMP', 'KM']
+        //def smartImportFilePrefix = ['KMTMP', 'KM']
+        def smartImportFilePrefix = ['KM']
 
         def importFilePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
 

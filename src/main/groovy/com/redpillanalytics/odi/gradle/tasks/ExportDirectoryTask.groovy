@@ -81,7 +81,10 @@ class ExportDirectoryTask extends ExportTask {
       }
 
       // Delete buildDir when all the files are processed
-      ant.delete(dir: buildDir)
+      try{
+         ant.delete(dir: buildDir)
+      } catch(Exception e ) { log.debug(e.toString()) }
+
    }
 
 }

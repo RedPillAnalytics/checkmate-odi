@@ -75,6 +75,27 @@ class ExportTask extends InstanceTask {
       return result
    }
 
+   def smartExportList(List<ISmartExportable> smartExportList, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
+
+      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
+
+      def result
+
+      result = smartExportService.exportToXml(
+              smartExportList,
+              path,
+              "${objectPrefix}_${objectName.replaceAll("[^a-zA-Z0-9]+","_")}",
+              overwrite,
+              isZip,
+              encodingOptions,
+              materializeShortcut,
+              null,
+              'checkmate-odi12c+' as char[],
+              exportWithoutCipherData)
+
+      return result
+   }
+
    def exportTopology(String folderPath) {
 
       def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)

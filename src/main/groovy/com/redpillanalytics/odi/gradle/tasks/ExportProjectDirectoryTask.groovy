@@ -107,7 +107,8 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   if(!['knowledge-module'].contains(objectType)) {
                      exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}")
                   } else {
-                     exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}", true)
+                     //exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}", true)
+                     smartExportObject(object as ISmartExportable, "${exportDir.canonicalPath}/${objectType}", "KM", object.name as String)
                   }
                }
             }
