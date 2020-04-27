@@ -26,26 +26,31 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
             instance.beginTxn()
 
             // Export the Reusable Mappings
+            log.info('Exporting reusable-mappings...')
             instance.findAllGlobalReusableMappings().each {
                 exportObject(it, "${exportDir.canonicalPath}/reusable-mapping")
             }
 
             // Export the user Functions
+            log.info('Exporting user-functions...')
             instance.findAllGlobalUserFunctions().each {
                 exportObject(it, "${exportDir.canonicalPath}/user-function")
             }
 
             // Export the Sequences
+            log.info('Exporting sequences...')
             instance.findAllGlobalSequences().each {
                 exportObject(it, "${exportDir.canonicalPath}/sequence")
             }
 
             // Export the Variables
+            log.info('Exporting variables...')
             instance.findAllGlobalVariables().each {
                 exportObject(it, "${exportDir.canonicalPath}/variable")
             }
 
             // Export the Knowledge Modules
+            log.info('Exporting knowledge-modules...')
             List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
 
             instance.findAllGlobalCKM().each {

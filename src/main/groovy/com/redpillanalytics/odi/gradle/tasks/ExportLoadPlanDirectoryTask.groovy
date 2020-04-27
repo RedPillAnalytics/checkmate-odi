@@ -24,6 +24,7 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
 
          instance.beginTxn()
 
+         log.info('Exporting load-plans...')
          instance.findAllLoadPlans().each {
             exportObject(it, exportDir.canonicalPath)
          }

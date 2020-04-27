@@ -24,6 +24,7 @@ class ImportTopologyDirectoryTask extends ImportDirectoryTask {
         try {
 
             // Import the topology directory
+            log.info('Importing Topology...')
             importTopologyDir()
 
             // Close the connection

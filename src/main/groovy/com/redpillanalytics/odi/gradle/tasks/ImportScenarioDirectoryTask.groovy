@@ -24,9 +24,11 @@ class ImportScenarioDirectoryTask extends ImportDirectoryTask {
         try {
 
             // Import the Scenario Folders
+            log.info('Importing scenario-folders...')
             smartImportXmlFiles(getImportFiles('SFOL'))
 
             // Import the Scenarios
+            log.info('Importing scenarios...')
             importXmlFiles(getImportFiles('SCEN'))
 
             // Close the Connection

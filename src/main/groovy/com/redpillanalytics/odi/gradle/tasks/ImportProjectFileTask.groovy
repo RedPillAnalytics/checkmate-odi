@@ -59,6 +59,7 @@ class ImportProjectFileTask extends ImportTask {
 
          instance.beginTxn()
 
+         log.info('Importing file...')
          smartImportObject(importFile)
 
          instance.endTxn()

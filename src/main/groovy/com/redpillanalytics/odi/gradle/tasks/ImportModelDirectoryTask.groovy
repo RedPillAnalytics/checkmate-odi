@@ -24,9 +24,11 @@ class ImportModelDirectoryTask extends ImportDirectoryTask {
         try {
 
             // Import the Model Folders
+            log.info('Importing model-folders...')
             smartImportXmlFiles(getImportFiles('MFOL'))
 
             // Import the Models
+            log.info('Importing models...')
             importXmlFiles(getImportFiles('MOD'))
 
             // Close the Connection

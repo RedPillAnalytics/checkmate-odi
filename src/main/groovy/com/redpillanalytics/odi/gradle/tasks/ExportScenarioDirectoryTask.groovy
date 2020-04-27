@@ -25,11 +25,13 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
             instance.beginTxn()
 
             // export all the scenario folders
+            log.info('Exporting scenario-folders...')
             instance.findAllScenarioFolders().each {
                 exportObject(it, "${exportDir.canonicalPath}/scenario-folder", true, false)
             }
 
             // export all the scenarios
+            log.info('Exporting scenarios...')
             instance.findAllScenarios().each {
                 exportObject(it, "${exportDir.canonicalPath}/scenario")
             }

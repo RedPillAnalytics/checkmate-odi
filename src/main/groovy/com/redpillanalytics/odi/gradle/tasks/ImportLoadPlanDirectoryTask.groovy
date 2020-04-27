@@ -24,6 +24,7 @@ class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
         try {
 
             // Import the Load Plans
+            log.info('Importing load-plans...')
             importXmlFiles(getImportFiles('LP'))
 
             // Close the Connection
