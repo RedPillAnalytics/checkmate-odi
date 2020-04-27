@@ -104,24 +104,31 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
             }
 
-            if(['knowledge-module', 'variable', 'sequence', 'user-function'].contains(objectType)) {
+            // Export the project objects
+            if(['knowledge-module'].contains(objectType)) {
+
+               // Export the knowledge M=modules
+               List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
+
+               instance."$finder"(projectCode).each { object ->
+                  exportList.add(object as ISmartExportable)
+               }
+
+               smartExportList(exportList, "${exportDir.canonicalPath}/${objectType}", "KM", "Project_Knowledge_Modules")
+
+            } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
 
                instance."$finder"(projectCode).each { object ->
                   if (!nameList || nameList.contains(object.name)) {
                      count++
                      logger.debug "object name: ${object.name}"
-                     if(!['knowledge-module'].contains(objectType)) {
-                        exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}")
-                     } else {
-                        //exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}", true)
-                        smartExportObject(object as ISmartExportable, "${exportDir.canonicalPath}/${objectType}", "KM", object.name as String)
-                     }
+                     exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}")
                   }
                }
 
             } else {
 
-               // export the folder objects
+               // Export the folder objects
                folders.each { OdiFolder folder ->
                   // export the folder
                   exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
@@ -134,6 +141,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                      }
                   }
                }
+
             }
 
          }
