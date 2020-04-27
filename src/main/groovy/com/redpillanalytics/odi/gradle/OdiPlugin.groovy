@@ -126,6 +126,7 @@ class OdiPlugin implements Plugin<Project> {
                   group taskGroup
                   description "Import ODI project objects from source into the ODI repository."
                   instance odiInstance
+                  projectCode defaultProjectCode
                   category 'project'
                }
 
