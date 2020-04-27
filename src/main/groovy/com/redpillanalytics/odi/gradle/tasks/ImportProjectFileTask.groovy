@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -13,6 +14,9 @@ class ImportProjectFileTask extends ImportTask {
 
    @Internal
    String category = 'file'
+
+   @Internal
+   Instance instance
 
    /**
     * The ODI project code to import. Default: value of 'obi.projectName', or the name of the project subdirectory.
@@ -50,14 +54,26 @@ class ImportProjectFileTask extends ImportTask {
 
       //Make the Connection
       instance.connect()
-      instance.beginTxn()
 
-      smartImportObject(importFile)
+      try {
 
-      instance.endTxn()
+         instance.beginTxn()
 
-      // Close the Connection
-      instance.close()
+         smartImportObject(importFile)
+
+         instance.endTxn()
+
+         // Close the Connection
+         instance.close()
+
+      } catch(Exception e) {
+         // End the Transaction
+         instance.endTxn()
+         // Close the Connection
+         instance.close()
+         // Throw the Exception
+         throw e
+      }
 
    }
 }

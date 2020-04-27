@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -11,19 +12,8 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
     @Input
     String category = 'global'
 
-    /**
-     * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
-     *
-     * @return The List of export files.
-     */
-    List getImportFiles(String filePrefix) {
-
-        def result = new LinkedList()
-
-        result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
-
-        return result
-    }
+    @Internal
+    Instance instance
 
     @TaskAction
     def taskAction() {
@@ -31,26 +21,36 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
         //Make the Connection
         instance.connect()
 
-        //def smartImportFilePrefix = ['KMTMP', 'KM']
-        def smartImportFilePrefix = ['KM']
+        try {
 
-        def importFilePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
+            def smartImportFilePrefix = ['KM']
 
-        // Smart Import the Global Templates and KM
-        smartImportFilePrefix.each {
-            smartImportXmlFiles(getImportFiles(it))
+            def importFilePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
+
+            // Smart Import the Global Templates and KM
+            smartImportFilePrefix.each {
+                smartImportXmlFiles(getImportFiles(it))
+            }
+
+            // Import the Global Objects
+            importFilePrefix.each {
+
+                // Import the files by prefix
+                importXmlFiles(getImportFiles(it))
+
+            }
+
+            // Close the Connection
+            instance.close()
+
+        } catch(Exception e) {
+            // End the Transaction
+            instance.endTxn()
+            // Close the Connection
+            instance.close()
+            // Throw the Exception
+            throw e
         }
-
-        // Import the Global Objects
-        importFilePrefix.each {
-
-            // Import the files by prefix
-            importXmlFiles(getImportFiles(it))
-
-        }
-
-        // Close the Connection
-        instance.close()
 
     }
 

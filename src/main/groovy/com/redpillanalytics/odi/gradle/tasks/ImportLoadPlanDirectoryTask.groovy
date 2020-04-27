@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -11,20 +12,8 @@ class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
     @Input
     String category = 'load-plan'
 
-    /**
-     * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
-     *
-     * @return The List of export files.
-     */
     @Internal
-    List getImportFiles() {
-
-        def result = new LinkedList()
-
-        result.addAll(project.fileTree(dir: importDir, include: "**/LP_*.xml").toList())
-
-        return result
-    }
+    Instance instance
 
     @TaskAction
     def taskAction() {
@@ -32,10 +21,22 @@ class ImportLoadPlanDirectoryTask extends ImportDirectoryTask {
         //Make the Connection
         instance.connect()
 
-        // Import the Load Plans
-        importXmlFiles(importFiles)
+        try {
 
-        // Close the Connection
-        instance.close()
+            // Import the Load Plans
+            importXmlFiles(getImportFiles('LP'))
+
+            // Close the Connection
+            instance.close()
+
+        } catch(Exception e) {
+            // End the Transaction
+            instance.endTxn()
+            // Close the Connection
+            instance.close()
+            // Throw the Exception
+            throw e
+        }
+
     }
 }

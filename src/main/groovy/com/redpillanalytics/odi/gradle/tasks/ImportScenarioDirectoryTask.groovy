@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -11,31 +12,8 @@ class ImportScenarioDirectoryTask extends ImportDirectoryTask {
     @Input
     String category = 'scenario'
 
-    /**
-     * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
-     *
-     * @return The List of export files.
-     */
     @Internal
-    List getImportScenarioFolderFiles() {
-
-        def result = new LinkedList()
-
-        result.addAll(project.fileTree(dir: importDir, include: "**/SFOL*.xml").toList())
-
-        return result
-    }
-
-    @Internal
-    List getImportScenarioFiles() {
-
-        def result = new LinkedList()
-
-        result.addAll(project.fileTree(dir: importDir, include: "**/SCEN*.xml").toList())
-
-        return result
-    }
-
+    Instance instance
 
     @TaskAction
     def taskAction() {
@@ -43,14 +21,25 @@ class ImportScenarioDirectoryTask extends ImportDirectoryTask {
         //Make the Connection
         instance.connect()
 
-        // Import the Scenario Folders
-        smartImportXmlFiles(importScenarioFolderFiles)
+        try {
 
-        // Import the Scenarios
-        importXmlFiles(importScenarioFiles)
+            // Import the Scenario Folders
+            smartImportXmlFiles(getImportFiles('SFOL'))
 
-        // Close the Connection
-        instance.close()
+            // Import the Scenarios
+            importXmlFiles(getImportFiles('SCEN'))
+
+            // Close the Connection
+            instance.close()
+
+        } catch(Exception e) {
+            // End the Transaction
+            instance.endTxn()
+            // Close the Connection
+            instance.close()
+            // Throw the Exception
+            throw e
+        }
 
     }
 

@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -12,6 +13,9 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
    @Input
    String category = 'project'
 
+   @Internal
+   Instance instance
+
    /**
     * The ODI project code to import. Default: value of 'odi.projectName', or the name of the project subdirectory.
     */
@@ -20,26 +24,13 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
            description = "The ODI project code to import. Default: value of 'odi.projectName', or the name of the project subdirectory.")
    String projectCode
 
-   /**
-    * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
-    *
-    * @return The List of export files.
-    */
-   List getImportFiles(String filePrefix) {
-
-      def result = new LinkedList()
-
-      result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
-
-      return result
-   }
-
    @TaskAction
    def taskAction() {
 
       //Make the Connection
       instance.connect()
-      try{
+
+      try {
 
          def projectFilePrefix = ['VAR', 'UFN', 'SEQ']
 
@@ -69,7 +60,9 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
          // Close the Connection
          instance.close()
 
-      } catch(Exception e ) {
+      } catch(Exception e) {
+         // End the Transaction
+         instance.endTxn()
          // Close the Connection
          instance.close()
          // Throw the Exception

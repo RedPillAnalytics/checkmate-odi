@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
@@ -11,30 +12,8 @@ class ImportModelDirectoryTask extends ImportDirectoryTask {
     @Input
     String category = 'model'
 
-    /**
-     * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
-     *
-     * @return The List of export files.
-     */
     @Internal
-    List getImportModelFolderFiles() {
-
-        def result = new LinkedList()
-
-        result.addAll(project.fileTree(dir: importDir, include: "**/MFOL_*.xml").toList())
-
-        return result
-    }
-
-    @Internal
-    List getImportModelFiles() {
-
-        def result = new LinkedList()
-
-        result.addAll(project.fileTree(dir: importDir, include: "**/MOD_*.xml").toList())
-
-        return result
-    }
+    Instance instance
 
     @TaskAction
     def taskAction() {
@@ -42,14 +21,25 @@ class ImportModelDirectoryTask extends ImportDirectoryTask {
         //Make the Connection
         instance.connect()
 
-        // Import the Model Folders
-        smartImportXmlFiles(importModelFolderFiles)
+        try {
 
-        // Import the Models
-        importXmlFiles(importModelFiles)
+            // Import the Model Folders
+            smartImportXmlFiles(getImportFiles('MFOL'))
 
-        // Close the Connection
-        instance.close()
+            // Import the Models
+            importXmlFiles(getImportFiles('MOD'))
+
+            // Close the Connection
+            instance.close()
+
+        } catch(Exception e) {
+            // End the Transaction
+            instance.endTxn()
+            // Close the Connection
+            instance.close()
+            // Throw the Exception
+            throw e
+        }
 
     }
 }

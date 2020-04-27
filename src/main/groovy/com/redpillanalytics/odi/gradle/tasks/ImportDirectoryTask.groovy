@@ -36,6 +36,20 @@ class ImportDirectoryTask extends ImportTask {
    }
 
    /**
+    * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
+    *
+    * @return The List of export files.
+    */
+   List getImportFiles(String filePrefix) {
+
+      def result = new LinkedList()
+
+      result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
+
+      return result
+   }
+
+   /**
     * Smart Import the File List of Objects.
     */
    def smartImportXmlFiles(List<File> smartImportFiles) {
