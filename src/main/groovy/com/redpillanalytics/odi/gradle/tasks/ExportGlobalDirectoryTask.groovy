@@ -17,7 +17,7 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
 
     @SuppressWarnings("GroovyAssignabilityCheck")
     @TaskAction
-    def exportGlobals() {
+    def taskAction() {
 
         instance.connect()
 

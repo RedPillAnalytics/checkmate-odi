@@ -50,7 +50,7 @@ class ImportProjectFileTask extends ImportTask {
    }
 
    @TaskAction
-   def importObjectXML() {
+   def taskAction() {
 
       //Make the Connection
       instance.connect()

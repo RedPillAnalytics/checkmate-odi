@@ -16,7 +16,7 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
 
    @SuppressWarnings("GroovyAssignabilityCheck")
    @TaskAction
-   def exportLoadPlans() {
+   def taskAction() {
 
       instance.connect()
 

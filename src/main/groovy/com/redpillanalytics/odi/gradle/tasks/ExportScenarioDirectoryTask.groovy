@@ -16,7 +16,7 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
 
     @SuppressWarnings("GroovyAssignabilityCheck")
     @TaskAction
-    def exportScenario() {
+    def taskAction() {
 
         instance.connect()
 

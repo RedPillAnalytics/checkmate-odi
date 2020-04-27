@@ -43,7 +43,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
    }
 
    @TaskAction
-   def exportModelDirectory() {
+   def taskAction() {
 
       instance.connect()
 

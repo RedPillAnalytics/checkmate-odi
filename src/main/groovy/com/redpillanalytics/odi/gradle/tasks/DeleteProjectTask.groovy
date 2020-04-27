@@ -18,7 +18,7 @@ class DeleteProjectTask extends InstanceTask {
    String projectCode
 
    @TaskAction
-   def deleteProject() {
+   def taskAction() {
 
       instance.connect()
 

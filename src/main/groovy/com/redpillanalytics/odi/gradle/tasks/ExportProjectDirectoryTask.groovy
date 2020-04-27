@@ -69,7 +69,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    }
 
    @TaskAction
-   def exportObjects() {
+   def taskAction() {
 
       objectList.each { object ->
          assert "'object' must be one of '${objectMaster.toString()}'." && objectMaster.contains(object)

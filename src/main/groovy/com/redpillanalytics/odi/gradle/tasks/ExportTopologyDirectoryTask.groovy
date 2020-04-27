@@ -18,7 +18,7 @@ class ExportTopologyDirectoryTask extends ExportDirectoryTask {
     Instance instance
 
     @TaskAction
-    def exportTopology() {
+    def taskAction() {
 
         instance.connect()
 

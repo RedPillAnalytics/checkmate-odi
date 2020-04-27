@@ -23,7 +23,7 @@ class DeleteModelsTask extends InstanceTask {
    String modelCode
 
    @TaskAction
-   def deleteModels() {
+   def taskAction() {
 
       instance.connect()
 

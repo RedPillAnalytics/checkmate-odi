@@ -44,7 +44,7 @@ class ExportProjectFileTask extends ExportTask {
    }
 
    @TaskAction
-   def exportProjectFile() {
+   def taskAction() {
 
       instance.connect()
 

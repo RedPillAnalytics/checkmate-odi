@@ -19,7 +19,7 @@ class ExportWorkRepoTask extends ExportDirectoryTask {
    Instance instance
 
    @TaskAction
-   def exportWorkRepo() {
+   def taskAction() {
 
       instance.connect()
 
