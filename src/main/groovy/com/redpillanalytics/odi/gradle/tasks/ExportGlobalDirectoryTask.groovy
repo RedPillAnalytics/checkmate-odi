@@ -45,7 +45,7 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
                 exportObject(it, "${exportDir.canonicalPath}/variable")
             }
 
-            // Export the KM
+            // Export the Knowledge Modules
             List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
 
             instance.findAllGlobalCKM().each {
@@ -82,7 +82,9 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
 
             instance.close()
 
-        } catch(Exception e ) {
+        } catch(Exception e) {
+            // End the Transaction
+            instance.endTxn()
             // Close the Connection
             instance.close()
             // Throw the Exception

@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.impexp.IExportable
 import oracle.odi.domain.project.OdiFolder
@@ -56,6 +57,9 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    List<String> nameList
 
    @Internal
+   Instance instance
+
+   @Internal
    String category = 'project'
 
    @OutputDirectory
@@ -73,70 +77,81 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       instance.connect()
 
-      // get the folders
-      def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
+      try {
 
-      Integer count = 0
+         // get the folders
+         def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
 
-      // begin the transaction
-      instance.beginTxn()
+         Integer count = 0
 
-      // export the project
-      log.info("Exporting Project ${projectCode}...")
+         // begin the transaction
+         instance.beginTxn()
 
-      exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
+         // export the project
+         log.info("Exporting Project ${projectCode}...")
 
-      log.info "Folder list: ${folders}"
+         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
 
-      objectList.each { objectType ->
+         log.info "Folder list: ${folders}"
 
-         log.info "Exporting ${objectType}s..."
+         objectList.each { objectType ->
 
-         // capture the class name to use
-         // fancy regex... but all of this is to make 'reusable-mapping' == 'ReusableMapping'
-         def finder = objectType.replaceAll(~/([^-]+)(?:-)?(\w)?(.+)/) { String all, String first, String capital, String rest ->
-            "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
-         }
+            log.info "Exporting ${objectType}s..."
 
-         if(['knowledge-module', 'variable', 'sequence', 'user-function'].contains(objectType)) {
-
-            instance."$finder"(projectCode).each { object ->
-               if (!nameList || nameList.contains(object.name)) {
-                  count++
-                  logger.debug "object name: ${object.name}"
-                  if(!['knowledge-module'].contains(objectType)) {
-                     exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}")
-                  } else {
-                     //exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}", true)
-                     smartExportObject(object as ISmartExportable, "${exportDir.canonicalPath}/${objectType}", "KM", object.name as String)
-                  }
-               }
+            // capture the class name to use
+            // fancy regex... but all of this is to make 'reusable-mapping' == 'ReusableMapping'
+            def finder = objectType.replaceAll(~/([^-]+)(?:-)?(\w)?(.+)/) { String all, String first, String capital, String rest ->
+               "find${first.capitalize()}${capital ? capital.toUpperCase() : ''}$rest"
             }
 
-         } else {
+            if(['knowledge-module', 'variable', 'sequence', 'user-function'].contains(objectType)) {
 
-            // export the folder objects
-            folders.each { OdiFolder folder ->
-               // export the folder
-               exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
-               // export the folder objects
-               instance."$finder"(projectCode, folder.name).each { object ->
+               instance."$finder"(projectCode).each { object ->
                   if (!nameList || nameList.contains(object.name)) {
                      count++
                      logger.debug "object name: ${object.name}"
-                     exportObject(object as IExportable, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}")
+                     if(!['knowledge-module'].contains(objectType)) {
+                        exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}")
+                     } else {
+                        //exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}", true)
+                        smartExportObject(object as ISmartExportable, "${exportDir.canonicalPath}/${objectType}", "KM", object.name as String)
+                     }
+                  }
+               }
+
+            } else {
+
+               // export the folder objects
+               folders.each { OdiFolder folder ->
+                  // export the folder
+                  exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
+                  // export the folder objects
+                  instance."$finder"(projectCode, folder.name).each { object ->
+                     if (!nameList || nameList.contains(object.name)) {
+                        count++
+                        logger.debug "object name: ${object.name}"
+                        exportObject(object as IExportable, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}")
+                     }
                   }
                }
             }
+
          }
 
+         instance.endTxn()
+
+         instance.close()
+
+         if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
+
+      } catch(Exception e) {
+         // End the Transaction
+         instance.endTxn()
+         // Close the Connection
+         instance.close()
+         // Throw the Exception
+         throw e
       }
-
-      instance.endTxn()
-
-      instance.close()
-
-      if (count == 0) throw new Exception("No project objects match provided filters; folder: ${folderName?:'<none>'}; object types: ${objectList}")
 
       if ( objectList.size() == objectMaster.size() && !nameList ) {
          // execute the export stage process
