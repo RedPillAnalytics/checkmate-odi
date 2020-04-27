@@ -11,27 +11,41 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
     // specify the model subdirectory
     String category = 'scenario'
 
+    @Internal
+    Instance instance
+
     @SuppressWarnings("GroovyAssignabilityCheck")
     @TaskAction
-    def exportScenarios() {
+    def exportScenario() {
 
         instance.connect()
 
-        instance.beginTxn()
+        try {
 
-        // export all the scenario folders
-        instance.findAllScenarioFolders().each {
-            exportObject(it, "${exportDir.canonicalPath}/scenario-folder", true, false)
+            instance.beginTxn()
+
+            // export all the scenario folders
+            instance.findAllScenarioFolders().each {
+                exportObject(it, "${exportDir.canonicalPath}/scenario-folder", true, false)
+            }
+
+            // export all the scenarios
+            instance.findAllScenarios().each {
+                exportObject(it, "${exportDir.canonicalPath}/scenario")
+            }
+
+            instance.endTxn()
+
+            instance.close()
+
+        } catch(Exception e) {
+            // End the Transaction
+            instance.endTxn()
+            // Close the Connection
+            instance.close()
+            // Throw the Exception
+            throw e
         }
-
-        // export all the scenarios
-        instance.findAllScenarios().each {
-            exportObject(it, "${exportDir.canonicalPath}/scenario")
-        }
-
-        instance.endTxn()
-
-        instance.close()
 
         // execute the export stage process
         exportStageDir()

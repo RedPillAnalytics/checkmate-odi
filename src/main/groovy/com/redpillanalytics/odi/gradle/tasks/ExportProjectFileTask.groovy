@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.impexp.EncodingOptions
 import oracle.odi.impexp.smartie.ISmartExportable
@@ -20,6 +21,9 @@ class ExportProjectFileTask extends ExportTask {
    @Option(option = "project-code",
            description = "The ODI project code to export. Default: value of 'obi.projectName', or the name of the project subdirectory.")
    String projectCode
+
+   @Internal
+   Instance instance
 
    @Internal
    String category = 'file'
@@ -44,21 +48,32 @@ class ExportProjectFileTask extends ExportTask {
 
       instance.connect()
 
-      log.debug "All projects: ${instance.projectFinder.findAll()}"
+      try {
 
-      def projectList = new LinkedList<ISmartExportable>()
+         log.debug "All projects: ${instance.projectFinder.findAll()}"
 
-      projectList.add(instance.findProject(projectCode, false))
+         def projectList = new LinkedList<ISmartExportable>()
 
-      instance.beginTxn()
+         projectList.add(instance.findProject(projectCode, false))
 
-      projectList.each { project ->
-         smartExportObject(project, exportFile.parent,'FILE', exportFile.name)
+         instance.beginTxn()
+
+         projectList.each { project ->
+            smartExportObject(project, exportFile.parent,'FILE', exportFile.name)
+         }
+
+         instance.endTxn()
+
+         instance.close()
+
+      } catch(Exception e) {
+         // End the Transaction
+         instance.endTxn()
+         // Close the Connection
+         instance.close()
+         // Throw the Exception
+         throw e
       }
-
-      instance.endTxn()
-
-      instance.close()
 
    }
 }
