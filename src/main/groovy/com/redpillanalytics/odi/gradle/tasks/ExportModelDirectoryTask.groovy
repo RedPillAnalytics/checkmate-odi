@@ -1,8 +1,10 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.impexp.IExportable
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -13,6 +15,9 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
    // specify the model subdirectory
    String category = 'model'
+
+   @Internal
+   Instance instance
 
    /**
     * The ODI model code to export. Default: null, which means all models are exported.
@@ -38,29 +43,43 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
    }
 
    @TaskAction
-   def exportModelDirectory() {
+   def taskAction() {
 
       instance.connect()
-      // get the model folders
-      def modelfolders = modelfolderName ? instance.findModelFolderbyName(modelfolderName) : instance.findAllModelFolders()
 
-      // get the models
-      def models = modelCode ? instance.findModelbyCode(modelCode) : instance.findAllModels()
+      try {
 
-      instance.beginTxn()
-      // export the model folders
-      modelfolders.each {
-         exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false)
+         // get the model folders
+         def modelfolders = modelfolderName ? instance.findModelFolderbyName(modelfolderName) : instance.findAllModelFolders()
+
+         // get the models
+         def models = modelCode ? instance.findModelbyCode(modelCode) : instance.findAllModels()
+
+         instance.beginTxn()
+         // export the model folders
+         log.info('Exporting model-folders...')
+         modelfolders.each {
+            exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false)
+         }
+
+         // export the models
+         log.info('Exporting models...')
+         models.each {
+            exportObject(it as IExportable, "${exportDir.canonicalPath}/model")
+         }
+
+         instance.endTxn()
+
+         instance.close()
+
+      } catch(Exception e) {
+         // End the Transaction
+         instance.endTxn()
+         // Close the Connection
+         instance.close()
+         // Throw the Exception
+         throw e
       }
-
-      // export the models
-      models.each {
-         exportObject(it as IExportable, "${exportDir.canonicalPath}/model")
-      }
-
-      instance.endTxn()
-
-      instance.close()
 
       if ( !modelCode && !modelfolderName ) {
          // execute the export stage process

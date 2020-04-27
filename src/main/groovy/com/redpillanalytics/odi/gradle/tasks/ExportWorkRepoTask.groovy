@@ -1,5 +1,6 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.project.OdiFolder
 import oracle.odi.impexp.EncodingOptions
@@ -14,24 +15,39 @@ class ExportWorkRepoTask extends ExportDirectoryTask {
    @Internal
    String category = 'odi'
 
+   @Internal
+   Instance instance
+
    @TaskAction
-   def exportObjects() {
+   def taskAction() {
 
       instance.connect()
 
-      instance.beginTxn()
+      try {
 
-      exportService.exportWorkInFolder(
-              exportDir.canonicalPath,
-               new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION,
-                                   EncodingOptions.DEFAULT_JAVA_CHARSET,
-                                   EncodingOptions.DEFAULT_XML_CHARSET),
-              'checkmate-odi12c+' as char[],
-              false
-      )
+         instance.beginTxn()
 
-      instance.endTxn()
+         exportService.exportWorkInFolder(
+                 exportDir.canonicalPath,
+                 new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION,
+                         EncodingOptions.DEFAULT_JAVA_CHARSET,
+                         EncodingOptions.DEFAULT_XML_CHARSET),
+                 'checkmate-odi12c+' as char[],
+                 false
+         )
 
-      instance.close()
+         instance.endTxn()
+
+         instance.close()
+
+      } catch(Exception e) {
+         // End the Transaction
+         instance.endTxn()
+         // Close the Connection
+         instance.close()
+         // Throw the Exception
+         throw e
+      }
+
    }
 }

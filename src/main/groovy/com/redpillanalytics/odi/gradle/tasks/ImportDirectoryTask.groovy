@@ -36,18 +36,34 @@ class ImportDirectoryTask extends ImportTask {
    }
 
    /**
+    * Gets the hierarchical collection of XML files, sorted using folder structure and file name prefix logic.
+    *
+    * @return The List of export files.
+    */
+   List getImportFiles(String filePrefix) {
+
+      def result = new LinkedList()
+
+      result.addAll(project.fileTree(dir: importDir, include: "**/${filePrefix}_*.xml").toList())
+
+      return result
+   }
+
+   /**
     * Smart Import the File List of Objects.
     */
    def smartImportXmlFiles(List<File> smartImportFiles) {
 
-      instance.beginTxn()
-
       smartImportFiles.each { file ->
+         // Begin the transaction
+         instance.beginTxn()
+         // Import the object
          log.info "Importing file '$file.canonicalPath'..."
          smartImportObject(file)
+         // End the transaction
+         instance.endTxn()
       }
 
-      instance.endTxn()
    }
 
    /**
@@ -55,14 +71,15 @@ class ImportDirectoryTask extends ImportTask {
     */
    def importXmlFiles(List<File> importFiles, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
-      instance.beginTxn()
-
       importFiles.each { file ->
+         // Begin the transaction
+         instance.beginTxn()
+         // Import the object
          log.info "Importing file '$file.canonicalPath'..."
          importObject(file, importMode)
+         // End the transaction
+         instance.endTxn()
       }
-
-      instance.endTxn()
 
    }
 
@@ -71,11 +88,11 @@ class ImportDirectoryTask extends ImportTask {
     */
    def importTopologyDir() {
 
+      // Begin the transaction
       instance.beginTxn()
-
-      // Import the topology directory
+      // Import the Topology
       importTopology(importDir.canonicalPath)
-
+      // End the transaction
       instance.endTxn()
 
    }

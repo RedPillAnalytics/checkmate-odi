@@ -11,19 +11,36 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
    // specify the load-plan subdirectory
    String category = 'load-plan'
 
+   @Internal
+   Instance instance
+
    @SuppressWarnings("GroovyAssignabilityCheck")
    @TaskAction
-   def exportLoadPlans() {
+   def taskAction() {
 
       instance.connect()
-      instance.beginTxn()
 
-      instance.findAllLoadPlans().each {
-         exportObject(it, exportDir.canonicalPath)
+      try{
+
+         instance.beginTxn()
+
+         log.info('Exporting load-plans...')
+         instance.findAllLoadPlans().each {
+            exportObject(it, exportDir.canonicalPath)
+         }
+
+         instance.endTxn()
+
+         instance.close()
+
+      } catch(Exception e) {
+         // End the Transaction
+         instance.endTxn()
+         // Close the Connection
+         instance.close()
+         // Throw the Exception
+         throw e
       }
-
-      instance.endTxn()
-      instance.close()
 
       // execute the export stage process
       exportStageDir()

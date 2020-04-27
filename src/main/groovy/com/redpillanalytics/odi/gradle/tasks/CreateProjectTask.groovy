@@ -27,7 +27,7 @@ class CreateProjectTask extends InstanceTask {
    String projectName
 
    @TaskAction
-   def createProject() {
+   def taskAction() {
 
       instance.connect()
 

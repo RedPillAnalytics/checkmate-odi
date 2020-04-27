@@ -17,80 +17,84 @@ class ExportGlobalDirectoryTask extends ExportDirectoryTask {
 
     @SuppressWarnings("GroovyAssignabilityCheck")
     @TaskAction
-    def exportGlobals() {
+    def taskAction() {
 
         instance.connect()
 
-        instance.beginTxn()
+        try{
 
-        // Export the Reusable Mappings
-        instance.findAllGlobalReusableMappings().each {
-            exportObject(it, "${exportDir.canonicalPath}/reusable-mapping")
+            instance.beginTxn()
+
+            // Export the Reusable Mappings
+            log.info('Exporting reusable-mappings...')
+            instance.findAllGlobalReusableMappings().each {
+                exportObject(it, "${exportDir.canonicalPath}/reusable-mapping")
+            }
+
+            // Export the user Functions
+            log.info('Exporting user-functions...')
+            instance.findAllGlobalUserFunctions().each {
+                exportObject(it, "${exportDir.canonicalPath}/user-function")
+            }
+
+            // Export the Sequences
+            log.info('Exporting sequences...')
+            instance.findAllGlobalSequences().each {
+                exportObject(it, "${exportDir.canonicalPath}/sequence")
+            }
+
+            // Export the Variables
+            log.info('Exporting variables...')
+            instance.findAllGlobalVariables().each {
+                exportObject(it, "${exportDir.canonicalPath}/variable")
+            }
+
+            // Export the Knowledge Modules
+            log.info('Exporting knowledge-modules...')
+            List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
+
+            instance.findAllGlobalCKM().each {
+                exportList.add(it)
+            }
+
+            instance.findAllGlobalIKM().each {
+                exportList.add(it)
+            }
+
+            instance.findAllGlobalJKM().each {
+                exportList.add(it)
+            }
+
+            instance.findAllGlobalLKM().each {
+                exportList.add(it)
+            }
+
+            instance.findAllGlobalRKM().each {
+                exportList.add(it)
+            }
+
+            instance.findAllGlobalSKM().each {
+                exportList.add(it)
+            }
+
+            instance.findAllGlobalXKM().each {
+                exportList.add(it)
+            }
+
+            smartExportList(exportList, "${exportDir.canonicalPath}/knowledge-module", "KM", "Global_Knowledge_Modules")
+
+            instance.endTxn()
+
+            instance.close()
+
+        } catch(Exception e) {
+            // End the Transaction
+            instance.endTxn()
+            // Close the Connection
+            instance.close()
+            // Throw the Exception
+            throw e
         }
-
-        // Export the user Functions
-        instance.findAllGlobalUserFunctions().each {
-            exportObject(it, "${exportDir.canonicalPath}/user-function")
-        }
-
-        // Export the Sequences
-        instance.findAllGlobalSequences().each {
-            exportObject(it, "${exportDir.canonicalPath}/sequence")
-        }
-
-        // Export the Variables
-        instance.findAllGlobalVariables().each {
-            exportObject(it, "${exportDir.canonicalPath}/variable")
-        }
-
-        // Export the KM Templates
-//        instance.findAllGlobalKnowledgeModuleTemplate().each {
-//            exportObject(it, "${exportDir.canonicalPath}/knowledge-module-template", true)
-//        }
-
-        // Export the KM
-        List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
-
-        instance.findAllGlobalCKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            exportList.add(it)
-        }
-
-        instance.findAllGlobalIKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            exportList.add(it)
-        }
-
-        instance.findAllGlobalJKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            exportList.add(it)
-        }
-
-        instance.findAllGlobalLKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            exportList.add(it)
-        }
-
-        instance.findAllGlobalRKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            exportList.add(it)
-        }
-
-        instance.findAllGlobalSKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            exportList.add(it)
-        }
-
-        instance.findAllGlobalXKM().each {
-            //exportObject(it, "${exportDir.canonicalPath}/knowledge-module", true)
-            exportList.add(it)
-        }
-
-        smartExportList(exportList, "${exportDir.canonicalPath}/knowledge-module", "KM", "Global_Knowledge_Modules")
-
-        instance.endTxn()
-
-        instance.close()
 
         // Execute the export stage process
         exportStageDir()

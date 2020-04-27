@@ -159,9 +159,7 @@ class Instance {
    }
 
    def flush() {
-
       odi.getTransactionalEntityManager().flush()
-
    }
 
    // IFinder Objects
@@ -184,7 +182,6 @@ class Instance {
    }
 
    def getProjects() {
-
       return projectFinder.findAll().toArray()
    }
 
