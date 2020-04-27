@@ -27,13 +27,31 @@ class ImportGlobalDirectoryTask extends ImportDirectoryTask {
 
             def importFilePrefix = ['REUMAP', 'SEQ', 'UFN', 'VAR']
 
-            // Smart Import the Global Templates and KM
+            // Smart Import the Global  KM
             smartImportFilePrefix.each {
+
+                log.info("Importing knowledge-modules...")
                 smartImportXmlFiles(getImportFiles(it))
+
             }
 
             // Import the Global Objects
             importFilePrefix.each {
+
+                switch(it) {
+                    case 'REUMAP':
+                        log.info("Importing reusable-mappings...")
+                        break
+                    case 'SEQ':
+                        log.info("Importing sequences...")
+                        break
+                    case 'UFN':
+                        log.info("Importing user-functions...")
+                        break
+                    case 'VAR':
+                        log.info("Importing variables...")
+                        break
+                }
 
                 // Import the files by prefix
                 importXmlFiles(getImportFiles(it))
