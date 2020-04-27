@@ -38,23 +38,59 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
 
          // Import the Project Object
          if (!instance.findProject(projectCode, true)) {
+            log.info("Exporting Project ${projectCode}...")
             importXmlFiles(getImportFiles('PROJ'))
+         } else {
+            log.info("Found project ${projectCode}...")
          }
 
          // Smart Import the Project KMs
+         log.info("Importing knowledge-modules...")
          smartImportXmlFiles(getImportFiles('KM'))
 
          // Import the Project Objects
          projectFilePrefix.each {
+
+            switch(it) {
+               case 'VAR':
+                  log.info("Importing variables...")
+                  break
+               case 'UFN':
+                  log.info("Importing user-functions...")
+                  break
+               case 'SEQ':
+                  log.info("Importing sequences...")
+                  break
+            }
+
             importXmlFiles(getImportFiles(it))
+
          }
 
          // Smart Import the Project Folders
+         log.info("Importing folders...")
          smartImportXmlFiles(getImportFiles('FOLD'))
 
          // Import the Project Folder Objects
          folderFilePrefix.each {
+
+            switch(it) {
+               case 'TRT':
+                  log.info("Importing procedures...")
+                  break
+               case 'REUMAP':
+                  log.info("Importing reusable-mappings...")
+                  break
+               case 'MAP':
+                  log.info("Importing mappings...")
+                  break
+               case 'PACK':
+                  log.info("Importing packages...")
+                  break
+            }
+
             importXmlFiles(getImportFiles(it))
+
          }
 
          // Close the Connection
