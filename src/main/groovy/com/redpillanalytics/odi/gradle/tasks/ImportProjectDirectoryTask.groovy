@@ -72,9 +72,8 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
       } catch(Exception e ) {
          // Close the Connection
          instance.close()
-
+         // Throw the Exception
          throw e
-
       }
 
    }
