@@ -148,14 +148,16 @@ class Instance {
             odi.getTransactionManager().commit(this.transaction)
          }
 
-      } catch(Exception e) {log.info(e.toString())}
+      } catch(Exception e) {
+         log.info("Transaction Rolled Back.")
+         log.debug(e.toString())
+      }
 
    }
 
    def close() {
       // Close the connection
       odi.close()
-
    }
 
    def flush() {
