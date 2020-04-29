@@ -42,8 +42,6 @@ class ImportTask extends InstanceTask {
          }
       }
 
-
-
    }
 
    def smartImportObject(File file) {
