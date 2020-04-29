@@ -71,6 +71,8 @@ import oracle.odi.domain.topology.finder.IOdiPhysicalAgentFinder
 import oracle.odi.domain.topology.finder.IOdiPhysicalSchemaFinder
 import oracle.odi.domain.topology.finder.IOdiTechnologyFinder
 
+import javax.persistence.RollbackException
+
 @Slf4j
 class Instance {
 
@@ -148,14 +150,16 @@ class Instance {
             odi.getTransactionManager().commit(this.transaction)
          }
 
-      } catch(Exception e) {log.info(e.toString())}
+      } catch(RollbackException e) {
+         log.info("Transaction Rolled Back.")
+         log.debug(e.toString())
+      }
 
    }
 
    def close() {
       // Close the connection
       odi.close()
-
    }
 
    def flush() {
