@@ -109,7 +109,6 @@ class Instance {
          return new MasterRepositoryDbInfo(url, driver, user, password.toCharArray(), pooling)
       }
       catch (NullPointerException e) {
-
          throw new Exception("A portion of the Master Repository credentials are missing.")
       }
    }
@@ -150,9 +149,8 @@ class Instance {
             odi.getTransactionManager().commit(this.transaction)
          }
 
-      } catch(Exception e) {
+      } catch(RollbackException e) {
          log.info("Transaction Rolled Back.")
-         log.debug(e.toString())
       }
 
    }

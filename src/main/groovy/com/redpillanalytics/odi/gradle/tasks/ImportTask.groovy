@@ -33,9 +33,7 @@ class ImportTask extends InstanceTask {
 
       } catch(Exception e ) {
          // Ignore SnpsNamespaceException for duplicated space names
-         if(e.toString().contains('ODI-17591')) {
-            log.debug(e.toString())
-         } else {
+         if(!e.toString().contains('ODI-17591')) {
             throw e
          }
       }
