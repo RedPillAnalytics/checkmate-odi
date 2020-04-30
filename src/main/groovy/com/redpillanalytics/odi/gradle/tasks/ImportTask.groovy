@@ -1,9 +1,7 @@
 package com.redpillanalytics.odi.gradle.tasks
 
+import com.sunopsis.core.SnpsNamespaceException
 import groovy.util.logging.Slf4j
-import oracle.odi.impexp.EncodingOptions
-import oracle.odi.impexp.OdiImportException
-import oracle.odi.impexp.smartie.OdiSmartImportException
 import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
 import oracle.odi.impexp.support.ImportServiceImpl
 import org.gradle.api.tasks.Internal
@@ -33,13 +31,9 @@ class ImportTask extends InstanceTask {
                  false
          )
 
-      } catch(OdiImportException e ) {
+      } catch(SnpsNamespaceException e ) {
          // Ignore SnpsNamespaceException for duplicated space names
-         if(e.toString().contains('ODI-17591')) {
-            log.debug(e.toString())
-         } else {
-            throw e
-         }
+         log.debug(e.toString())
       }
 
    }
