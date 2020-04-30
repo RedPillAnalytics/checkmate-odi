@@ -150,7 +150,7 @@ class Instance {
             odi.getTransactionManager().commit(this.transaction)
          }
 
-      } catch(RollbackException e) {
+      } catch(Exception e) {
          log.info("Transaction Rolled Back.")
          log.debug(e.toString())
       }
