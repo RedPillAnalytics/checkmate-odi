@@ -21,32 +21,13 @@ class ImportTask extends InstanceTask {
 
    def importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
-      try {
-
-         importService.importObjectFromXml(
-                 importMode,
-                 file.canonicalPath,
-                 true,
-                 'checkmate-odi12c+' as char[],
-                 false
-         )
-
-      } catch(Exception e ) {
-
-         if(e.toString().contains('ODI-17591')) {
-
-            importService.importObjectFromXml(
-                    ImportServiceImpl.IMPORT_MODE_DUPLICATION,
-                    file.canonicalPath,
-                    true,
-                    'checkmate-odi12c+' as char[],
-                    false
-            )
-
-         } else {
-            throw e
-         }
-      }
+      importService.importObjectFromXml(
+              importMode,
+              file.canonicalPath,
+              true,
+              'checkmate-odi12c+' as char[],
+              false
+      )
 
    }
 

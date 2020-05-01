@@ -72,12 +72,32 @@ class ImportDirectoryTask extends ImportTask {
    def importXmlFiles(List<File> importFiles, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
       importFiles.each { file ->
-         // Begin the transaction
-         instance.beginTxn()
-         // Import the object
-         importObject(file, importMode)
-         // End the transaction
-         instance.endTxn()
+
+         try {
+
+            // Begin the transaction
+            instance.beginTxn()
+            // Import the object
+            importObject(file, importMode)
+            // End the transaction
+            instance.endTxn()
+
+         } catch(Exception e ) {
+
+            if(e.toString().contains('ODI-17591')) {
+
+               // Begin the transaction
+               instance.beginTxn()
+               // Import the object
+               importObject(file, ImportServiceImpl.IMPORT_MODE_DUPLICATION)
+               // End the transaction
+               instance.endTxn()
+
+            } else {
+               throw e
+            }
+         }
+
       }
 
    }
