@@ -32,8 +32,18 @@ class ImportTask extends InstanceTask {
          )
 
       } catch(Exception e ) {
-         // Ignore SnpsNamespaceException for duplicated space names
-         if(!e.toString().contains('ODI-17591')) {
+
+         if(e.toString().contains('ODI-17591')) {
+
+            importService.importObjectFromXml(
+                    ImportServiceImpl.IMPORT_MODE_DUPLICATION,
+                    file.canonicalPath,
+                    true,
+                    'checkmate-odi12c+' as char[],
+                    false
+            )
+
+         } else {
             throw e
          }
       }

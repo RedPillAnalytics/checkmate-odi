@@ -75,7 +75,6 @@ class ImportDirectoryTask extends ImportTask {
          // Begin the transaction
          instance.beginTxn()
          // Import the object
-         log.info "Importing file '$file.canonicalPath'..."
          importObject(file, importMode)
          // End the transaction
          instance.endTxn()
