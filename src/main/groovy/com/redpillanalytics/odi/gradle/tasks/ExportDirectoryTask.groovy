@@ -27,11 +27,13 @@ class ExportDirectoryTask extends ExportTask {
       return sourceDir ? project.file(sourceDir) : buildDir
    }
 
-   def xmlDiff(File controlXml, File testXml) {
+   static def xmlDiff(File controlXml, File testXml) {
 
       Diff result = DiffBuilder.compare(org.xmlunit.builder.Input.fromFile(controlXml))
               .withTest(org.xmlunit.builder.Input.fromFile(testXml))
-              .withNodeFilter({ node -> node.getNodeName() != "Encryption" })
+              .withNodeFilter({
+                 node -> node.getNodeName() != "Encryption" && node.getNodeName() != "Admin"
+              })
               .build()
 
       return result.hasDifferences()
@@ -43,8 +45,8 @@ class ExportDirectoryTask extends ExportTask {
       // Find and remove the deleted objects in the source base comparing with the build objects
       project.fileTree(dir: sourceBase, include: "**/*.xml").toList().each { File srcFile ->
          if (!project.fileTree(dir: buildDir, include: "**/*.xml").collect {it.name}.contains(srcFile.name)) {
-            log.info("File ${srcFile.name} deleted, removing from source base ...")
             ant.delete(file: srcFile)
+            log.info("File ${srcFile.name} deleted")
          }
       }
 
@@ -62,28 +64,28 @@ class ExportDirectoryTask extends ExportTask {
          def sourceFile = sourceList.find({File sourceFile -> sourceFile.name == buildFile.name})
          if(sourceFile) {
             flag = true
-            log.info("File ${buildFile.name} not changed ...")
+            log.info("File ${buildFile.name} not changed")
             if (xmlDiff(buildFile, sourceFile)) {
-               log.info("File ${buildFile.name} changed, copying to source base ...")
                ant.copy(file: buildFile.canonicalPath,
                        tofile: sourceFile.canonicalPath,
                        overwrite: true)
+               log.info("File ${buildFile.name} changed")
             }
          }
 
          if(!flag) {
             // If the XML file does not exist in Source Base copy from Build to Source Base
-            log.info("Object ${buildFile.name} created, copying to source base ...")
             ant.copy(file: buildFile.canonicalPath,
                     tofile: "${sourceBase}/${(buildFile.canonicalPath - buildDir.canonicalPath)}",
                     overwrite: true)
+            log.info("File ${buildFile.name} created")
          }
       }
 
       // Delete buildDir when all the files are processed
       try{
          ant.delete(dir: buildDir)
-      } catch(Exception e ) { log.debug(e.toString()) }
+      } catch(Exception e ) { log.debug("Cannot delete ${buildDir}") }
 
    }
 
