@@ -1,6 +1,5 @@
 package com.redpillanalytics.odi.gradle.tasks
 
-import com.sunopsis.core.SnpsNamespaceException
 import groovy.util.logging.Slf4j
 import oracle.odi.impexp.smartie.impl.SmartImportServiceImpl
 import oracle.odi.impexp.support.ImportServiceImpl
