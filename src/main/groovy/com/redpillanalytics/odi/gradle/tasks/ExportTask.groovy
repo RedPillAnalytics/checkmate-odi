@@ -21,9 +21,16 @@ class ExportTask extends InstanceTask {
       return new SmartExportServiceImpl(instance.odi)
    }
 
+   @Internal
+   def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION,
+                                             EncodingOptions.DEFAULT_JAVA_CHARSET,
+                                             EncodingOptions.DEFAULT_XML_CHARSET)
+
+   @Internal
+   def cipherKey = 'checkmate-odi12c+' as char[]
+
    def exportObject(IExportable object, String path, Boolean parents = false, Boolean recursive = true, Boolean overwrite = true) {
 
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
 
       if(!parents) {
@@ -34,7 +41,7 @@ class ExportTask extends InstanceTask {
                  overwrite,
                  recursive,
                  encodingOptions,
-                 'checkmate-odi12c+' as char[],
+                 cipherKey,
                  false)
 
       } else {
@@ -45,7 +52,7 @@ class ExportTask extends InstanceTask {
                  overwrite,
                  recursive,
                  encodingOptions,
-                 'checkmate-odi12c+' as char[],
+                 cipherKey,
                  false)
 
       }
@@ -55,7 +62,6 @@ class ExportTask extends InstanceTask {
 
    def smartExportObject(ISmartExportable object, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
 
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
       smartExportList.add(object)
       def result
@@ -69,15 +75,13 @@ class ExportTask extends InstanceTask {
               encodingOptions,
               materializeShortcut,
               null,
-              'checkmate-odi12c+' as char[],
+              cipherKey,
               exportWithoutCipherData)
 
       return result
    }
 
    def smartExportList(List<ISmartExportable> smartExportList, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
-
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
 
       def result
 
@@ -90,7 +94,7 @@ class ExportTask extends InstanceTask {
               encodingOptions,
               materializeShortcut,
               null,
-              'checkmate-odi12c+' as char[],
+              cipherKey,
               exportWithoutCipherData)
 
       return result
@@ -98,13 +102,12 @@ class ExportTask extends InstanceTask {
 
    def exportTopology(String folderPath) {
 
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
 
       result = exportService.exportTopologyInFolder(
               folderPath,
               encodingOptions,
-              'checkmate-odi12c+' as char[],
+              cipherKey,
               false)
 
       return result
