@@ -21,77 +21,38 @@ class ImportTask extends InstanceTask {
    @Internal
    def cipherKey = 'checkmate-odi12c+' as char[]
 
-   def importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE, Boolean cipherData = false) {
+   def importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE, Boolean withoutCipherData = true) {
 
-      if (!cipherData) {
-
-         importService.importObjectFromXml(
-                 importMode,
-                 file.canonicalPath,
-                 true,
-                 null,
-                 true
-         )
-
-      } else {
-
-         importService.importObjectFromXml(
-                 importMode,
-                 file.canonicalPath,
-                 true,
-                 cipherKey,
-                 false
-         )
-
-      }
+      importService.importObjectFromXml(
+              importMode,
+              file.canonicalPath,
+              true,
+              cipherKey,
+              withoutCipherData
+      )
 
    }
 
-   def smartImportObject(File file, Boolean cipherData = false) {
+   def smartImportObject(File file, Boolean withoutCipherData = true) {
 
       smartImportService.setMatchedFCODefaultImportAction(smartImportService.MATCH_BY_ID, smartImportService.SMART_IMPORT_ACTION_OVERWRITE)
 
-      if (!cipherData) {
-
-         smartImportService.importObjectsFromXml(
-                 file.canonicalPath,
-                 null,
-                 true,
-         )
-
-      } else {
-
-         smartImportService.importObjectsFromXml(
-                 file.canonicalPath,
-                 cipherKey,
-                 false,
-         )
-
-      }
+      smartImportService.importObjectsFromXml(
+              file.canonicalPath,
+              cipherKey,
+              withoutCipherData,
+      )
 
    }
 
-   def importTopology(String folderPath, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE, Boolean cipherData = true)  {
+   def importTopology(String folderPath, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE, Boolean withoutCipherData = false)  {
 
-      if (!cipherData) {
-
-         importService.importTopologyFromFolder(
-                 importMode,
-                 folderPath,
-                 true,
-                 null,
-                 true)
-
-      } else {
-
-         importService.importTopologyFromFolder(
-                 importMode,
-                 folderPath,
-                 true,
-                 cipherKey,
-                 false)
-
-      }
+      importService.importTopologyFromFolder(
+              importMode,
+              folderPath,
+              true,
+              cipherKey,
+              withoutCipherData)
 
    }
 
