@@ -90,7 +90,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          // export the project
          log.info("Exporting Project ${projectCode}...")
 
-         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
+         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false, false)
 
          log.info "Folder list: ${folders}"
 
@@ -131,7 +131,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                // Export the folder objects
                folders.each { OdiFolder folder ->
                   // export the folder
-                  exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
+                  exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false, false)
                   // export the folder objects
                   instance."$finder"(projectCode, folder.name).each { object ->
                      if (!nameList || nameList.contains(object.name)) {
