@@ -65,7 +65,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    @OutputDirectory
    File getExportDir() {
       return sourceDir ? project.file(sourceDir) :
-              ( objectList.size() == objectMaster.size() && !nameList ) ? buildDir : sourceBase
+              ( objectList.size() == objectMaster.size() && !nameList && !folderName ) ? buildDir : sourceBase
    }
 
    @TaskAction
@@ -161,7 +161,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          throw e
       }
 
-      if ( objectList.size() == objectMaster.size() && !nameList ) {
+      if ( objectList.size() == objectMaster.size() && !nameList && !folderName ) {
          // execute the export stage process
          exportStageDir()
       }
