@@ -29,7 +29,7 @@ class ExportTask extends InstanceTask {
    @Internal
    def cipherKey = 'checkmate-odi12c+' as char[]
 
-   def exportObject(IExportable object, String path, Boolean parents = false, Boolean recursive = true, Boolean overwrite = true) {
+   def exportObject(IExportable object, String path, Boolean parents = false, Boolean withoutCipherData = true, Boolean recursive = true, Boolean overwrite = true) {
 
       def result
 
@@ -42,7 +42,7 @@ class ExportTask extends InstanceTask {
                  recursive,
                  encodingOptions,
                  cipherKey,
-                 false)
+                 withoutCipherData)
 
       } else {
 
@@ -53,14 +53,14 @@ class ExportTask extends InstanceTask {
                  recursive,
                  encodingOptions,
                  cipherKey,
-                 false)
+                 withoutCipherData)
 
       }
 
       return result
    }
 
-   def smartExportObject(ISmartExportable object, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
+   def smartExportObject(ISmartExportable object, String path, String objectPrefix, String objectName, Boolean withoutCipherData = true, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false) {
 
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
       smartExportList.add(object)
@@ -76,12 +76,12 @@ class ExportTask extends InstanceTask {
               materializeShortcut,
               null,
               cipherKey,
-              exportWithoutCipherData)
+              withoutCipherData)
 
       return result
    }
 
-   def smartExportList(List<ISmartExportable> smartExportList, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
+   def smartExportList(List<ISmartExportable> smartExportList, String path, String objectPrefix, String objectName, Boolean withoutCipherData = true, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false) {
 
       def result
 
@@ -95,12 +95,12 @@ class ExportTask extends InstanceTask {
               materializeShortcut,
               null,
               cipherKey,
-              exportWithoutCipherData)
+              withoutCipherData)
 
       return result
    }
 
-   def exportTopology(String folderPath) {
+   def exportTopology(String folderPath, Boolean withoutCipherData = false) {
 
       def result
 
@@ -108,7 +108,7 @@ class ExportTask extends InstanceTask {
               folderPath,
               encodingOptions,
               cipherKey,
-              false)
+              withoutCipherData)
 
       return result
    }
