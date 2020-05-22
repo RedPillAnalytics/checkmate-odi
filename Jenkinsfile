@@ -28,7 +28,7 @@ pipeline {
       stage('Release') {
          when { branch "master" }
          steps {
-            sh "$gradle clean release -Prelease.disableChecks -Prelease.localOnly"
+            sh "$gradle clean release -Prelease.disableChecks -Prelease.localOnly -Prelease.version=1.3.0"
          }
       }
 
