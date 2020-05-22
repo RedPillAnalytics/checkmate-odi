@@ -50,7 +50,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
       try {
 
          // get the model folders
-         def modelfolders = modelfolderName ? instance.findModelFolderbyName(modelfolderName) : instance.findAllModelFolders()
+         def modelFolders = modelfolderName ? instance.findModelFolderbyName(modelfolderName) : instance.findAllModelFolders()
 
          // get the models
          def models = modelCode ? instance.findModelbyCode(modelCode) : instance.findAllModels()
@@ -58,8 +58,8 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
          instance.beginTxn()
          // export the model folders
          log.info('Exporting model-folders...')
-         modelfolders.each {
-            exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false)
+         modelFolders.each {
+            exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false, false)
          }
 
          // export the models
