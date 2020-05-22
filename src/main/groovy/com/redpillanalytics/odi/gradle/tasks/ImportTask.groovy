@@ -19,13 +19,16 @@ class ImportTask extends InstanceTask {
       return new SmartImportServiceImpl(instance.odi)
    }
 
+   @Internal
+   def cipherKey = 'checkmate-odi12c+' as char[]
+
    def importObject(File file, int importMode = ImportServiceImpl.IMPORT_MODE_SYNONYM_INSERT_UPDATE) {
 
       importService.importObjectFromXml(
               importMode,
               file.canonicalPath,
               true,
-              'checkmate-odi12c+' as char[],
+              cipherKey,
               false
       )
 
@@ -37,7 +40,7 @@ class ImportTask extends InstanceTask {
 
       smartImportService.importObjectsFromXml(
               file.canonicalPath,
-              'checkmate-odi12c+' as char[],
+              cipherKey,
               false,
       )
 
@@ -49,7 +52,7 @@ class ImportTask extends InstanceTask {
               importMode,
               folderPath,
               true,
-              'checkmate-odi12c+' as char[],
+              cipherKey,
               false)
 
    }
