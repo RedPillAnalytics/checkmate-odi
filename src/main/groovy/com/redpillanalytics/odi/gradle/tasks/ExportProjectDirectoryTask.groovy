@@ -164,6 +164,9 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
       if ( objectList.size() == objectMaster.size() && !nameList && !folderName ) {
          // execute the export stage process
          exportStageDir()
+      } else {
+         // execute the export stage process without deleted objects
+         exportStageDir(false)
       }
 
    }

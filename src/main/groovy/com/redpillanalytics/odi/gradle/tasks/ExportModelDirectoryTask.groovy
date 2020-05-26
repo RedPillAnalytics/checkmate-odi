@@ -84,6 +84,9 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
       if ( !modelCode && !modelfolderName ) {
          // execute the export stage process
          exportStageDir()
+      } else {
+         // execute the export stage process without deleted objects
+         exportStageDir(false)
       }
 
    }
