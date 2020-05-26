@@ -65,7 +65,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    @OutputDirectory
    File getExportDir() {
       return sourceDir ? project.file(sourceDir) :
-              ( objectList.size() == objectMaster.size() && !nameList ) ? buildDir : sourceBase
+              ( objectList.size() == objectMaster.size() && !nameList && !folderName ) ? buildDir : sourceBase
    }
 
    @TaskAction
@@ -107,7 +107,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
             // Export the project objects
             if(['knowledge-module'].contains(objectType)) {
 
-               // Export the knowledge M=modules
+               // Export the knowledge modules
                List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
 
                instance."$finder"(projectCode).each { object ->
@@ -161,9 +161,12 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          throw e
       }
 
-      if ( objectList.size() == objectMaster.size() && !nameList ) {
+      if ( objectList.size() == objectMaster.size() && !nameList && !folderName ) {
          // execute the export stage process
          exportStageDir()
+      } else {
+         // execute the export stage process without deleted objects
+         exportStageDir(false)
       }
 
    }

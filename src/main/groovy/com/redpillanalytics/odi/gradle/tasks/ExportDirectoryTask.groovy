@@ -40,14 +40,18 @@ class ExportDirectoryTask extends ExportTask {
 
    }
 
-   def exportStageDir() {
+   def exportStageDir(Boolean deleteObjects = true) {
 
-      // Find and remove the deleted objects in the source base comparing with the build objects
-      project.fileTree(dir: sourceBase, include: "**/*.xml").toList().each { File srcFile ->
-         if (!project.fileTree(dir: buildDir, include: "**/*.xml").collect {it.name}.contains(srcFile.name)) {
-            ant.delete(file: srcFile)
-            log.info("File ${srcFile.name} deleted")
+      if (deleteObjects) {
+
+         // Find and remove the deleted objects in the source base comparing with the build objects
+         project.fileTree(dir: sourceBase, include: "**/*.xml").toList().each { File srcFile ->
+            if (!project.fileTree(dir: buildDir, include: "**/*.xml").collect {it.name}.contains(srcFile.name)) {
+               ant.delete(file: srcFile)
+               log.info("File ${srcFile.name} deleted")
+            }
          }
+
       }
 
       // Create buildDir and sourceBase xml files list to compare
@@ -59,9 +63,10 @@ class ExportDirectoryTask extends ExportTask {
 
       buildList.each { buildFile ->
          flag = false
-         // Compare the XML files and if the file change copy from Build to Source Base
 
+         // Compare the xml files and if the file change copy from buildDir to sourceBase
          def sourceFile = sourceList.find({File sourceFile -> sourceFile.name == buildFile.name})
+
          if(sourceFile) {
             flag = true
             log.info("File ${buildFile.name} not changed")

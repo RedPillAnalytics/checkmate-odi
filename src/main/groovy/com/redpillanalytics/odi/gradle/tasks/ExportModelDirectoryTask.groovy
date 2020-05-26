@@ -50,7 +50,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
       try {
 
          // get the model folders
-         def modelfolders = modelfolderName ? instance.findModelFolderbyName(modelfolderName) : instance.findAllModelFolders()
+         def modelFolders = modelfolderName ? instance.findModelFolderbyName(modelfolderName) : instance.findAllModelFolders()
 
          // get the models
          def models = modelCode ? instance.findModelbyCode(modelCode) : instance.findAllModels()
@@ -58,7 +58,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
          instance.beginTxn()
          // export the model folders
          log.info('Exporting model-folders...')
-         modelfolders.each {
+         modelFolders.each {
             exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false)
          }
 
@@ -84,6 +84,9 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
       if ( !modelCode && !modelfolderName ) {
          // execute the export stage process
          exportStageDir()
+      } else {
+         // execute the export stage process without deleted objects
+         exportStageDir(false)
       }
 
    }

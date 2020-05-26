@@ -21,9 +21,16 @@ class ExportTask extends InstanceTask {
       return new SmartExportServiceImpl(instance.odi)
    }
 
-   def exportObject(IExportable object, String path, Boolean parents = false, Boolean recursive = true, Boolean overwrite = true) {
+   @Internal
+   def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION,
+                                             EncodingOptions.DEFAULT_JAVA_CHARSET,
+                                             EncodingOptions.DEFAULT_XML_CHARSET)
 
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
+   @Internal
+   def cipherKey = 'checkmate-odi12c+' as char[]
+
+   def exportObject(IExportable object, String path, Boolean parents = false, Boolean recursive = true, Boolean withoutCipherData = false, Boolean overwrite = true) {
+
       def result
 
       if(!parents) {
@@ -34,8 +41,8 @@ class ExportTask extends InstanceTask {
                  overwrite,
                  recursive,
                  encodingOptions,
-                 'checkmate-odi12c+' as char[],
-                 false)
+                 cipherKey,
+                 withoutCipherData)
 
       } else {
 
@@ -45,17 +52,16 @@ class ExportTask extends InstanceTask {
                  overwrite,
                  recursive,
                  encodingOptions,
-                 'checkmate-odi12c+' as char[],
-                 false)
+                 cipherKey,
+                 withoutCipherData)
 
       }
 
       return result
    }
 
-   def smartExportObject(ISmartExportable object, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
+   def smartExportObject(ISmartExportable object, String path, String objectPrefix, String objectName, Boolean withoutCipherData = false, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false) {
 
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       List<ISmartExportable> smartExportList = new LinkedList<ISmartExportable>()
       smartExportList.add(object)
       def result
@@ -69,15 +75,13 @@ class ExportTask extends InstanceTask {
               encodingOptions,
               materializeShortcut,
               null,
-              'checkmate-odi12c+' as char[],
-              exportWithoutCipherData)
+              cipherKey,
+              withoutCipherData)
 
       return result
    }
 
-   def smartExportList(List<ISmartExportable> smartExportList, String path, String objectPrefix, String objectName, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false, Boolean exportWithoutCipherData = false) {
-
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
+   def smartExportList(List<ISmartExportable> smartExportList, String path, String objectPrefix, String objectName, Boolean withoutCipherData = false, Boolean isZip = false, Boolean overwrite = true, Boolean materializeShortcut = false) {
 
       def result
 
@@ -90,22 +94,21 @@ class ExportTask extends InstanceTask {
               encodingOptions,
               materializeShortcut,
               null,
-              'checkmate-odi12c+' as char[],
-              exportWithoutCipherData)
+              cipherKey,
+              withoutCipherData)
 
       return result
    }
 
-   def exportTopology(String folderPath) {
+   def exportTopology(String folderPath, Boolean withoutCipherData = false) {
 
-      def encodingOptions = new EncodingOptions(EncodingOptions.DEFAULT_XML_VERSION, EncodingOptions.DEFAULT_JAVA_CHARSET, EncodingOptions.DEFAULT_XML_CHARSET)
       def result
 
       result = exportService.exportTopologyInFolder(
               folderPath,
               encodingOptions,
-              'checkmate-odi12c+' as char[],
-              false)
+              cipherKey,
+              withoutCipherData)
 
       return result
    }
