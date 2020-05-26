@@ -59,7 +59,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
          // export the model folders
          log.info('Exporting model-folders...')
          modelFolders.each {
-            exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false, false)
+            exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false)
          }
 
          // export the models

@@ -90,7 +90,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
          // export the project
          log.info("Exporting Project ${projectCode}...")
 
-         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false, false)
+         exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
 
          log.info "Folder list: ${folders}"
 
@@ -107,7 +107,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
             // Export the project objects
             if(['knowledge-module'].contains(objectType)) {
 
-               // Export the knowledge M=modules
+               // Export the knowledge modules
                List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
 
                instance."$finder"(projectCode).each { object ->
@@ -131,7 +131,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                // Export the folder objects
                folders.each { OdiFolder folder ->
                   // export the folder
-                  exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false, false)
+                  exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
                   // export the folder objects
                   instance."$finder"(projectCode, folder.name).each { object ->
                      if (!nameList || nameList.contains(object.name)) {
