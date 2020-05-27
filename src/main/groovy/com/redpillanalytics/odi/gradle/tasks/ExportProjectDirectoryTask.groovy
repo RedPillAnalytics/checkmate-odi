@@ -62,12 +62,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
    @Internal
    String category = 'project'
 
-   @OutputDirectory
-   File getExportDir() {
-      return sourceDir ? project.file(sourceDir) :
-              ( objectList.size() == objectMaster.size() && !nameList && !folderName ) ? buildDir : sourceBase
-   }
-
    @TaskAction
    def taskAction() {
 

@@ -24,7 +24,7 @@ class ExportDirectoryTask extends ExportTask {
 
    @OutputDirectory
    File getExportDir() {
-      return sourceDir ? project.file(sourceDir) : buildDir
+      return sourceDir ? project.file(sourceDir) : buildDir ? buildDir : sourceBase
    }
 
    static def xmlDiff(File controlXml, File testXml) {
