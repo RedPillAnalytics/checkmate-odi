@@ -35,12 +35,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
    @Optional
    @Option(option = "model-folder",
            description = "The ODI model folder name to export. Default: null, which means all model folders are exported.")
-   String modelfolderName
-
-   @OutputDirectory
-   File getExportDir() {
-      return sourceDir ? project.file(sourceDir) : ( !modelCode && !modelfolderName ) ? buildDir : sourceBase
-   }
+   String modelFolderName
 
    @TaskAction
    def taskAction() {
@@ -50,7 +45,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
       try {
 
          // get the model folders
-         def modelFolders = modelfolderName ? instance.findModelFolderbyName(modelfolderName) : instance.findAllModelFolders()
+         def modelFolders = modelFolderName ? instance.findModelFolderbyName(modelFolderName) : instance.findAllModelFolders()
 
          // get the models
          def models = modelCode ? instance.findModelbyCode(modelCode) : instance.findAllModels()
@@ -81,7 +76,7 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
          throw e
       }
 
-      if ( !modelCode && !modelfolderName ) {
+      if ( !modelCode && !modelFolderName ) {
          // execute the export stage process
          exportStageDir()
       } else {
