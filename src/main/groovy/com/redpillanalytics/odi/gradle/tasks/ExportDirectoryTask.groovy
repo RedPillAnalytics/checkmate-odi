@@ -34,6 +34,9 @@ class ExportDirectoryTask extends ExportTask {
               .withNodeFilter({
                  node -> node.getNodeName() != "Encryption" && node.getNodeName() != "Admin"
               })
+              .withAttributeFilter({
+                 attr -> attr.getName() != "LastDate"
+              })
               .build()
 
       return result.hasDifferences()
