@@ -28,19 +28,19 @@ class ExportDirectoryTask extends ExportTask {
    }
 
    static def xmlDiff(File controlXml, File testXml) {
-
       Diff result = DiffBuilder.compare(org.xmlunit.builder.Input.fromFile(controlXml))
               .withTest(org.xmlunit.builder.Input.fromFile(testXml))
               .withNodeFilter({
-                 node -> node.getNodeName() != "Encryption" && node.getNodeName() != "Admin"
-              })
-              .withAttributeFilter({
-                 attr -> attr.getName() != "LastDate"
+                 node ->
+                    node.getNodeName() != "Encryption" &&
+                    node.getNodeName() != "Admin" &&
+                    node.getAttributes()?.getNamedItem('name')?.toString() != 'name="LastDate"'
               })
               .build()
 
-      return result.hasDifferences()
+      log.debug(result.toString())
 
+      return result.hasDifferences()
    }
 
    def exportStageDir(Boolean deleteObjects = true) {
