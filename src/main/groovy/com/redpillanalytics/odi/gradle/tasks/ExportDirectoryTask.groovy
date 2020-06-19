@@ -37,6 +37,9 @@ class ExportDirectoryTask extends ExportTask {
                     node.getAttributes()?.getNamedItem('name')?.toString() != 'name="LastDate"'
               })
               .build()
+
+      log.debug(result.toString())
+
       return result.hasDifferences()
    }
 
