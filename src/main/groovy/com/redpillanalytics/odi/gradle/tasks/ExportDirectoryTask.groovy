@@ -72,10 +72,10 @@ class ExportDirectoryTask extends ExportTask {
          if(sourceFile) {
             // If XML file exist in Source Base do the XML Diff and if changed copy from buildDir to sourceBase
             if (xmlDiff(buildFile, sourceFile)) {
+               log.info("File ${buildFile.name} changed")
                ant.copy(file: buildFile.canonicalPath,
                        tofile: sourceFile.canonicalPath,
                        overwrite: true)
-               log.info("File ${buildFile.name} changed")
             } else {
                log.info("File ${buildFile.name} not changed")
             }
