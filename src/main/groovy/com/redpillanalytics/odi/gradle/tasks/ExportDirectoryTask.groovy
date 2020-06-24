@@ -66,10 +66,11 @@ class ExportDirectoryTask extends ExportTask {
 
       buildList.each { buildFile ->
 
-         // Compare the xml files and if the file change copy from buildDir to sourceBase
+         // Compare the xml files and if the file change copy from buildDir to buildDir
          def sourceFile = sourceList.find({File sourceFile -> sourceFile.name == buildFile.name})
 
          if(sourceFile) {
+            // If XML file exist in Source Base do the XML Diff and if changed copy from buildDir to sourceBase
             if (xmlDiff(buildFile, sourceFile)) {
                ant.copy(file: buildFile.canonicalPath,
                        tofile: sourceFile.canonicalPath,
@@ -79,7 +80,7 @@ class ExportDirectoryTask extends ExportTask {
                log.info("File ${buildFile.name} not changed")
             }
          } else {
-            // If the XML file does not exist in Source Base copy from Build to Source Base
+            // If the XML file does not exist in Source Base copy from from buildDir to sourceBase
             ant.copy(file: buildFile.canonicalPath,
                     tofile: "${sourceBase}/${(buildFile.canonicalPath - buildDir.canonicalPath)}",
                     overwrite: true)
