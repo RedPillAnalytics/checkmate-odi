@@ -54,6 +54,7 @@ import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import oracle.odi.domain.runtime.loadplan.finder.IOdiLoadPlanFinder
 import oracle.odi.domain.runtime.scenario.OdiScenario
 import oracle.odi.domain.runtime.scenario.OdiScenarioFolder
+import oracle.odi.domain.runtime.scenario.Tag
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFinder
 import oracle.odi.domain.runtime.scenario.finder.IOdiScenarioFolderFinder
 import oracle.odi.domain.topology.OdiContext
@@ -301,6 +302,11 @@ class Instance {
       } else {
          return getScenarioFinder().findLatestByName(scenarioName, latestByTimestamp)
       }
+   }
+
+   def findScenarioByTag(String name, String version) {
+      def tag = new Tag(name, version)
+      return getScenarioFinder().findByTag(tag)
    }
 
 
