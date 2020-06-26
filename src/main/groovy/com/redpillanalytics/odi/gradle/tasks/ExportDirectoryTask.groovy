@@ -33,13 +33,12 @@ class ExportDirectoryTask extends ExportTask {
               .withNodeFilter({
                  node ->
                     node.getNodeName() != "Encryption" &&
-                    node.getNodeName() != "Admin" &&
-                    node.getAttributes()?.getNamedItem('name')?.toString() != 'name="LastDate"'
+                            node.getNodeName() != "Admin" &&
+                            node.getAttributes()?.getNamedItem('name')?.textContent != 'LastDate'
               })
+              .ignoreWhitespace()
               .build()
-
       log.debug(result.toString())
-
       return result.hasDifferences()
    }
 
@@ -77,7 +76,7 @@ class ExportDirectoryTask extends ExportTask {
                        tofile: sourceFile.canonicalPath,
                        overwrite: true)
             } else {
-               log.info("File ${buildFile.name} not changed")
+               log.info("- File ${buildFile.name} not changed")
             }
          } else {
             // If the XML file does not exist in Source Base copy from from buildDir to sourceBase
