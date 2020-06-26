@@ -12,7 +12,7 @@ import org.gradle.api.tasks.options.Option
 @Slf4j
 class ExportScenarioDirectoryTask extends ExportDirectoryTask {
 
-    // specify the model subdirectory
+    // specify the scenario subdirectory
     String category = 'scenario'
 
     @Internal

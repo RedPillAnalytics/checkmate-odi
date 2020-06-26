@@ -105,7 +105,7 @@ class OdiPlugin implements Plugin<Project> {
 
             if (project.extensions.odi.isDevelopment()) {
 
-               // Task that conect to the ODI Repository to Validate Parameters
+               // Task that connect to the ODI Repository to Validate Parameters
                project.task(bg.getTaskName('getOdiConnection'), type: GetOdiConnectionTask) {
 
                   group taskGroup
