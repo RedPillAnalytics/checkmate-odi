@@ -295,6 +295,14 @@ class Instance {
       return getScenarioFinder().findAll()
    }
 
+   def findScenarioByName(String scenarioName, Boolean latestByTimestamp) {
+      if(!latestByTimestamp) {
+         return getScenarioFinder().findLatestByName(scenarioName)
+      } else {
+         return getScenarioFinder().findLatestByName(scenarioName, latestByTimestamp)
+      }
+   }
+
 
    // Scenario Folder Finders
 
