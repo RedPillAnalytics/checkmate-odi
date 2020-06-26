@@ -295,17 +295,6 @@ class Instance {
       return getScenarioFinder().findAll()
    }
 
-   def findScenarioBySourceMapping(Number mappingInternalID, boolean useTimestamp) {
-      return getScenarioFinder().findLatestBySourceMapping(mappingInternalID, useTimestamp)
-   }
-
-   def findScenarioBySourcePackage(Number packageInternalID, boolean useTimestamp) {
-      return getScenarioFinder().findLatestBySourcePackage(packageInternalID, useTimestamp)
-   }
-
-   def findScenarioBySourceUserProcedure(Number userProcedureInternalID, boolean useTimestamp) {
-      return getScenarioFinder().findLatestBySourceUserProcedure(userProcedureInternalID, useTimestamp)
-   }
 
    // Scenario Folder Finders
 
