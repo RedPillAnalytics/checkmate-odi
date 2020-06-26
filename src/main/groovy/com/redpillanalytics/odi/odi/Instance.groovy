@@ -296,7 +296,7 @@ class Instance {
       return getScenarioFinder().findAll()
    }
 
-   def findScenarioByName(String scenarioName, Boolean latestByTimestamp) {
+   def findScenarioByName(String scenarioName, Boolean latestByTimestamp = false) {
       if(!latestByTimestamp) {
          return getScenarioFinder().findLatestByName(scenarioName)
       } else {
