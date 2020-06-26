@@ -314,6 +314,10 @@ class Instance {
       return getScenarioFolderFinder().findAll()
    }
 
+   def findScenarioFolderByName(String folderName) {
+      return getScenarioFolderFinder().findByName(folderName)
+   }
+
    // Load Plans Finder
 
    def getLoadPlanFinder() {
