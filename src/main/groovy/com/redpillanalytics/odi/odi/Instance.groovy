@@ -321,7 +321,7 @@ class Instance {
    }
 
    def findScenarioFolderByName(String folderName) {
-      return getScenarioFolderFinder().findByName(folderName)
+      return getScenarioFolderFinder().findAllByName(folderName)
    }
 
    // Load Plans Finder
