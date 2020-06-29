@@ -62,7 +62,7 @@ class OdiPlugin implements Plugin<Project> {
          String defaultProjectName
          String defaultProjectCode
 
-         if (project.extensions.odi.enableProjects) {
+         if (project.extensions.odi.enableProject) {
 
             assert "'odi.projectName' is a required property." && project.extensions.odi.projectName
             defaultProjectName = project.extensions.odi.projectName

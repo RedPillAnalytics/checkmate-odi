@@ -22,11 +22,6 @@ class OdiPluginExtension {
    String buildDir = 'build/tmp'
 
    /**
-    * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
-    */
-   Boolean enableProjects = true
-
-   /**
     * The name of the ODI project being built. Defaults to the directory name in source control. Required parameter.
     */
    String projectName
@@ -40,6 +35,11 @@ class OdiPluginExtension {
     * The code of the ODI project being built. Defaults to a normalized version of the project name.
     */
    String projectCode
+
+   /**
+    * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
+    */
+   Boolean enableProject = true
 
    /**
     * When enabled, support ODI Global Objects in this Gradle project directory. Default is 'true'.
