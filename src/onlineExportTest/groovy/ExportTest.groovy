@@ -32,8 +32,8 @@ class ExportTest extends Specification {
 
       resourcesDir = new File('src/test/resources')
 
-      ant.delete(dir: projectDir)
-      ant.mkdir(dir: projectDir)
+      //ant.delete(dir: projectDir)
+      //ant.mkdir(dir: projectDir)
 
       settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = 'JUMP'""")
 
@@ -174,6 +174,24 @@ class ExportTest extends Specification {
       given:
       taskName = 'exportScenarioDir'
       result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_D'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportScenarioDir task with --scenario-name and --scenario-version option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si','--scenario-name=LOAD_D', '--scenario-version=001'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportScenarioDir task with --scenario-folder, --scenario-name and --scenario-version option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_D', '--scenario-version=001'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
