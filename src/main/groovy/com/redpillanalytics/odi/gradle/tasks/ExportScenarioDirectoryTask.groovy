@@ -28,13 +28,13 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
     String scenarioName
 
     /**
-     * The ODI scenario tag to export. Default: null, which means all scenarios are exported.
+     * The ODI scenario version to export. Default: null, which means all scenarios are exported.
      */
     @Input
     @Optional
-    @Option(option = "scenario-tag",
-            description = "The ODI scenario tag to export. Default: null, which means all scenarios are exported.")
-    String scenarioTag
+    @Option(option = "scenario-version",
+            description = "The ODI scenario version to export. Default: null, which means all scenarios are exported.")
+    String scenarioVersion
 
     /**
      * The ODI scenario folder name to export. Default: null, which means all scenario folders are exported.
@@ -56,7 +56,8 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
             def scenarioFolders = scenarioFolderName ? instance.findScenarioFolderByName(scenarioFolderName) : instance.findAllScenarioFolders()
 
             // get the scenarios
-            def scenario = scenarioName ? instance.findScenarioByName(scenarioName) : instance.findAllScenarios()
+            def scenario = scenarioName && scenarioVersion ? instance.findScenarioByTag(scenarioName, scenarioVersion) :
+                    scenarioName && !scenarioVersion ? instance.findScenarioByName(scenarioName) : instance.findAllScenarios()
 
             instance.beginTxn()
 
@@ -85,7 +86,7 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
             throw e
         }
 
-        if ( !scenarioName && !scenarioFolderName ) {
+        if ( !scenarioName && !scenarioVersion && !scenarioFolderName ) {
             // execute the export stage process
             exportStageDir()
         } else {
