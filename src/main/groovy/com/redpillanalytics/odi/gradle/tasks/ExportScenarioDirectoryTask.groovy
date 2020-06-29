@@ -24,8 +24,17 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
     @Input
     @Optional
     @Option(option = "scenario-name",
-            description = "The ODI scenario code to export. Default: null, which means all scenarios are exported.")
+            description = "The ODI scenario name to export. Default: null, which means all scenarios are exported.")
     String scenarioName
+
+    /**
+     * The ODI scenario tag to export. Default: null, which means all scenarios are exported.
+     */
+    @Input
+    @Optional
+    @Option(option = "scenario-tag",
+            description = "The ODI scenario tag to export. Default: null, which means all scenarios are exported.")
+    String scenarioTag
 
     /**
      * The ODI scenario folder name to export. Default: null, which means all scenario folders are exported.
