@@ -50,7 +50,7 @@ class ExportDirectoryTask extends ExportTask {
          project.fileTree(dir: sourceBase, include: "**/*.xml").toList().each { File srcFile ->
             if (!project.fileTree(dir: buildDir, include: "**/*.xml").collect {it.name}.contains(srcFile.name)) {
                ant.delete(file: srcFile)
-               log.info("File ${srcFile.name} deleted")
+               log.info("- File ${srcFile.name} deleted")
             }
          }
 
@@ -71,7 +71,7 @@ class ExportDirectoryTask extends ExportTask {
          if(sourceFile) {
             // If XML file exist in Source Base do the XML Diff and if changed copy from buildDir to sourceBase
             if (xmlDiff(buildFile, sourceFile)) {
-               log.info("File ${buildFile.name} changed")
+               log.info("- File ${buildFile.name} changed")
                ant.copy(file: buildFile.canonicalPath,
                        tofile: sourceFile.canonicalPath,
                        overwrite: true)
@@ -83,7 +83,7 @@ class ExportDirectoryTask extends ExportTask {
             ant.copy(file: buildFile.canonicalPath,
                     tofile: "${sourceBase}/${(buildFile.canonicalPath - buildDir.canonicalPath)}",
                     overwrite: true)
-            log.info("File ${buildFile.name} created")
+            log.info("- File ${buildFile.name} created")
          }
 
       }

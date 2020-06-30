@@ -100,16 +100,17 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
             // Export the project objects
             if(['knowledge-module'].contains(objectType)) {
+               if (!nameList) {
+                  // Export the knowledge modules
+                  List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
 
-               // Export the knowledge modules
-               List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
+                  instance."$finder"(projectCode).each { object ->
+                     exportList.add(object as ISmartExportable)
+                  }
 
-               instance."$finder"(projectCode).each { object ->
-                  exportList.add(object as ISmartExportable)
+                  smartExportList(exportList, "${exportDir.canonicalPath}/${objectType}", "KM", "Project_Knowledge_Modules")
+
                }
-
-               smartExportList(exportList, "${exportDir.canonicalPath}/${objectType}", "KM", "Project_Knowledge_Modules")
-
             } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
 
                instance."$finder"(projectCode).each { object ->
