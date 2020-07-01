@@ -73,9 +73,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       try {
 
-         // get the folders
-         def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
-
          Integer count = 0
 
          // begin the transaction
@@ -86,7 +83,8 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
          exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
 
-         log.info "Folder list: ${folders}"
+         // get the folders
+         def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
 
          objectList.each { objectType ->
 
