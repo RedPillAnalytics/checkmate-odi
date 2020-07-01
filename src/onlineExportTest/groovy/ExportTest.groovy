@@ -152,6 +152,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportLoadPlanDir task with --load-plan option"() {
+      given:
+      taskName = 'exportLoadPlanDir'
+      result = executeSingleTask(taskName, ['-Si', '--load-plan=LOAD_EDW'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportScenarioDir task with defaults"() {
       given:
       taskName = 'exportScenarioDir'
