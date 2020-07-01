@@ -111,6 +111,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                   smartExportList(exportList, "${exportDir.canonicalPath}/${objectType}", "KM", "Project_Knowledge_Modules")
 
                }
+
             } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
 
                instance."$finder"(projectCode).each { object ->
