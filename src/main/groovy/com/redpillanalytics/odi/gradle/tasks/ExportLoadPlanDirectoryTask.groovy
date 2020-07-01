@@ -2,8 +2,12 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
+import oracle.odi.domain.impexp.IExportable
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 @Slf4j
 class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
@@ -14,7 +18,15 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
    @Internal
    Instance instance
 
-   @SuppressWarnings("GroovyAssignabilityCheck")
+   /**
+    * The ODI scenario folder name to export. Default: null, which means all scenario folders are exported.
+    */
+   @Input
+   @Optional
+   @Option(option = "load-plan",
+           description = "The ODI load plan name to export. Default: null, which means all load plans are exported.")
+   List<String> loadPlanList
+
    @TaskAction
    def taskAction() {
 
@@ -24,9 +36,14 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
 
          instance.beginTxn()
 
+         // get the load plans
+         def loadPlans = instance.findAllLoadPlans()
+
+
          log.info('Exporting load-plans...')
-         instance.findAllLoadPlans().each {
-            exportObject(it, exportDir.canonicalPath)
+         loadPlans.each {
+            if(!loadPlanList || loadPlanList.contains(it.name))
+            exportObject(it as IExportable, exportDir.canonicalPath)
          }
 
          instance.endTxn()
