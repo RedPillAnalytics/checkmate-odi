@@ -165,7 +165,7 @@ class Instance {
       odi.getTransactionalEntityManager().flush()
    }
 
-   // IFinder Objects
+   // Odi IFinder
 
    // Project Finders
 
@@ -174,18 +174,20 @@ class Instance {
    }
 
    def getOdiProject(String projectCode) {
-
       return findProject(projectCode)
    }
 
    def findProject(String code, Boolean ignore = true) {
-      def project = getProjectFinder().findByCode(code)
-      if (!project && !ignore) throw new Exception("Project code '${code}' does not exist.")
-      return project
+      def list = getProjectFinder().findByCode(code)
+      if (!list && !ignore) throw new Exception("Project code '${code}' does not exist.")
+      log.info "Project list: ${list.collect{it.name}}"
+      return list
    }
 
    def getProjects() {
-      return projectFinder.findAll().toArray()
+      def list = projectFinder.findAll().toArray()
+      log.info "Project list: ${list.collect{it.name}}"
+      return list
    }
 
    // Folder Finders
@@ -263,13 +265,16 @@ class Instance {
    }
 
    def findAllModels() {
-      return getModelFinder().findAll().toArray()
+      def list = getModelFinder().findAll().toArray()
+      log.info "Model list: ${list.collect{it.name}}"
+      return list
    }
 
    def findModelbyCode(String modelCode, Boolean ignore = true) {
-      def model = getModelFinder().findByCode(modelCode)
-      if (!model && !ignore) throw new Exception("Model code '${modelCode}' does not exist.")
-      return model
+      def list = getModelFinder().findByCode(modelCode)
+      if (!list && !ignore) throw new Exception("Model code '${modelCode}' does not exist.")
+      log.info "Model list: ${list.collect{it.name}}"
+      return list
    }
 
    // Model Folder Finders
@@ -279,13 +284,16 @@ class Instance {
    }
 
    def findAllModelFolders() {
-      return getModelFolderFinder().findAll().toArray()
+      def list = getModelFolderFinder().findAll().toArray()
+      log.info "Model list: ${list.collect{it.name}}"
+      return list
    }
 
    def findModelFolderbyName(String name) {
-      def folder = getModelFolderFinder().findByName(name)
-      if (!folder) throw new Exception("Model '${folder}' does not exist.")
-      return folder
+      def list = getModelFolderFinder().findByName(name)
+      if (!list) throw new Exception("Model '${name}' does not exist.")
+      log.info "Model Folder list: ${list.collect{it.name}}"
+      return list
    }
 
    // Scenario Finders
@@ -295,7 +303,9 @@ class Instance {
    }
 
    def findAllScenarios() {
-      return getScenarioFinder().findAll()
+      def list = getScenarioFinder().findAll()
+      log.info "Scenario list: ${list.collect{it.name}}"
+      return list
    }
 
    def findScenarioByName(String scenarioName, Boolean latestByTimestamp = false) {
@@ -319,11 +329,15 @@ class Instance {
    }
 
    def findAllScenarioFolders() {
-      return getScenarioFolderFinder().findAll()
+      def list = getScenarioFolderFinder().findAll()
+      log.info "Scenario Folder list: ${list.collect{it.name}}"
+      return list
    }
 
    def findScenarioFolderByName(String folderName) {
-      return getScenarioFolderFinder().findAllByName(folderName)
+      def list = getScenarioFolderFinder().findAllByName(folderName)
+      log.info "Scenario Folder list: ${list.collect{it.name}}"
+      return list
    }
 
    // Load Plans Finder
@@ -335,7 +349,7 @@ class Instance {
 
    def findAllLoadPlans() {
       def list = getLoadPlanFinder().findAll()
-      log.info "Load plan list: $list"
+      log.info "Load Plan list: ${list.collect{it.name}}"
       return list
    }
 
@@ -348,13 +362,13 @@ class Instance {
 
    def findAllGlobalVariables() {
       def list = getVariableFinder().findAllGlobals()
-      log.info "Global Variables list: $list"
+      log.info "Global Variable list: ${list.collect{it.name}}"
       return list
    }
 
    def findVariable(String projectCode) {
       def list = getVariableFinder().findByProject(projectCode)
-      log.info "Project Variables list: $list"
+      log.info "Project Variable list: ${list.collect{it.name}}"
       return list
    }
 
@@ -403,55 +417,55 @@ class Instance {
 
    def findAllGlobalCKM() {
       def list = getCKMFinder().findAllGlobals()
-      log.info "Global CKM list: $list"
+      log.info "Global CKM list: ${list.collect{it.name}}"
       return list
    }
 
    def findAllGlobalIKM() {
       def list = getIKMFinder().findAllGlobals()
-      log.info "Global IKM list: $list"
+      log.info "Global IKM list: ${list.collect{it.name}}"
       return list
    }
 
    def findAllGlobalJKM() {
       def list = getJKMFinder().findAllGlobals()
-      log.info "Global JKM list: $list"
+      log.info "Global JKM list: ${list.collect{it.name}}"
       return list
    }
 
    def findAllGlobalLKM() {
       def list = getLKMFinder().findAllGlobals()
-      log.info "Global LKM list: $list"
+      log.info "Global LKM list: ${list.collect{it.name}}"
       return list
    }
 
    def findAllGlobalRKM() {
       def list = getRKMFinder().findAllGlobals()
-      log.info "Global RKM list: $list"
+      log.info "Global RKM list: ${list.collect{it.name}}"
       return list
    }
 
    def findAllGlobalSKM() {
       def list = getSKMFinder().findAllGlobals()
-      log.info "Global SKM list: $list"
+      log.info "Global SKM list: ${list.collect{it.name}}"
       return list
    }
 
    def findAllGlobalXKM() {
       def list = getXKMFinder().findAllGlobals()
-      log.info "Global SKM list: $list"
+      log.info "Global SKM list: ${list.collect{it.name}}"
       return list
    }
 
    def findAllGlobalKnowledgeModule() {
       def list = getKnowledgeModuleFinder().findAllGlobals()
-      log.info "Global KnowledgeModule list: $list"
+      log.info "Global Knowledge Module list: ${list.collect{it.name}}"
       return list
    }
 
    def findKnowledgeModule(String projectCode) {
       def list = getKnowledgeModuleFinder().findByProject(projectCode)
-      log.info "KnowledgeModuleFinder list: $list"
+      log.info "Knowledge Module list: ${list.collect{it.name}}"
       return list
    }
 
@@ -464,7 +478,7 @@ class Instance {
 
    def findAllGlobalKnowledgeModuleTemplate() {
       def list = getKnowledgeModuleTemplateFinder().findAll()
-      log.info "Global KnowledgeModuleTemplate list: $list"
+      log.info "Global Knowledge Module Template list: ${list.collect{it.name}}"
       return list
    }
 
@@ -477,13 +491,13 @@ class Instance {
 
    def findAllGlobalSequences() {
       def list = getSequenceFinder().findAllGlobals()
-      log.info "Global Sequences list: $list"
+      log.info "Global Sequence list: ${list.collect{it.name}}"
       return list
    }
 
    def findSequence(String projectCode) {
       def list = getSequenceFinder().findByProject(projectCode)
-      log.info "Sequence list: $list"
+      log.info "Sequence list: ${list.collect{it.name}}"
       return list
    }
 
@@ -496,13 +510,13 @@ class Instance {
 
    def findAllGlobalUserFunctions() {
       def list = getUserFunctionFinder().findAllGlobals()
-      log.info "UserFunction Sequences list: $list"
+      log.info "User Function list: ${list.collect{it.name}}"
       return list
    }
 
    def findUserFunction(String projectCode) {
       def list = getUserFunctionFinder().findByProject(projectCode)
-      log.info "UserFunctionFinder list: $list"
+      log.info "User Function list: ${list.collect{it.name}}"
       return list
    }
 
@@ -515,7 +529,7 @@ class Instance {
 
    def findAllContext() {
       def list = getContextFinder().findAll()
-      log.info "Context list: $list"
+      log.info "Context list: ${list.collect{it.name}}"
       return list
    }
 
@@ -528,13 +542,13 @@ class Instance {
 
    def findAllTechnology() {
       def list = getTechnologyFinder().findAll()
-      log.info "Technology list: $list"
+      log.info "Technology list: ${list.collect{it.name}}"
       return list
    }
 
    def findUsedTechnologies() {
       def list = getTechnologyFinder().findUsedTechnologies()
-      log.info "Technology list: $list"
+      log.info "Technology list: ${list.collect{it.name}}"
       return list
    }
 
@@ -547,7 +561,7 @@ class Instance {
 
    def findAllDataServer() {
       def list = getDataServerFinder().findAll()
-      log.info "DataServer list: $list"
+      log.info "DataServer list: ${list.collect{it.name}}"
       return list
    }
 
@@ -560,7 +574,7 @@ class Instance {
 
    def findAllPhysicalSchema() {
       def list = getPhysicalSchemaFinder().findAll()
-      log.info "PhysicalSchema list: $list"
+      log.info "Physical Schema list: ${list.collect{it.name}}"
       return list
    }
 
@@ -573,7 +587,7 @@ class Instance {
 
    def findAllPhysicalAgent() {
       def list = getPhysicalAgentFinder().findAll()
-      log.info "PhysicalAgent list: $list"
+      log.info "Physical Agent list: ${list.collect{it.name}}"
       return list
    }
 
@@ -586,7 +600,7 @@ class Instance {
 
    def findAllLogicalAgent() {
       def list = getLogicalAgentFinder().findAll()
-      log.info "LogicalAgent list: $list"
+      log.info "Logical Agent list: ${list.collect{it.name}}"
       return list
    }
 
@@ -599,7 +613,7 @@ class Instance {
 
    def findAllLogicalSchema() {
       def list = getLogicalSchemaFinder().findAll()
-      log.info "LogicalSchema list: $list"
+      log.info "Logical Schema list: ${list.collect{it.name}}"
       return list
    }
 
