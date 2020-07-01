@@ -325,14 +325,14 @@ class Instance {
       } else {
          list = getScenarioFinder().findLatestByName(scenarioName, latestByTimestamp)
       }
-      "Scenario list: ${list.collect{it.name}}"
+      log.info "Scenario list: ${list.collect{it.name}}"
       return list
    }
 
    def findScenarioByTag(String name, String version) {
       def tag = new Tag(name, version)
       def list = getScenarioFinder().findByTag(tag)
-      "Scenario list: ${list.collect{it.name}}"
+      log.info "Scenario list: ${list.collect{it.name}}"
       return list
    }
 
