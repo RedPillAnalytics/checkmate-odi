@@ -195,9 +195,10 @@ class Instance {
    }
 
    def findFolder(String folder, String project, Boolean ignore = true) {
-      def odiFolders = getFolderFinder().findByName(folder, project)
-      if (!odiFolders && !ignore) throw new Exception("Folder '${folder}' does not exist in project '${project}'.")
-      return odiFolders
+      def list = getFolderFinder().findByName(folder, project)
+      if (!list && !ignore) throw new Exception("Folder '${folder}' does not exist in project '${project}'.")
+      log.info "Folder list: ${list.collect{it.name}}"
+      return list
    }
 
    def getFoldersProjectFinder() {
@@ -205,9 +206,10 @@ class Instance {
    }
 
    def findFoldersProject(String project, Boolean ignore = true) {
-      def odiProjects = getFoldersProjectFinder().findByProject(project)
-      if (!odiProjects[0] && !ignore) throw new Exception("No folders exist in project '${project}'.")
-      return getFoldersProjectFinder().findByProject(project)
+      def list = getFoldersProjectFinder().findByProject(project)
+      if (!list[0] && !ignore) throw new Exception("No folders exist in project '${project}'.")
+      log.info "Folder list: ${list.collect{it.name}}"
+      return list
    }
 
    // Mapping Finders
