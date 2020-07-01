@@ -165,7 +165,7 @@ class Instance {
       odi.getTransactionalEntityManager().flush()
    }
 
-   // Odi IFinder
+   // Odi Finders
 
    // Project Finders
 
@@ -221,7 +221,9 @@ class Instance {
    }
 
    def findMapping(String project, String folder) {
-      return getMappingFinder().findByProject(project, folder)
+      def list = getMappingFinder().findByProject(project, folder)
+      log.info "Mapping list: ${list.collect{it.name}}"
+      return list
    }
 
    // Package Finders
@@ -231,7 +233,9 @@ class Instance {
    }
 
    def findPackage(String project, String folder) {
-      return getPackageFinder().findByProject(project, folder)
+      def list = getPackageFinder().findByProject(project, folder)
+      log.info "Package list: ${list.collect{it.name}}"
+      return list
    }
 
    // Procedure Finders
@@ -241,7 +245,9 @@ class Instance {
    }
 
    def findProcedure(String project, String folder) {
-      return getProcedureFinder().findByProject(project, folder)
+      def list = getProcedureFinder().findByProject(project, folder)
+      log.info "Procedure list: ${list.collect{it.name}}"
+      return list
    }
 
    // Reusable-Mapping Finders
@@ -251,11 +257,15 @@ class Instance {
    }
 
    def findReusableMapping(String project, String folder) {
-      return getReusableMappingFinder().findByProject(project, folder)
+      def list = getReusableMappingFinder().findByProject(project, folder)
+      log.info "Reusable Mapping list: ${list.collect{it.name}}"
+      return list
    }
 
    def findAllGlobalReusableMappings() {
-      return getReusableMappingFinder().findAllGlobals()
+      def list = getReusableMappingFinder().findAllGlobals()
+      log.info "Global Reusable Mapping list: ${list.collect{it.name}}"
+      return list
    }
 
    // Model Finders
@@ -309,16 +319,21 @@ class Instance {
    }
 
    def findScenarioByName(String scenarioName, Boolean latestByTimestamp = false) {
+      def list
       if(!latestByTimestamp) {
-         return getScenarioFinder().findLatestByName(scenarioName)
+         list = getScenarioFinder().findLatestByName(scenarioName)
       } else {
-         return getScenarioFinder().findLatestByName(scenarioName, latestByTimestamp)
+         list = getScenarioFinder().findLatestByName(scenarioName, latestByTimestamp)
       }
+      "Scenario list: ${list.collect{it.name}}"
+      return list
    }
 
    def findScenarioByTag(String name, String version) {
       def tag = new Tag(name, version)
-      return getScenarioFinder().findByTag(tag)
+      def list = getScenarioFinder().findByTag(tag)
+      "Scenario list: ${list.collect{it.name}}"
+      return list
    }
 
 
@@ -368,12 +383,11 @@ class Instance {
 
    def findVariable(String projectCode) {
       def list = getVariableFinder().findByProject(projectCode)
-      log.info "Project Variable list: ${list.collect{it.name}}"
+      log.info "Variable list: ${list.collect{it.name}}"
       return list
    }
 
    // Knowledge Module Finder
-   // IOdiCKMFinder, IOdiIKMFinder, IOdiJKMFinder, IOdiLKMFinder, IOdiRKMFinder
 
    def getKnowledgeModuleFinder() {
       def finder = (IOdiKMFinder) odi.getTransactionalEntityManager().getFinder(OdiKM.class)
