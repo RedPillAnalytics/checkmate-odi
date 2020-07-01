@@ -124,6 +124,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                // Export the folder objects
                folders.each { OdiFolder folder ->
                   // export the folder
+                  logger.info("Folder ${folder.name}...")
                   exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
                   // export the folder objects
                   instance."$finder"(projectCode, folder.name).each { object ->
