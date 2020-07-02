@@ -2,19 +2,49 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
+import oracle.odi.domain.impexp.IExportable
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 @Slf4j
 class ExportScenarioDirectoryTask extends ExportDirectoryTask {
 
-    // specify the model subdirectory
+    // specify the scenario subdirectory
     String category = 'scenario'
 
     @Internal
     Instance instance
 
-    @SuppressWarnings("GroovyAssignabilityCheck")
+    /**
+     * The ODI scenario to export. Default: null, which means all scenarios are exported.
+     */
+    @Input
+    @Optional
+    @Option(option = "scenario-name",
+            description = "The ODI scenario name to export. Default: null, which means all scenarios are exported.")
+    String scenarioName
+
+    /**
+     * The ODI scenario version to export. Default: null, which means all scenarios are exported.
+     */
+    @Input
+    @Optional
+    @Option(option = "scenario-version",
+            description = "The ODI scenario version to export. Default: null, which means all scenarios are exported.")
+    String scenarioVersion
+
+    /**
+     * The ODI scenario folder name to export. Default: null, which means all scenario folders are exported.
+     */
+    @Input
+    @Optional
+    @Option(option = "scenario-folder",
+            description = "The ODI scenario folder name to export. Default: null, which means all scenario folders are exported.")
+    String scenarioFolderName
+
     @TaskAction
     def taskAction() {
 
@@ -22,18 +52,25 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
 
         try {
 
+            // get the scenario folders
+            def scenarioFolders = scenarioFolderName ? instance.findScenarioFolderByName(scenarioFolderName) : instance.findAllScenarioFolders()
+
+            // get the scenarios
+            def scenario = scenarioName && scenarioVersion ? instance.findScenarioByTag(scenarioName, scenarioVersion) :
+                    scenarioName && !scenarioVersion ? instance.findScenarioByName(scenarioName) : instance.findAllScenarios()
+
             instance.beginTxn()
 
             // export all the scenario folders
             log.info('Exporting scenario-folders...')
-            instance.findAllScenarioFolders().each {
-                exportObject(it, "${exportDir.canonicalPath}/scenario-folder", true, false)
+            scenarioFolders.each {
+                exportObject(it as IExportable, "${exportDir.canonicalPath}/scenario-folder", true, false)
             }
 
             // export all the scenarios
             log.info('Exporting scenarios...')
-            instance.findAllScenarios().each {
-                exportObject(it, "${exportDir.canonicalPath}/scenario")
+            scenario.each {
+                exportObject(it as IExportable, "${exportDir.canonicalPath}/scenario")
             }
 
             instance.endTxn()
@@ -49,8 +86,13 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
             throw e
         }
 
-        // execute the export stage process
-        exportStageDir()
+        if ( !scenarioName && !scenarioVersion && !scenarioFolderName ) {
+            // execute the export stage process
+            exportStageDir()
+        } else {
+            // execute the export stage process without deleted objects
+            exportStageDir(false)
+        }
 
     }
 }

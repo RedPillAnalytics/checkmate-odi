@@ -8,7 +8,6 @@ import oracle.odi.impexp.smartie.ISmartExportable
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -73,9 +72,6 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
       try {
 
-         // get the folders
-         def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
-
          Integer count = 0
 
          // begin the transaction
@@ -86,7 +82,8 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
          exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
 
-         log.info "Folder list: ${folders}"
+         // get the folders
+         def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
 
          objectList.each { objectType ->
 
@@ -100,15 +97,17 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
             // Export the project objects
             if(['knowledge-module'].contains(objectType)) {
+               if (!nameList) {
+                  // Export the knowledge modules
+                  List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
 
-               // Export the knowledge modules
-               List<ISmartExportable> exportList = new LinkedList<ISmartExportable>()
+                  instance."$finder"(projectCode).each { object ->
+                     exportList.add(object as ISmartExportable)
+                  }
 
-               instance."$finder"(projectCode).each { object ->
-                  exportList.add(object as ISmartExportable)
+                  smartExportList(exportList, "${exportDir.canonicalPath}/${objectType}", "KM", "Project_Knowledge_Modules")
+
                }
-
-               smartExportList(exportList, "${exportDir.canonicalPath}/${objectType}", "KM", "Project_Knowledge_Modules")
 
             } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
 
@@ -125,6 +124,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                // Export the folder objects
                folders.each { OdiFolder folder ->
                   // export the folder
+                  logger.info("Folder ${folder.name}...")
                   exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
                   // export the folder objects
                   instance."$finder"(projectCode, folder.name).each { object ->

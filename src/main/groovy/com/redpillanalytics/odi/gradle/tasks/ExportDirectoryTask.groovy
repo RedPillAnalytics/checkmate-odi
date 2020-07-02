@@ -2,7 +2,6 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.options.Option
@@ -44,25 +43,25 @@ class ExportDirectoryTask extends ExportTask {
 
    def exportStageDir(Boolean deleteObjects = true) {
 
-      if (deleteObjects) {
-
-         // Find and remove the deleted objects in the source base comparing with the build objects
-         project.fileTree(dir: sourceBase, include: "**/*.xml").toList().each { File srcFile ->
-            if (!project.fileTree(dir: buildDir, include: "**/*.xml").collect {it.name}.contains(srcFile.name)) {
-               ant.delete(file: srcFile)
-               log.info("File ${srcFile.name} deleted")
-            }
-         }
-
-      }
-
       // Create buildDir and sourceBase xml files list to compare
       def buildList = project.fileTree(dir: buildDir, include: "**/*.xml").toList()
       log.debug("Build Dir List: ${buildList}")
       def sourceList = project.fileTree(dir: sourceBase, include: "**/*.xml").toList()
       log.debug("Source base List: ${sourceList}")
-      Boolean flag
 
+      if (deleteObjects) {
+
+         // Find and remove the deleted objects in the source base comparing with the build objects
+         sourceList.each { File sourceFile ->
+            if (!buildList.collect {File buildFile -> buildFile.name}.contains(sourceFile.name)) {
+               ant.delete(file: sourceFile)
+               log.info("-- File ${sourceFile.name} deleted")
+            }
+         }
+
+      }
+
+      // Find and detect changes between files in build list comparing with source base objects
       buildList.each { buildFile ->
 
          // Compare the xml files and if the file change copy from buildDir to buildDir
@@ -71,19 +70,19 @@ class ExportDirectoryTask extends ExportTask {
          if(sourceFile) {
             // If XML file exist in Source Base do the XML Diff and if changed copy from buildDir to sourceBase
             if (xmlDiff(buildFile, sourceFile)) {
-               log.info("File ${buildFile.name} changed")
+               log.info("!= File ${buildFile.name} changed")
                ant.copy(file: buildFile.canonicalPath,
                        tofile: sourceFile.canonicalPath,
                        overwrite: true)
             } else {
-               log.info("- File ${buildFile.name} not changed")
+               log.info("== File ${buildFile.name} not changed")
             }
          } else {
             // If the XML file does not exist in Source Base copy from from buildDir to sourceBase
+            log.info("++ File ${buildFile.name} created")
             ant.copy(file: buildFile.canonicalPath,
                     tofile: "${sourceBase}/${(buildFile.canonicalPath - buildDir.canonicalPath)}",
                     overwrite: true)
-            log.info("File ${buildFile.name} created")
          }
 
       }

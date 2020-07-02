@@ -152,6 +152,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportLoadPlanDir task with --load-plan option"() {
+      given:
+      taskName = 'exportLoadPlanDir'
+      result = executeSingleTask(taskName, ['-Si', '--load-plan=LOAD_EDW'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportScenarioDir task with defaults"() {
       given:
       taskName = 'exportScenarioDir'
@@ -160,6 +169,43 @@ class ExportTest extends Specification {
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
+
+   def "Execute :exportScenarioDir task with --scenario-name option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si', '--scenario-name=LOAD_F'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportScenarioDir task with --scenario-name and --scenario-folder option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_D'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportScenarioDir task with --scenario-name and --scenario-version option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si','--scenario-name=LOAD_D', '--scenario-version=001'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportScenarioDir task with --scenario-folder, --scenario-name and --scenario-version option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_D', '--scenario-version=001'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
 
    def "Execute :exportGlobalDir task with defaults"() {
       given:

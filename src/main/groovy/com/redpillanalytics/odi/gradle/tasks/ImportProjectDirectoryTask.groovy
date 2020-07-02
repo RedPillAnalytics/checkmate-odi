@@ -38,7 +38,7 @@ class ImportProjectDirectoryTask extends ImportDirectoryTask {
 
          // Import the Project Object
          if (!instance.findProject(projectCode, true)) {
-            log.info("Exporting Project ${projectCode}...")
+            log.info("Importing Project ${projectCode}...")
             importXmlFiles(getImportFiles('PROJ'))
          } else {
             log.info("Found project ${projectCode}...")

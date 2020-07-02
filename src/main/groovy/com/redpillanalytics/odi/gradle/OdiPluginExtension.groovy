@@ -22,11 +22,6 @@ class OdiPluginExtension {
    String buildDir = 'build/tmp'
 
    /**
-    * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
-    */
-   Boolean enableProjects = true
-
-   /**
     * The name of the ODI project being built. Defaults to the directory name in source control. Required parameter.
     */
    String projectName
@@ -42,29 +37,34 @@ class OdiPluginExtension {
    String projectCode
 
    /**
+    * When enabled, support ODI Design Projects in this Gradle project directory. Default is 'true'.
+    */
+   Boolean enableProject = true
+
+   /**
     * When enabled, support ODI Global Objects in this Gradle project directory. Default is 'true'.
     */
-   Boolean enableGlobals = true
+   Boolean enableGlobal = true
 
    /**
     * When enabled, support ODI Topology Objects in this Gradle project directory. Default is 'true'.
     */
-   Boolean enableTopologies = true
+   Boolean enableTopology = true
 
    /**
     * When enabled, support ODI Design Models in this Gradle project directory. Default is 'true'.
     */
-   Boolean enableModels = true
+   Boolean enableModel = true
 
    /**
     * When enabled, support ODI Load Plans in this Gradle project directory. Default is 'true'.
     */
-   Boolean enableLoadPlans = true
+   Boolean enableLoadPlan = true
 
    /**
     * When enabled, support ODI Scenarios in this Gradle project directory. Default is 'true'.
     */
-   Boolean enableScenarios = true
+   Boolean enableScenario = true
 
    /**
     * The base ODI build directory, which exists inside of the project 'buildDir' directory.
@@ -90,11 +90,6 @@ class OdiPluginExtension {
     * URL for an ODI Agent used in CI/CD pipelines.
     */
    String agentUrl = 'http://localhost:20910/oraclediagent'
-
-//   /**
-//    * When enabled, all Instance Tasks ensure that the ODI API zip file is downloaded and extracted. Only applicable with the 'com.redpillanalytics.checkmate.odi.api' plugin is enabled.
-//    */
-//   Boolean extractOdiApi = false
 
    String masterUrl = "jdbc:oracle:thin:@${Utils.getHostname()}:1521/ORCL"
    String masterDriver = "oracle.jdbc.OracleDriver"
