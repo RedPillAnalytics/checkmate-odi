@@ -59,8 +59,13 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
          throw e
       }
 
-      // execute the export stage process
-      exportStageDir()
+      if ( !loadPlanList ) {
+         // execute the export stage process
+         exportStageDir()
+      } else {
+         // execute the export stage process without deleted objects
+         exportStageDir(false)
+      }
 
    }
 }
