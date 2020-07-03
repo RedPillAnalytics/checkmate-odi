@@ -130,6 +130,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
                // Export the folder objects
                folders.each { OdiFolder folder ->
                   // export the folder objects
+                  logger.info("Folder ${folder.name}:")
                   instance."$finder"(projectCode, folder.name).each { object ->
                      if (!nameList || nameList.collect{it.toLowerCase()}.contains(object.name.toLowerCase())) {
                         count++
