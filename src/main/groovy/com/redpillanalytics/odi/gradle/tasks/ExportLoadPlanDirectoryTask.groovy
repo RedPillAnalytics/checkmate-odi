@@ -42,7 +42,7 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
 
          log.info('Exporting load-plans...')
          loadPlans.each {
-            if(!loadPlanList || loadPlanList.contains(it.name))
+            if(!loadPlanList || loadPlanList.collect{it.toLowerCase()}.contains(it.name.toLowerCase()))
             exportObject(it as IExportable, exportDir.canonicalPath)
          }
 
@@ -59,8 +59,13 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
          throw e
       }
 
-      // execute the export stage process
-      exportStageDir()
+      if ( !loadPlanList ) {
+         // execute the export stage process
+         exportStageDir()
+      } else {
+         // execute the export stage process without deleted objects
+         exportStageDir(false)
+      }
 
    }
 }

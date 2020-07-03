@@ -82,8 +82,14 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
          exportObject(instance.findProject(projectCode,false), "${exportDir.canonicalPath}", false,false)
 
-         // get the folders
+         // get the project folders
          def folders = folderName ? instance.findFolder(folderName, projectCode, false) : instance.findFoldersProject(projectCode, false)
+
+         // export the project folders
+         folders.each { OdiFolder folder ->
+            log.info("Exporting Folder ${folder.name}...")
+            exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
+         }
 
          objectList.each { objectType ->
 
@@ -112,7 +118,7 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
             } else if(['variable', 'sequence', 'user-function'].contains(objectType)) {
 
                instance."$finder"(projectCode).each { object ->
-                  if (!nameList || nameList.contains(object.name)) {
+                  if (!nameList || nameList.collect{it.toLowerCase()}.contains(object.name.toLowerCase())) {
                      count++
                      logger.debug "object name: ${object.name}"
                      exportObject(object as IExportable, "${exportDir.canonicalPath}/${objectType}")
@@ -123,12 +129,10 @@ class ExportProjectDirectoryTask extends ExportDirectoryTask {
 
                // Export the folder objects
                folders.each { OdiFolder folder ->
-                  // export the folder
-                  logger.info("Folder ${folder.name}...")
-                  exportObject(folder, "${exportDir.canonicalPath}/folder/${folder.name}", true,false)
                   // export the folder objects
+                  logger.info("Folder ${folder.name}:")
                   instance."$finder"(projectCode, folder.name).each { object ->
-                     if (!nameList || nameList.contains(object.name)) {
+                     if (!nameList || nameList.collect{it.toLowerCase()}.contains(object.name.toLowerCase())) {
                         count++
                         logger.debug "object name: ${object.name}"
                         exportObject(object as IExportable, "${exportDir.canonicalPath}/folder/${folder.name}/${objectType}")
