@@ -42,7 +42,7 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
 
          log.info('Exporting load-plans...')
          loadPlans.each {
-            if(!loadPlanList || loadPlanList.contains(it.name))
+            if(!loadPlanList || loadPlanList.collect{it.toLowerCase()}.contains(it.name.toLowerCase()))
             exportObject(it as IExportable, exportDir.canonicalPath)
          }
 
