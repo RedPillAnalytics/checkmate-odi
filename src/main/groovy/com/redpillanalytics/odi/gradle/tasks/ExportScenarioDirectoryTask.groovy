@@ -2,7 +2,6 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
-import oracle.odi.domain.impexp.IExportable
 import oracle.odi.domain.runtime.scenario.OdiScenario
 import oracle.odi.domain.runtime.scenario.OdiScenarioFolder
 import org.gradle.api.tasks.Input
