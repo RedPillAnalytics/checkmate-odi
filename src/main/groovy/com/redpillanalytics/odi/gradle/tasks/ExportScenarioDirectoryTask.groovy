@@ -3,6 +3,8 @@ package com.redpillanalytics.odi.gradle.tasks
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.impexp.IExportable
+import oracle.odi.domain.runtime.scenario.OdiScenario
+import oracle.odi.domain.runtime.scenario.OdiScenarioFolder
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -52,25 +54,31 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
 
         try {
 
-            // get the scenario folders
-            def scenarioFolders = scenarioFolderName ? instance.findScenarioFolderByName(scenarioFolderName) : instance.findAllScenarioFolders()
+            // get all the scenario folders
+            def scenarioFolders = instance.findAllScenarioFolders() as List<OdiScenarioFolder>
 
-            // get the scenarios
-            def scenario = scenarioName && scenarioVersion ? instance.findScenarioByTag(scenarioName, scenarioVersion) :
-                    scenarioName && !scenarioVersion ? instance.findScenarioByName(scenarioName) : instance.findAllScenarios()
+            // get all the scenarios
+            def scenario = instance.findAllScenarios() as List<OdiScenario>
 
             instance.beginTxn()
 
-            // export all the scenario folders
+            // export the scenario folders
             log.info('Exporting scenario-folders...')
-            scenarioFolders.each {
-                exportObject(it as IExportable, "${exportDir.canonicalPath}/scenario-folder", true, false)
+            scenarioFolders.each { OdiScenarioFolder object ->
+                if(!scenarioFolderName || scenarioFolderName.toLowerCase().contains(object.name.toLowerCase()))
+                exportObject(object, "${exportDir.canonicalPath}/scenario-folder", true, false)
             }
 
-            // export all the scenarios
+            // export the scenarios
             log.info('Exporting scenarios...')
-            scenario.each {
-                exportObject(it as IExportable, "${exportDir.canonicalPath}/scenario")
+            scenario.each { OdiScenario object ->
+                if(!scenarioFolderName || scenarioFolderName.toLowerCase().contains(object.getScenarioFolder().name.toLowerCase())) {
+                    if(!scenarioName || scenarioName.toLowerCase().contains(object.name.toLowerCase())) {
+                        if(!scenarioVersion || scenarioVersion.toLowerCase().contains(object.getVersion().toLowerCase())) {
+                            exportObject(object, "${exportDir.canonicalPath}/scenario")
+                        }
+                    }
+                }
             }
 
             instance.endTxn()

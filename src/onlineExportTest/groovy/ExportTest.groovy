@@ -179,6 +179,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportScenarioDir task with --scenario-version option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si', '--scenario-version=001'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportScenarioDir task with --scenario-name and --scenario-folder option"() {
       given:
       taskName = 'exportScenarioDir'
