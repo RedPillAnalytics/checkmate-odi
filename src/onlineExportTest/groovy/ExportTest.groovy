@@ -188,6 +188,15 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportScenarioDir task with --scenario-folder option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si', '--scenario-folder=EDW'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportScenarioDir task with --scenario-name and --scenario-folder option"() {
       given:
       taskName = 'exportScenarioDir'

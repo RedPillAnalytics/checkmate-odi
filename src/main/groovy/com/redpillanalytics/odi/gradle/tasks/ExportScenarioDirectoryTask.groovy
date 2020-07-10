@@ -64,14 +64,19 @@ class ExportScenarioDirectoryTask extends ExportDirectoryTask {
             // export the scenario folders
             log.info('Exporting scenario-folders...')
             scenarioFolders.each { OdiScenarioFolder object ->
-                if(!scenarioFolderName || scenarioFolderName.toLowerCase().contains(object.name.toLowerCase()))
-                exportObject(object, "${exportDir.canonicalPath}/scenario-folder", true, false)
+                if(!scenarioFolderName || scenarioFolderName.toLowerCase().contains(object.name.toLowerCase())) {
+                    exportObject(object, "${exportDir.canonicalPath}/scenario-folder", true, false)
+                }
             }
 
             // export the scenarios
             log.info('Exporting scenarios...')
             scenario.each { OdiScenario object ->
-                if(!scenarioFolderName || scenarioFolderName.toLowerCase().contains(object.getScenarioFolder().name.toLowerCase())) {
+                try {
+                    log.info("SCENARIO FOLDER: ${object.getScenarioFolder()} SCENARIO NAME: ${object.name} SCENARIO VERSION: ${object.getVersion()}")
+                } catch(Exception e ) {log.info(e.toString())}
+
+                if(!scenarioFolderName || ((object.getScenarioFolder() && scenarioFolderName) ? scenarioFolderName.toLowerCase().contains(object.getScenarioFolder().name.toLowerCase()) : false)) {
                     if(!scenarioName || scenarioName.toLowerCase().contains(object.name.toLowerCase())) {
                         if(!scenarioVersion || scenarioVersion.toLowerCase().contains(object.getVersion().toLowerCase())) {
                             exportObject(object, "${exportDir.canonicalPath}/scenario")
