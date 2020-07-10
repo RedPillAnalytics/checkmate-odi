@@ -295,7 +295,7 @@ class Instance {
 
    def findAllModelFolders() {
       def list = getModelFolderFinder().findAll().toArray()
-      log.info "Model list: ${list.collect{it.name}}"
+      log.info "Model Folder list: ${list.collect{it.name}}"
       return list
    }
 

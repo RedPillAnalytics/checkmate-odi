@@ -134,10 +134,28 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportModelDir task with --model-folder option"() {
+      given:
+      taskName = 'exportModelDir'
+      result = executeSingleTask(taskName, ['--model-folder=JUMP', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportModelDir task with --model-code option"() {
       given:
       taskName = 'exportModelDir'
-      result = executeSingleTask(taskName, ['--model-code=STAGE_AREA', '-Si'])
+      result = executeSingleTask(taskName, ['--model-code=EDW', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportModelDir task with --model-folder and --model-code option"() {
+      given:
+      taskName = 'exportModelDir'
+      result = executeSingleTask(taskName, ['--model-folder=JUMP', '--model-code=EDW', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
