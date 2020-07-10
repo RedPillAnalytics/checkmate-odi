@@ -3,6 +3,7 @@ package com.redpillanalytics.odi.gradle.tasks
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
 import oracle.odi.domain.impexp.IExportable
+import oracle.odi.domain.runtime.loadplan.OdiLoadPlan
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
@@ -37,13 +38,14 @@ class ExportLoadPlanDirectoryTask extends ExportDirectoryTask {
          instance.beginTxn()
 
          // get the load plans
-         def loadPlans = instance.findAllLoadPlans()
+         def loadPlans = instance.findAllLoadPlans() as List<OdiLoadPlan>
 
 
          log.info('Exporting load-plans...')
-         loadPlans.each {
-            if(!loadPlanList || loadPlanList.collect{it.toLowerCase()}.contains(it.name.toLowerCase()))
-            exportObject(it as IExportable, exportDir.canonicalPath)
+         loadPlans.each { OdiLoadPlan object ->
+            if(!loadPlanList || loadPlanList.collect{it.toLowerCase()}.contains(object.name.toLowerCase())) {
+               exportObject(object, exportDir.canonicalPath)
+            }
          }
 
          instance.endTxn()
