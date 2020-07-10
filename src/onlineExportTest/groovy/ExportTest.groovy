@@ -242,7 +242,6 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-
    def "Execute :exportGlobalDir task with defaults"() {
       given:
       taskName = 'exportGlobalDir'
