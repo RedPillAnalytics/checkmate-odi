@@ -2,11 +2,11 @@ package com.redpillanalytics.odi.gradle.tasks
 
 import com.redpillanalytics.odi.odi.Instance
 import groovy.util.logging.Slf4j
-import oracle.odi.domain.impexp.IExportable
+import oracle.odi.domain.model.OdiModel
+import oracle.odi.domain.model.OdiModelFolder
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 
@@ -44,24 +44,31 @@ class ExportModelDirectoryTask extends ExportDirectoryTask {
 
       try {
 
-         // get the model folders
-         def modelFolders = modelFolderName ? instance.findModelFolderbyName(modelFolderName) : instance.findAllModelFolders()
+         // get all the model folders
+         def modelFolders = instance.findAllModelFolders() as List<OdiModelFolder>
 
-         // get the models
-         def models = modelCode ? instance.findModelbyCode(modelCode) : instance.findAllModels()
+         // get all the models
+         def models = instance.findAllModels() as List<OdiModel>
 
          instance.beginTxn()
          // export the model folders
 
          log.info('Exporting model-folders...')
-         modelFolders.each {
-            exportObject(it as IExportable, "${exportDir.canonicalPath}/model-folder", true, false)
+         modelFolders.each { OdiModelFolder object ->
+            if(!modelFolderName || modelFolderName.toLowerCase().contains(object.name.toLowerCase())) {
+               exportObject(object, "${exportDir.canonicalPath}/model-folder", true, false)
+            }
          }
 
          // export the models
          log.info('Exporting models...')
-         models.each {
-            exportObject(it as IExportable, "${exportDir.canonicalPath}/model")
+         models.each { OdiModel object ->
+            if(!modelFolderName || ((object.getParentModelFolder() && modelFolderName) ?
+                    modelFolderName.toLowerCase().contains(object.getParentModelFolder().name.toLowerCase()) : false)) {
+               if(!modelCode || modelCode.toLowerCase().contains(object.name.toLowerCase())) {
+                  exportObject(object, "${exportDir.canonicalPath}/model")
+               }
+            }
          }
 
          instance.endTxn()

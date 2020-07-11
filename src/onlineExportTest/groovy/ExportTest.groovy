@@ -134,10 +134,28 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportModelDir task with --model-folder option"() {
+      given:
+      taskName = 'exportModelDir'
+      result = executeSingleTask(taskName, ['--model-folder=JUMP', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportModelDir task with --model-code option"() {
       given:
       taskName = 'exportModelDir'
-      result = executeSingleTask(taskName, ['--model-code=STAGE_AREA', '-Si'])
+      result = executeSingleTask(taskName, ['--model-code=EDW', '-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportModelDir task with --model-folder and --model-code option"() {
+      given:
+      taskName = 'exportModelDir'
+      result = executeSingleTask(taskName, ['--model-folder=JUMP', '--model-code=EDW', '-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -179,10 +197,28 @@ class ExportTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   def "Execute :exportScenarioDir task with --scenario-version option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si', '--scenario-version=001'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :exportScenarioDir task with --scenario-folder option"() {
+      given:
+      taskName = 'exportScenarioDir'
+      result = executeSingleTask(taskName, ['-Si', '--scenario-folder=EDW'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :exportScenarioDir task with --scenario-name and --scenario-folder option"() {
       given:
       taskName = 'exportScenarioDir'
-      result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_D'])
+      result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_F'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -191,7 +227,7 @@ class ExportTest extends Specification {
    def "Execute :exportScenarioDir task with --scenario-name and --scenario-version option"() {
       given:
       taskName = 'exportScenarioDir'
-      result = executeSingleTask(taskName, ['-Si','--scenario-name=LOAD_D', '--scenario-version=001'])
+      result = executeSingleTask(taskName, ['-Si','--scenario-name=LOAD_F', '--scenario-version=001'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -200,12 +236,11 @@ class ExportTest extends Specification {
    def "Execute :exportScenarioDir task with --scenario-folder, --scenario-name and --scenario-version option"() {
       given:
       taskName = 'exportScenarioDir'
-      result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_D', '--scenario-version=001'])
+      result = executeSingleTask(taskName, ['-Si','--scenario-folder=EDW', '--scenario-name=LOAD_F', '--scenario-version=001'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
-
 
    def "Execute :exportGlobalDir task with defaults"() {
       given:
