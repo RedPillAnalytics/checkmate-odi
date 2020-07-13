@@ -31,9 +31,11 @@ class ExportDirectoryTask extends ExportTask {
               .withTest(org.xmlunit.builder.Input.fromFile(testXml))
               .withNodeFilter({
                  node ->
-                    node.getNodeName() != "Encryption" &&
-                            node.getNodeName() != "Admin" &&
-                            node.getAttributes()?.getNamedItem('name')?.textContent != 'LastDate'
+                           node.getNodeName() != "Encryption" &&
+                           node.getNodeName() != "Admin" &&
+                           node.getAttributes()?.getNamedItem('name')?.textContent != 'LastDate' &&
+                           node.getAttributes()?.getNamedItem('name')?.textContent != 'LastUser' &&
+                           node.getAttributes()?.getNamedItem('name')?.textContent != 'IndChange'
               })
               .ignoreWhitespace()
               .build()
