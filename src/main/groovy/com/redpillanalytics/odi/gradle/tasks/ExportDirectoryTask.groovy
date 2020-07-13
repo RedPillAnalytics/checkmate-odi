@@ -35,6 +35,7 @@ class ExportDirectoryTask extends ExportTask {
                     node.getNodeName() != "Encryption" &&
                             node.getNodeName() != "Admin" &&
                             node.getAttributes()?.getNamedItem('name')?.textContent != 'LastDate'
+                            node.getAttributes()?.getNamedItem('name')?.textContent != 'IndChange'
               })
               .ignoreWhitespace()
               .build()
